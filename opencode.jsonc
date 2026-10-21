@@ -1,0 +1,6 @@
+{
+  // Configuración mínima y agnóstica al modelo.
+  // README.md y TODO.md se cargan como instrucciones en cada sesión.
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["README.md", "TODO.md"],
+}

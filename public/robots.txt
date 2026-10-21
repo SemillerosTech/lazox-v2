@@ -1,14 +1,8 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Contenido privado y flujos de demostración
+Disallow: /guias/
+Disallow: /carrito
+Disallow: /compra/
+Disallow: /pedido/

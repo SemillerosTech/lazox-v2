@@ -10,8 +10,8 @@ export function NewsletterForm() {
     >
       <input
         type="email"
-        placeholder="Tu correo"
-        aria-label="Tu correo"
+        placeholder="Su correo"
+        aria-label="Su correo"
         className="min-w-0 flex-1 bg-transparent px-4 text-sm outline-none"
       />
       <button

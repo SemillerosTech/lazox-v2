@@ -1,29 +1,22 @@
 import Image from "next/image";
+import Link from "next/link";
+import type { ReactNode } from "react";
 import {
   ArrowRight,
   BookOpen,
   Cloud,
   Heart,
-  Music2,
   Sprout,
   Star,
   Truck,
   type LucideIcon,
 } from "lucide-react";
 
-import { SiteHeader } from "@/components/site-header";
-import { Logo } from "@/components/logo";
-import { NewsletterForm } from "@/components/newsletter-form";
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from "@/components/social-icons";
-
-const nav = [
-  "Por edades",
-  "Por experiencias",
-  "Talleres y cursos",
-  "Recursos",
-  "Tienda",
-  "Nosotros",
-];
+import { Badge } from "@/components/badge";
+import { BookCover } from "@/components/book-cover";
+import { ButtonLink } from "@/components/button-link";
+import { Price } from "@/components/price";
+import { catalog } from "@/lib/catalog";
 
 const shapes = [
   "rounded-2xl bg-brand-yellow",
@@ -115,9 +108,11 @@ const testimonials = [
 function Pill({
   children,
   variant = "pink",
+  href = "#",
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   variant?: "pink" | "white" | "outline";
+  href?: string;
 }) {
   const styles = {
     pink: "bg-brand-pink text-primary-foreground hover:brightness-110",
@@ -126,12 +121,12 @@ function Pill({
   }[variant];
 
   return (
-    <a
-      href="#"
-      className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition ${styles}`}
+    <Link
+      href={href}
+      className={`inline-flex min-h-11 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-pink ${styles}`}
     >
-      {children} <ArrowRight className="h-4 w-4" />
-    </a>
+      {children} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+    </Link>
   );
 }
 
@@ -158,11 +153,11 @@ function Placeholder({
   );
 }
 
-export default function Home() {
-  return (
-    <div className="overflow-x-hidden text-brand-ink">
-      <SiteHeader />
+export default async function Home() {
+  const book = await catalog.getBook("inseparables");
 
+  return (
+    <>
       {/* Hero */}
       <section className="bg-brand-cream">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-10 md:grid-cols-2 md:py-16">
@@ -175,7 +170,7 @@ export default function Home() {
               comunidades.
             </p>
             <div className="mt-6">
-              <Pill>Ver experiencias</Pill>
+              <Pill href="/estantes">Ver experiencias</Pill>
             </div>
           </div>
           <Image
@@ -193,9 +188,9 @@ export default function Home() {
       <div className="bg-brand-blue text-primary-foreground">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-3 text-sm font-bold md:flex-row">
           <span>Libros, talleres y recursos para familias, escuelas y comunidades</span>
-          <Pill variant="white">Conoce LAZOX</Pill>
+          <Pill variant="white">Conozca LAZOX</Pill>
           <span className="flex items-center gap-2">
-            Envíos a todo México <Truck className="h-5 w-5" />
+            Envíos a todo México <Truck className="h-5 w-5" aria-hidden="true" />
           </span>
         </div>
       </div>
@@ -208,11 +203,13 @@ export default function Home() {
           una experiencia
         </h2>
         <p className="mx-auto mt-4 max-w-xl font-semibold">
-          Descubre libros, materiales, talleres y recursos diseñados para jugar, crear, aprender y
+          Descubra libros, materiales, talleres y recursos diseñados para jugar, crear, aprender y
           crecer juntos.
         </p>
         <div className="mt-6">
-          <Pill variant="white">Explorar todas las experiencias</Pill>
+          <Pill variant="white" href="/estantes">
+            Explorar todas las experiencias
+          </Pill>
         </div>
       </section>
 
@@ -230,7 +227,9 @@ export default function Home() {
           ))}
         </div>
         <div className="mt-8">
-          <Pill variant="outline">Ver todos los productos</Pill>
+          <Pill variant="outline" href="/estantes">
+            Ver todos los productos
+          </Pill>
         </div>
       </section>
 
@@ -238,7 +237,7 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4">
         <div className="rounded-3xl bg-brand-blue px-6 py-10 text-center text-primary-foreground">
           <h2 className="text-3xl font-extrabold text-brand-yellow">Explora con intención</h2>
-          <p className="mt-1 text-sm">Encuentra experiencias por lo que más te importa.</p>
+          <p className="mt-1 text-sm">Encuentre experiencias por lo que más le importa.</p>
           <div className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-3">
             {purposes.map(([title, className]) => (
               <span key={title} className={`rounded-full px-5 py-2 text-sm font-bold ${className}`}>
@@ -247,7 +246,9 @@ export default function Home() {
             ))}
           </div>
           <div className="mt-8">
-            <Pill variant="white">Explorar por temática</Pill>
+            <Pill variant="white" href="/estantes">
+              Explorar por temática
+            </Pill>
           </div>
         </div>
       </section>
@@ -264,7 +265,7 @@ export default function Home() {
               acompañar la vida real de las familias.
             </p>
             <div className="mt-6">
-              <Pill>Conoce más</Pill>
+              <Pill>Conozca más</Pill>
             </div>
           </div>
           <Image
@@ -278,12 +279,45 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Banda Inseparables */}
+      {book && (
+        <section aria-labelledby="inseparables-home-title" className="mx-auto max-w-7xl px-4 py-14">
+          <div className="grid gap-8 rounded-[2.5rem] border border-border bg-background p-6 sm:p-8 md:grid-cols-[minmax(0,220px)_1fr] md:items-center md:p-10">
+            <div className="mx-auto w-40 sm:w-48 md:w-full">
+              <BookCover book={book} sizes="(max-width: 768px) 160px, 220px" />
+            </div>
+            <div>
+              <Badge tone="provisional">Primer libro disponible</Badge>
+              <h2
+                id="inseparables-home-title"
+                className="mt-3 text-4xl font-extrabold text-brand-pink md:text-5xl"
+              >
+                {book.title}
+              </h2>
+              <p className="mt-1 font-semibold text-muted-foreground">
+                {book.author} · Ilustraciones de {book.illustrator}
+              </p>
+              <p className="mt-4 max-w-2xl">
+                Dos zapatillas que iban juntas a todas partes, hasta que un día algo las separa.
+              </p>
+              <div className="mt-5 flex flex-wrap items-center gap-4">
+                <Price price={book.price} />
+                <ButtonLink href={`/libros/${book.slug}`}>Conocer el libro</ButtonLink>
+                <ButtonLink href={`/estantes/${book.shelfCode.toLowerCase()}`} variant="outline">
+                  Ver estante {book.shelfCode}
+                </ButtonLink>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Novedades */}
       <section className="mx-auto max-w-7xl px-4 py-14">
         <div className="flex items-end justify-between">
           <h2 className="text-3xl font-extrabold text-brand-pink">Novedades en LAZOX</h2>
           <a href="#" className="flex items-center gap-1 text-sm font-bold text-brand-pink">
-            Ver todas <ArrowRight className="h-4 w-4" />
+            Ver todas <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </a>
         </div>
         <div className="mt-8 grid grid-cols-2 gap-5 md:grid-cols-4">
@@ -314,14 +348,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Selecciona tu experiencia */}
+      {/* Seleccione su experiencia */}
       <section className="bg-brand-mint px-4 py-14 text-center">
-        <h2 className="text-2xl font-extrabold">Selecciona tu experiencia</h2>
+        <h2 className="text-2xl font-extrabold">Seleccione su experiencia</h2>
         <p className="text-sm">Libros, talleres, materiales y más.</p>
         <div className="mx-auto mt-8 grid max-w-6xl grid-cols-2 gap-4 md:grid-cols-4">
           {experiences.map(({ icon: Icon, title, description, className }) => (
             <div key={title} className={`flex flex-col items-center rounded-2xl p-6 ${className}`}>
-              <Icon className="h-12 w-12" strokeWidth={2.5} />
+              <Icon className="h-12 w-12" strokeWidth={2.5} aria-hidden="true" />
               <h3 className="mt-3 font-sans text-sm font-extrabold uppercase">{title}</h3>
               <p className="mt-1 text-xs">{description}</p>
             </div>
@@ -338,7 +372,7 @@ export default function Home() {
               <p>{quote}</p>
               <div className="mt-3 flex justify-center gap-0.5 text-brand-pink">
                 {Array.from({ length: 5 }).map((_, index) => (
-                  <Star key={index} className="h-4 w-4 fill-current" />
+                  <Star key={index} className="h-4 w-4 fill-current" aria-hidden="true" />
                 ))}
               </div>
               <p className="mt-2 text-xs text-muted-foreground">— {author}</p>
@@ -350,60 +384,15 @@ export default function Home() {
       {/* Promo strip */}
       <div className="bg-brand-blue text-primary-foreground">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-3 text-sm font-bold md:flex-row">
-          <span>Libros, talleres y materiales con 20% de descuento</span>
-          <Pill variant="white">Ver promociones</Pill>
+          <span>Libros, talleres y materiales para jugar, crear y aprender</span>
+          <Pill variant="white" href="/libros/inseparables">
+            Conocer Inseparables
+          </Pill>
           <span className="flex items-center gap-2">
-            Envíos a todo México <Truck className="h-5 w-5" />
+            Envíos a todo México <Truck className="h-5 w-5" aria-hidden="true" />
           </span>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-background">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-3 md:items-center">
-          <div>
-            <Logo className="h-16 w-auto" />
-            <p className="mt-1 text-sm">Jugar · Crear · Aprender · Crecer juntos</p>
-          </div>
-          <div>
-            <p className="text-sm font-bold">Suscríbete a nuestra comunidad</p>
-            <NewsletterForm />
-          </div>
-          <div className="md:text-right">
-            <p className="text-sm font-bold">Síguenos</p>
-            <div className="mt-2 flex gap-4 md:justify-end">
-              <a href="#" aria-label="Instagram" className="transition hover:text-brand-pink">
-                <InstagramIcon className="h-6 w-6" />
-              </a>
-              <a href="#" aria-label="Facebook" className="transition hover:text-brand-pink">
-                <FacebookIcon className="h-6 w-6" />
-              </a>
-              <a href="#" aria-label="YouTube" className="transition hover:text-brand-pink">
-                <YoutubeIcon className="h-6 w-6" />
-              </a>
-              <a href="#" aria-label="TikTok" className="transition hover:text-brand-pink">
-                <Music2 className="h-6 w-6" />
-              </a>
-            </div>
-          </div>
-        </div>
-        <div className="border-t border-border">
-          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-xs font-semibold md:flex-row md:justify-between">
-            <div className="flex flex-wrap gap-4">
-              {nav.map((item) => (
-                <a key={item} href="#">
-                  {item}
-                </a>
-              ))}
-            </div>
-            <div className="flex gap-4">
-              <a href="#">Términos</a>
-              <a href="#">Privacidad</a>
-              <a href="#">Contacto</a>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }

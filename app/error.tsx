@@ -21,7 +21,7 @@ export default function Error({
           No pudimos cargar esta página
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Algo salió mal de nuestro lado. Intenta recargar o volver al inicio.
+          Algo salió mal de nuestro lado. Intente recargar o volver al inicio.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button

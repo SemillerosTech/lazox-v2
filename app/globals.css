@@ -105,3 +105,64 @@
     line-height: 1.05;
   }
 }
+
+@layer components {
+  .book-cover {
+    container-type: inline-size;
+  }
+
+  .book-cover__content {
+    padding: clamp(0.375rem, 5cqw, 1.5rem);
+  }
+
+  .book-cover__eyebrow {
+    font-size: clamp(0.4rem, 2.6cqw, 0.625rem);
+    letter-spacing: 0.2em;
+  }
+
+  .book-cover__title {
+    font-size: clamp(0.65rem, 12.5cqw, 2.4rem);
+    line-height: 1.02;
+    overflow-wrap: anywhere;
+  }
+
+  .book-cover__author {
+    font-size: clamp(0.5rem, 4.2cqw, 0.875rem);
+  }
+
+  .book-cover__demo {
+    font-size: clamp(0.4rem, 2.8cqw, 0.625rem);
+    white-space: nowrap;
+  }
+
+  .book-cover__mark {
+    display: none;
+    font-size: 40cqw;
+    line-height: 1;
+  }
+
+  @container (max-width: 100px) {
+    .book-cover__eyebrow,
+    .book-cover__demo,
+    .book-cover__title,
+    .book-cover__author {
+      display: none;
+    }
+
+    .book-cover__mark {
+      display: block;
+      margin: auto;
+    }
+  }
+
+  @container (max-width: 170px) {
+    .book-cover__eyebrow,
+    .book-cover__demo {
+      display: none;
+    }
+
+    .book-cover__title {
+      font-size: clamp(0.65rem, 15cqw, 1.5rem);
+    }
+  }
+}
