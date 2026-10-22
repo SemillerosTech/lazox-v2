@@ -1,6 +1,6 @@
 # LAZOX
 
-Sitio de LAZOX: libros, estantes, talleres y experiencias para crecer juntos. Incluye el
+Sitio de LAZOX: libros, estantes, talleres y conversaciones para crecer juntos. Incluye el
 prototipo navegable de **Inseparables**: ficha, guía privada, carrito, compra de demostración,
 confirmación y representación de la caja.
 
@@ -13,7 +13,7 @@ confirmación y representación de la caja.
 LAZOX trabaja con familias, escuelas, empresas y comunidades. La propuesta editorial organiza los
 libros en **10 estantes emocionales** identificados con códigos estables `EST-01`…`EST-10`.
 
-El prototipo actual sirve para validar la experiencia alrededor de un solo libro aprobado:
+El prototipo actual sirve para validar el recorrido alrededor de un solo libro aprobado:
 
 | Dato             | Valor                                                         |
 | ---------------- | ------------------------------------------------------------- |
@@ -285,6 +285,8 @@ Estas reglas vienen del brief y no deben cambiarse sin aprobación:
 
 - LAZOX habla de **usted**. Los textos de Rossy se conservan literalmente aunque usen “tú”.
 - No usar lenguaje clínico.
+- No usar «experiencia» ni sus variantes en contenido público. Según el contexto, preferir
+  «recorrido», «conversación», «acompañamiento», «aparador», «libros», «lecturas» o «actividades».
 - Un solo precio: `$435 MXN`. Sin descuentos, promociones, precios tachados ni precios alternativos.
 - La recomendación de `EST-03` permanece **provisional** hasta aprobación editorial.
 - Solo `EST-03` tiene un libro aprobado. Los demás estantes muestran un estado vacío neutral.

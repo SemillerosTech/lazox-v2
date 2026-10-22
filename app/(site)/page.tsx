@@ -55,7 +55,7 @@ const news = [
   ["Bitácora de gratitud", "Pequeños momentos, grandes cambios."],
   ["Juego de conexiones", "Dinámicas para conocernos mejor."],
   ["Pequeños grandes exploradores", "Actividades para descubrir el mundo."],
-  ["Talleres LAZOX", "Experiencias vivenciales para crecer juntos."],
+  ["Talleres LAZOX", "Actividades para crecer juntos."],
   ["Kits creativos", "Materiales para crear, expresar y descubrir."],
 ];
 
@@ -93,7 +93,7 @@ const experiences: Array<{
   {
     icon: Cloud,
     title: "Rutas emocionales",
-    description: "Experiencias por tema",
+    description: "Libros por tema",
     className: "bg-brand-pink text-primary-foreground",
   },
 ];
@@ -163,14 +163,13 @@ export default async function Home() {
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-10 md:grid-cols-2 md:py-16">
           <div>
             <h1 className="text-5xl font-extrabold md:text-6xl">
-              Experiencias con sentido para crecer juntos
+              Libros que abren conversaciones para crecer juntos
             </h1>
             <p className="mt-5 max-w-md text-lg">
-              Talleres, cursos, materiales y experiencias para familias, escuelas, empresas y
-              comunidades.
+              Libros, talleres, cursos y materiales para familias, escuelas, empresas y comunidades.
             </p>
             <div className="mt-6">
-              <Pill href="/estantes">Ver experiencias</Pill>
+              <Pill href="/estantes">Explorar estantes</Pill>
             </div>
           </div>
           <Image
@@ -200,7 +199,7 @@ export default async function Home() {
         <h2 className="text-4xl font-extrabold text-brand-pink md:text-5xl">
           Para cada familia,
           <br />
-          una experiencia
+          una conversación
         </h2>
         <p className="mx-auto mt-4 max-w-xl font-semibold">
           Descubra libros, materiales, talleres y recursos diseñados para jugar, crear, aprender y
@@ -208,7 +207,7 @@ export default async function Home() {
         </p>
         <div className="mt-6">
           <Pill variant="white" href="/estantes">
-            Explorar todas las experiencias
+            Explorar todos los estantes
           </Pill>
         </div>
       </section>
@@ -236,8 +235,8 @@ export default async function Home() {
       {/* Explora */}
       <section className="mx-auto max-w-7xl px-4" data-tour="home-shelves">
         <div className="rounded-3xl bg-brand-blue px-6 py-10 text-center text-primary-foreground">
-          <h2 className="text-3xl font-extrabold text-brand-yellow">Explora con intención</h2>
-          <p className="mt-1 text-sm">Encuentre experiencias por lo que más le importa.</p>
+          <h2 className="text-3xl font-extrabold text-brand-yellow">Explore con intención</h2>
+          <p className="mt-1 text-sm">Encuentre libros por lo que más le importa.</p>
           <div className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-3">
             {purposes.map(([title, className]) => (
               <span key={title} className={`rounded-full px-5 py-2 text-sm font-bold ${className}`}>
@@ -261,8 +260,8 @@ export default async function Home() {
               Leer la práctica
             </h2>
             <p className="mt-4 max-w-sm font-semibold">
-              En LAZOX creemos en experiencias que se viven. Libros, juegos y materiales para
-              acompañar la vida real de las familias.
+              En LAZOX creemos en leer juntos. Libros, juegos y materiales para acompañar la vida
+              real de las familias.
             </p>
             <div className="mt-6">
               <Pill>Conozca más</Pill>
@@ -348,9 +347,9 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Seleccione su experiencia */}
+      {/* Seleccione por dónde empezar */}
       <section className="bg-brand-mint px-4 py-14 text-center">
-        <h2 className="text-2xl font-extrabold">Seleccione su experiencia</h2>
+        <h2 className="text-2xl font-extrabold">Seleccione por dónde empezar</h2>
         <p className="text-sm">Libros, talleres, materiales y más.</p>
         <div className="mx-auto mt-8 grid max-w-6xl grid-cols-2 gap-4 md:grid-cols-4">
           {experiences.map(({ icon: Icon, title, description, className }) => (

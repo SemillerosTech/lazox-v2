@@ -19,20 +19,20 @@ const nunito = Nunito({
 
 export const metadata: Metadata = {
   title: {
-    default: "LAZOX — Experiencias con sentido para crecer juntos",
+    default: "LAZOX — Libros que abren conversaciones",
     template: "%s | LAZOX",
   },
   description:
     "Talleres, cursos, libros y materiales para familias, escuelas, empresas y comunidades.",
   openGraph: {
-    title: "LAZOX — Experiencias para crecer juntos",
+    title: "LAZOX — Libros que abren conversaciones",
     description: "Libros, talleres y recursos para jugar, crear, aprender y crecer juntos.",
     type: "website",
     locale: "es_MX",
   },
   twitter: {
     card: "summary_large_image",
-    title: "LAZOX — Experiencias para crecer juntos",
+    title: "LAZOX — Libros que abren conversaciones",
     description: "Libros, talleres y recursos para jugar, crear, aprender y crecer juntos.",
   },
   robots: {

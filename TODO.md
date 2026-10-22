@@ -141,6 +141,7 @@ Estas decisiones bloquean varias tareas. No las resuelva por su cuenta:
 - No inventar contenido editorial, recomendaciones, números, precios ni enlaces.
 - No agregar descuentos ni precios tachados.
 - No alterar los textos de Rossy.
+- No usar «experiencia» ni sus variantes en contenido público.
 - No eliminar el control de acceso de la guía ni confiar solo en `noindex`.
 - No convertir la demo en compra real sin completar los pendientes de P1.
 - No integrar Shopify sin una decisión explícita.

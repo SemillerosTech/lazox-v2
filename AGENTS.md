@@ -98,6 +98,9 @@ Estas reglas son parte del brief. No las cambie sin aprobación:
   los “mejore”, corrija ni reescriba.
 - **Tono LAZOX:** en usted. Los textos de Rossy pueden usar “tú” y deben permanecer así.
 - **Sin lenguaje clínico.**
+- **Sin «experiencia»:** no usar «experiencia» ni sus variantes en contenido público. Elegir
+  «recorrido», «conversación», «acompañamiento», «aparador», «libros», «lecturas» o «actividades»
+  según el contexto.
 - **Solo `EST-03`** tiene un libro aprobado. Los demás estantes muestran un estado vacío neutral.
 - **No inventar** libros, recomendaciones, ISBN, autores, contenido de guía, números de WhatsApp,
   enlaces legales ni datos de contacto.
