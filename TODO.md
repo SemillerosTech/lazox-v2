@@ -39,6 +39,8 @@
 
 - [ ] **Definir la política de acceso a la guía.** Decidir si se mantiene una contraseña compartida
       o se migra a cuentas/enlaces firmados. Documentar rotación y soporte.
+- [ ] **Confirmar que `GUIDE_PUBLIC_DEMO` esté desactivado en producción.** Solo debe activarse en
+      el entorno de demostración; mientras esté activo, cualquiera con la URL puede leer la guía.
 - [ ] **Agregar limitación de intentos** al acceso privado si se mantiene la contraseña compartida.
 - [ ] **Definir el número oficial de WhatsApp** y probar el mensaje prellenado. No usar números de
       ejemplo en el repositorio.
@@ -109,6 +111,7 @@ Estas decisiones bloquean varias tareas. No las resuelva por su cuenta:
 ## Riesgos actuales
 
 - La guía usa una contraseña compartida sin limitación de intentos.
+- Si `GUIDE_PUBLIC_DEMO=true`, la guía queda abierta para cualquiera que tenga la URL.
 - El carrito vive solo en el navegador; no se sincroniza entre dispositivos.
 - La confirmación usa `sessionStorage`; no hay pedido ni correo real.
 - La portada es un placeholder CSS, no el arte oficial.
@@ -142,3 +145,24 @@ Estas decisiones bloquean varias tareas. No las resuelva por su cuenta:
 - No convertir la demo en compra real sin completar los pendientes de P1.
 - No integrar Shopify sin una decisión explícita.
 - No commitear secretos, contraseñas reales ni datos personales de prueba.
+
+## Limpieza del recorrido de demostración
+
+> Ejecutar solo cuando el recorrido para Gero ya no se necesite. No retirar el carrito, el checkout
+> de demostración, la guía privada ni su control de acceso.
+
+- [ ] Quitar `NEXT_PUBLIC_ENABLE_DEMO_TOUR` de `.env.example`, de Vercel y de los entornos locales.
+- [ ] Eliminar la carpeta `features/demo-tour/` completa.
+- [ ] Quitar `DemoTourMount` y la lectura de la flag de `app/(site)/layout.tsx`.
+- [ ] Ejecutar `pnpm remove driver.js` y comprobar que `pnpm-lock.yaml` ya no lo incluya.
+- [ ] Retirar todos los atributos `data-tour` y las props `dataTour` de homepage, estantes, ficha,
+      guía, carrito, checkout, confirmación y caja.
+- [ ] Conservar `createDemoOrder(...)` en `lib/cart/demo-order.ts` mientras el checkout de
+      demostración lo siga usando.
+- [ ] Buscar restos con
+      `grep -RIn "demo-tour\\|data-tour\\|driver.js\\|NEXT_PUBLIC_ENABLE_DEMO_TOUR" app components features lib README.md TODO.md .env.example`.
+- [ ] Verificar que no queden popovers, overlays, listeners ni CSS del recorrido en ninguna ruta.
+- [ ] Retirar la sección «Recorrido guiado de demostración» del `README.md` y esta lista de limpieza
+      una vez completada.
+- [ ] Ejecutar `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm build` y repetir el flujo
+      manual de carrito, checkout, confirmación, guía y WhatsApp.

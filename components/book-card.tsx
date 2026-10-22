@@ -6,9 +6,9 @@ import { BookCover } from "@/components/book-cover";
 import { Price } from "@/components/price";
 import type { Book } from "@/lib/types";
 
-export function BookCard({ book }: { book: Book }) {
+export function BookCard({ book, dataTour }: { book: Book; dataTour?: string | undefined }) {
   return (
-    <article className="flex h-full flex-col">
+    <article className="flex h-full flex-col" data-tour={dataTour}>
       <Link href={`/libros/${book.slug}`} aria-label={`Ver la ficha de ${book.title}`}>
         <BookCover
           book={book}

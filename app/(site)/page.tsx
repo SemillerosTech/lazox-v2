@@ -159,7 +159,7 @@ export default async function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-brand-cream">
+      <section className="bg-brand-cream" data-tour="home-hero">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-10 md:grid-cols-2 md:py-16">
           <div>
             <h1 className="text-5xl font-extrabold md:text-6xl">
@@ -234,7 +234,7 @@ export default async function Home() {
       </section>
 
       {/* Explora */}
-      <section className="mx-auto max-w-7xl px-4">
+      <section className="mx-auto max-w-7xl px-4" data-tour="home-shelves">
         <div className="rounded-3xl bg-brand-blue px-6 py-10 text-center text-primary-foreground">
           <h2 className="text-3xl font-extrabold text-brand-yellow">Explora con intención</h2>
           <p className="mt-1 text-sm">Encuentre experiencias por lo que más le importa.</p>

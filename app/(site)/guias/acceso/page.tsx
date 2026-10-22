@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 
 import { Breadcrumbs } from "@/components/breadcrumbs";
-import { hasGuideAccess, safeGuideRedirect } from "@/lib/guide-access";
+import { hasGuideAccess, isGuidePublicDemo, safeGuideRedirect } from "@/lib/guide-access";
 
 import { GuideAccessForm } from "./guide-access-form";
 
@@ -21,7 +21,7 @@ export default async function GuideAccessPage({
   const rawNext = Array.isArray(params.next) ? params.next[0] : params.next;
   const next = safeGuideRedirect(rawNext);
 
-  if (await hasGuideAccess()) {
+  if (isGuidePublicDemo() || (await hasGuideAccess())) {
     redirect(next);
   }
 

@@ -1,4 +1,4 @@
-import type { DemoOrder } from "@/lib/types";
+import type { DemoOrder, DemoOrderCustomer, DemoOrderLine } from "@/lib/types";
 
 const ORDER_STORAGE_KEY = "lazox:demo-order:v1";
 
@@ -8,6 +8,25 @@ let hasLoadedOrder = false;
 export function createDemoOrderId(): string {
   const suffix = Math.random().toString(36).slice(2, 6).toUpperCase();
   return `DEMO-${suffix}`;
+}
+
+export function createDemoOrder({
+  items,
+  subtotal,
+  customer,
+}: {
+  items: DemoOrderLine[];
+  subtotal: number;
+  customer: DemoOrderCustomer;
+}): DemoOrder {
+  return {
+    id: createDemoOrderId(),
+    createdAt: new Date().toISOString(),
+    items: items.map((item) => ({ ...item })),
+    subtotal,
+    customer: { ...customer },
+    paymentMethod: "demo",
+  };
 }
 
 export function saveDemoOrder(order: DemoOrder): void {

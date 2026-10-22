@@ -1,0 +1,229 @@
+/*
+ * Estilos del recorrido de demostración.
+ * Todo queda acotado a la clase del popover de Driver.js para no alterar
+ * los estilos globales del sitio ni los de otras instancias de Driver.
+ */
+.lazox-demo-tour {
+  --driver-popover-font-family: var(--font-sans, "Nunito", system-ui, sans-serif);
+  --lazox-tour-coral: var(--brand-red, #ff3b30);
+  --lazox-tour-green: var(--brand-green, #4caf50);
+  --lazox-tour-yellow: var(--brand-yellow, #ffd200);
+  --lazox-tour-ink: var(--brand-ink, #1f1f1f);
+
+  box-sizing: border-box;
+  width: min(380px, calc(100vw - 1rem));
+  min-width: 0;
+  max-width: min(380px, calc(100vw - 1rem));
+  max-height: min(75vh, calc(100vh - 2rem));
+  overflow-y: auto;
+  padding: 1.125rem;
+  border: 1px solid rgb(31 31 31 / 0.14);
+  border-radius: 1.25rem;
+  background: #fff;
+  color: var(--lazox-tour-ink);
+  box-shadow: 0 18px 60px rgb(31 31 31 / 0.22);
+  font-family: var(--driver-popover-font-family);
+}
+
+.lazox-demo-tour .driver-popover-title {
+  padding-right: 0;
+  color: var(--lazox-tour-ink);
+  font-family: var(--font-display, "Baloo 2", system-ui, sans-serif);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.lazox-demo-tour .driver-popover-description {
+  margin-top: 0.5rem;
+  color: var(--lazox-tour-ink);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.lazox-demo-tour__callout {
+  margin-top: 0.85rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgb(31 31 31 / 0.1);
+  border-radius: 0.9rem;
+  background: color-mix(in oklab, var(--lazox-tour-yellow) 24%, white);
+}
+
+.lazox-demo-tour__callout--message {
+  background: color-mix(in oklab, var(--lazox-tour-green) 12%, white);
+}
+
+.lazox-demo-tour__callout--warning {
+  background: rgb(255 59 48 / 0.08);
+}
+
+.lazox-demo-tour__callout-label {
+  margin: 0;
+  color: rgb(31 31 31 / 0.62);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lazox-demo-tour__callout-text {
+  margin: 0.3rem 0 0;
+  color: var(--lazox-tour-ink);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.lazox-demo-tour .driver-popover-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.lazox-demo-tour .driver-popover-progress-text {
+  order: 1;
+  color: rgb(31 31 31 / 0.58);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.lazox-demo-tour .driver-popover-navigation-btns {
+  order: 2;
+  display: flex;
+  flex-grow: 0;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.lazox-demo-tour .driver-popover-navigation-btns button + button {
+  margin-left: 0;
+}
+
+.lazox-demo-tour .driver-popover-footer-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.85rem;
+  border: 2px solid rgb(31 31 31 / 0.16);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--lazox-tour-ink);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-decoration: none;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease;
+}
+
+.lazox-demo-tour .driver-popover-footer-btn:hover,
+.lazox-demo-tour .driver-popover-footer-btn:focus-visible {
+  border-color: var(--lazox-tour-coral);
+  background: rgb(255 59 48 / 0.06);
+}
+
+.lazox-demo-tour .driver-popover-next-btn {
+  border-color: var(--lazox-tour-coral);
+  background: var(--lazox-tour-coral);
+  color: #fff;
+}
+
+.lazox-demo-tour .driver-popover-next-btn:hover,
+.lazox-demo-tour .driver-popover-next-btn:focus-visible {
+  border-color: var(--lazox-tour-coral);
+  background: var(--lazox-tour-coral);
+  color: #fff;
+  filter: brightness(0.94);
+}
+
+.lazox-demo-tour .driver-popover-next-btn.driver-popover-done-btn {
+  border-color: var(--lazox-tour-green);
+  background: var(--lazox-tour-green);
+}
+
+.lazox-demo-tour .driver-popover-btn-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.lazox-demo-tour__exit {
+  order: 0;
+  min-height: 44px;
+  padding: 0.4rem 0.15rem;
+  border: 0;
+  background: transparent;
+  color: rgb(31 31 31 / 0.58);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.lazox-demo-tour__exit:hover,
+.lazox-demo-tour__exit:focus-visible {
+  color: var(--lazox-tour-coral);
+}
+
+.lazox-demo-tour__home {
+  order: 3;
+  min-height: 44px;
+  padding: 0.4rem 0.15rem;
+  border: 0;
+  background: transparent;
+  color: var(--lazox-tour-coral);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.lazox-demo-tour__home:hover,
+.lazox-demo-tour__home:focus-visible {
+  color: var(--lazox-tour-ink);
+}
+
+.lazox-demo-tour :focus-visible {
+  outline: 2px solid var(--lazox-tour-coral);
+  outline-offset: 2px;
+}
+
+@media (max-width: 430px) {
+  .lazox-demo-tour {
+    width: calc(100vw - 1rem);
+    max-width: calc(100vw - 1rem);
+    max-height: calc(100vh - 1rem);
+    padding: 0.95rem;
+    border-radius: 1.1rem;
+  }
+
+  .lazox-demo-tour .driver-popover-title {
+    font-size: 1.12rem;
+  }
+
+  .lazox-demo-tour .driver-popover-description {
+    font-size: 0.9rem;
+  }
+
+  .lazox-demo-tour .driver-popover-footer {
+    gap: 0.35rem;
+  }
+
+  .lazox-demo-tour .driver-popover-footer-btn {
+    padding: 0.5rem 0.7rem;
+  }
+}

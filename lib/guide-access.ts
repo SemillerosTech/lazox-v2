@@ -6,6 +6,7 @@ export {
   GUIDE_ACCESS_COOKIE,
   GUIDE_ACCESS_MAX_AGE,
   hashGuidePassword,
+  isGuidePublicDemo,
   isValidGuideToken,
 } from "./guide-access-token";
 

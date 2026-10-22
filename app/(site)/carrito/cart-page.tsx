@@ -78,7 +78,7 @@ export function CartPage() {
           ))}
         </section>
 
-        <div className="lg:sticky lg:top-24">
+        <div className="lg:sticky lg:top-24" data-tour="cart-summary">
           <OrderSummary lines={summaryLines} subtotal={subtotal}>
             <ButtonLink href="/compra/demo" className="w-full">
               Ir a la compra de demostración

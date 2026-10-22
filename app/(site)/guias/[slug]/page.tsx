@@ -7,7 +7,7 @@ import { Badge } from "@/components/badge";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { catalog } from "@/lib/catalog";
 import { guides } from "@/lib/data/guides";
-import { hasGuideAccess } from "@/lib/guide-access";
+import { hasGuideAccess, isGuidePublicDemo } from "@/lib/guide-access";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = false;
@@ -30,7 +30,9 @@ export async function generateMetadata({
 
   return {
     title: `Guía de ${guide.title}`,
-    description: "Guía para conversar en familia. Contenido privado de demostración.",
+    description: isGuidePublicDemo()
+      ? "Guía para conversar en familia. Acceso temporal de demostración."
+      : "Guía para conversar en familia. Contenido privado de demostración.",
     robots: { index: false, follow: false },
   };
 }
@@ -41,7 +43,9 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
 
   if (!guide) notFound();
 
-  if (!(await hasGuideAccess())) {
+  const guideIsPublicDemo = isGuidePublicDemo();
+
+  if (!guideIsPublicDemo && !(await hasGuideAccess())) {
     redirect(`/guias/acceso?next=${encodeURIComponent(`/guias/${slug}`)}`);
   }
 
@@ -61,9 +65,13 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
       />
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
-        <Badge tone="private">
-          <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" /> Contenido privado
-        </Badge>
+        {guideIsPublicDemo ? (
+          <Badge tone="demo">Acceso temporal de demostración</Badge>
+        ) : (
+          <Badge tone="private">
+            <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" /> Contenido privado
+          </Badge>
+        )}
         <Badge tone="provisional">Licencia pendiente de confirmación</Badge>
       </div>
 
@@ -81,11 +89,12 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         role="note"
         className="mt-6 rounded-2xl border border-brand-yellow bg-brand-yellow/20 px-4 py-3 text-sm text-brand-ink"
       >
-        Esta guía se muestra únicamente en el entorno privado de demostración. La licencia con
-        Semilleros de Sentido A.C. todavía debe confirmarse como firmada antes de publicarla.
+        {guideIsPublicDemo
+          ? "Esta guía tiene acceso temporal para la demostración. La licencia con Semilleros de Sentido A.C. todavía debe confirmarse como firmada antes de publicarla."
+          : "Esta guía se muestra únicamente en el entorno privado de demostración. La licencia con Semilleros de Sentido A.C. todavía debe confirmarse como firmada antes de publicarla."}
       </div>
 
-      <article className="mt-10 space-y-10">
+      <article className="mt-10 space-y-10" data-tour="guide-content">
         <section aria-labelledby="guide-synopsis">
           <h2 id="guide-synopsis" className="font-display text-3xl font-extrabold text-brand-ink">
             Sinopsis

@@ -30,9 +30,16 @@ export default async function ShelvesPage() {
         </p>
       </header>
 
-      <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+        data-tour="shelves-grid"
+      >
         {shelves.map((shelf) => (
-          <ShelfCard key={shelf.code} shelf={shelf} />
+          <ShelfCard
+            key={shelf.code}
+            shelf={shelf}
+            dataTour={shelf.code === "EST-03" ? "shelf-est-03" : undefined}
+          />
         ))}
       </div>
 

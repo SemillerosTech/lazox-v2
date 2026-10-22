@@ -10,9 +10,11 @@ import { buttonClasses } from "@/lib/styles";
 export function AddToCartButton({
   bookId,
   className = "",
+  dataTour,
 }: {
   bookId: string;
   className?: string;
+  dataTour?: string | undefined;
 }) {
   const { add } = useCart();
   const [added, setAdded] = useState(false);
@@ -27,6 +29,7 @@ export function AddToCartButton({
     <div className={`flex flex-col gap-2 ${className}`}>
       <button
         type="button"
+        data-tour={dataTour}
         className={buttonClasses("primary", "w-full")}
         onClick={() => {
           add(bookId);

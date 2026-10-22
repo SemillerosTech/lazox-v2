@@ -44,6 +44,7 @@ recomendaciones inventadas**. Su estado es “selección en preparación”.
 - Guía privada con control de acceso real y `noindex`.
 - Carrito con `localStorage`, cantidades, eliminación, subtotal y estado compartido.
 - Checkout ficticio, confirmación de demostración y página conceptual de la caja.
+- Recorrido guiado de 16 pasos para la demostración ejecutiva, aislado y activado por variable.
 - WhatsApp con mensaje prellenado y panel de demostración si falta el número.
 - SEO básico, `robots.txt`, sitemap condicionado, 404 y páginas de error.
 - Documentación de catálogo y despliegue.
@@ -90,18 +91,22 @@ pnpm dev
 
 El sitio queda disponible en http://localhost:3000.
 
-Para probar la guía en local, defina `GUIDE_ACCESS_PASSWORD` en `.env.local`. No documente ni
-comparta contraseñas reales en el repositorio.
+Para probar la guía en local, defina `GUIDE_ACCESS_PASSWORD` en `.env.local` o active
+`GUIDE_PUBLIC_DEMO=true` para la demo ejecutiva. No documente ni comparta contraseñas reales en el
+repositorio.
 
 ## 6. Variables de entorno
 
-| Variable                      | Obligatoria | Uso                                                                |
-| ----------------------------- | ----------- | ------------------------------------------------------------------ |
-| `GUIDE_ACCESS_PASSWORD`       | Sí          | Contraseña de la guía privada. Sin ella, `/guias` queda bloqueada. |
-| `NEXT_PUBLIC_WHATSAPP_NUMBER` | No          | Número oficial con código de país, sin `+` ni espacios.            |
-| `NEXT_PUBLIC_SITE_URL`        | No          | URL pública para el sitemap y metadatos canónicos.                 |
+| Variable                       | Obligatoria | Uso                                                                                                                                    |
+| ------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `GUIDE_ACCESS_PASSWORD`        | Producción  | Contraseña de la guía privada. En la demo puede quedar vacía si `GUIDE_PUBLIC_DEMO=true`.                                              |
+| `GUIDE_PUBLIC_DEMO`            | No          | `"true"` abre `/guias` sin contraseña, solo para la demo ejecutiva. Nunca debe activarse en producción.                                |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER`  | No          | Número oficial con código de país, sin `+` ni espacios.                                                                                |
+| `NEXT_PUBLIC_SITE_URL`         | No          | URL pública para el sitemap y metadatos canónicos.                                                                                     |
+| `NEXT_PUBLIC_ENABLE_DEMO_TOUR` | No          | `"true"` activa el recorrido guiado de demostración. Cualquier otro valor o su ausencia lo desactiva. Se incorpora en tiempo de build. |
 
-`NEXT_PUBLIC_*` se incorpora en tiempo de build. Definir esas variables antes de `pnpm build`.
+`NEXT_PUBLIC_*` se incorpora en tiempo de build. Defina esas variables antes de `pnpm dev` o
+`pnpm build`.
 
 ## 7. Rutas
 
@@ -111,8 +116,8 @@ comparta contraseñas reales en el repositorio.
 | `/estantes`                 | Pública  | Los 10 estantes en orden editorial                    |
 | `/estantes/[slug]`          | Pública  | Detalle de estante; los vacíos muestran estado neutro |
 | `/libros/[slug]`            | Pública  | Ficha de Inseparables                                 |
-| `/guias/acceso`             | Pública  | Formulario de acceso a la guía privada                |
-| `/guias/[slug]`             | Privada  | Guía protegida por contraseña y no indexable          |
+| `/guias/acceso`             | Pública  | Formulario de acceso; en modo demo redirige a la guía |
+| `/guias/[slug]`             | Privada  | Guía protegida; en modo demo puede abrirse sin clave  |
 | `/carrito`                  | No index | Carrito con cantidades, eliminación y subtotal        |
 | `/compra/demo`              | No index | Checkout ficticio                                     |
 | `/pedido/confirmacion-demo` | No index | Confirmación de la compra ficticia                    |
@@ -140,6 +145,8 @@ app/
   global-error.tsx            Error boundary global
   not-found.tsx               404
 components/                   Componentes compartidos de UI
+features/
+  demo-tour/                  Recorrido guiado aislado, cargado solo con la flag activa
 lib/
   cart/                       Store, persistencia y pedido de demostración
   catalog/                    Contrato CatalogRepository y adaptador local
@@ -188,9 +195,57 @@ contenido editorial, use un estado vacío o deje el pendiente en `TODO.md`.
 No convierta este flujo en una compra real sin integrar antes el checkout, pedidos, correo y
 cumplimiento legal correspondientes.
 
+### 10.1 Recorrido guiado de demostración
+
+El recorrido para Gero vive en `features/demo-tour/` y está aislado del resto de la aplicación.
+
+- **Activación:** solo se muestra si `NEXT_PUBLIC_ENABLE_DEMO_TOUR=true` en el entorno de
+  `pnpm dev` o de `pnpm build`. Con `false`, vacío o ausente no se monta el controlador, no aparece
+  el botón y no se carga Driver.js.
+- **Inicio:** botón discreto “Iniciar recorrido de muestra” en la esquina inferior derecha. Nunca
+  se inicia automáticamente. Al comenzar vuelve a la homepage y arranca en el paso 1.
+- **Reinicio y salida:** “Salir” cierra el recorrido en cualquier paso; “Finalizar recorrido” lo
+  cierra al terminar. Ambos limpian overlays, listeners y el paso guardado. No hay reanudación
+  automática después de recargar la página.
+- **Navegación:** son 16 pasos por las rutas reales. “Anterior” y “Siguiente” pueden cruzar de
+  página; el controlador espera el elemento `data-tour` correspondiente antes de abrir el popover.
+- **Interacción bloqueada:** mientras el recorrido está activo, la página y el área resaltada no
+  reciben clics ni toques. Solo responden los controles del popover; así se evitan clics
+  accidentales en enlaces, WhatsApp, carrito y checkout.
+- **Guía:** con `GUIDE_PUBLIC_DEMO=true`, el paso entra directamente a la guía sin contraseña. Sin
+  esa variable, si no hay cookie de acceso, `/guias/acceso` aparece como aviso, no como paso. Se
+  puede entrar con la contraseña y el recorrido continúa, u omitir la guía y seguir. La excepción
+  de demo no elimina la protección de producción.
+- **WhatsApp:** el paso muestra el mensaje preparado dentro del popover y desactiva la interacción
+  con el botón real. No abre WhatsApp, no usa un número inventado y no envía nada.
+- **Carrito:** el paso de compra agrega Inseparables con cantidad 1 usando el store existente.
+- **Checkout:** el paso de pago crea la misma orden de demostración del checkout, la guarda en
+  `sessionStorage` (`lazox:demo-order:v1`), vacía el carrito y abre la confirmación. No hay cobro,
+  correo ni pedido real.
+- **Estado del recorrido:** solo se guarda el identificador del paso en
+  `sessionStorage` (`lazox:demo-tour:v1`). Nunca se guardan datos personales, de pago o del carrito.
+- **Último paso:** popover centrado sin elemento resaltado. Ofrece “Finalizar recorrido” y, como
+  opción, “Volver al inicio”.
+- **Responsive:** validado a 375, 390 y 430 px y en escritorio; el popover permanece dentro del
+  viewport y los controles mantienen un área táctil mínima de 44 px.
+
+Qué es real y qué es simulado:
+
+| Real                                                           | Simulado                                                      |
+| -------------------------------------------------------------- | ------------------------------------------------------------- |
+| Navegación entre páginas y estados reales.                     | Cobro, pedido, correo y envío.                                |
+| Control de acceso de la guía y cookie existente.               | Contenido extenso y licencia definitiva de la guía.           |
+| Apertura temporal de la guía en la demo.                       | Publicación o licencia definitiva de la guía.                 |
+| Carrito en `localStorage` y orden en `sessionStorage`.         | WhatsApp: solo se muestra el mensaje preparado.               |
+| Actualización de cantidad y subtotal con el store del carrito. | Portada, caja y materiales con composiciones de demostración. |
+| Consulta de la guía después de autenticarse.                   | Recomendación editorial definitiva y libro vecino.            |
+
+Para retirar la demostración cuando ya no se necesite, siga la sección de limpieza de
+[`TODO.md`](./TODO.md).
+
 ## 11. Acceso privado a la guía
 
-- Variable: `GUIDE_ACCESS_PASSWORD`.
+- Variable normal: `GUIDE_ACCESS_PASSWORD`.
 - Cookie: `lazox_guide_access`, `httpOnly`, `sameSite=lax`, `secure` en producción, ruta `/guias`
   y duración de 8 horas.
 - El valor de la cookie es el hash SHA-256 de la contraseña configurada; la comparación usa
@@ -198,7 +253,28 @@ cumplimiento legal correspondientes.
 - `proxy.ts` redirige a `/guias/acceso?next=...` cuando no hay acceso.
 - La página de la guía vuelve a validar la cookie en el servidor.
 - `safeGuideRedirect()` evita redirecciones abiertas.
-- Sin `GUIDE_ACCESS_PASSWORD`, el acceso queda bloqueado y el formulario se deshabilita.
+- Sin `GUIDE_ACCESS_PASSWORD` y sin `GUIDE_PUBLIC_DEMO`, el acceso queda bloqueado y el formulario
+  se deshabilita.
+
+### 11.1 Excepción para la demo
+
+La demo ejecutiva puede abrir la guía sin contraseña con:
+
+```sh
+GUIDE_PUBLIC_DEMO=true
+```
+
+En ese modo:
+
+- `/guias/[slug]` se muestra sin cookie.
+- `/guias/acceso` redirige a la guía en lugar de pedir contraseña.
+- `GUIDE_ACCESS_PASSWORD` puede quedar vacío.
+- El recorrido pasa de la ficha a la guía sin el aviso de acceso.
+- La guía conserva `noindex`, la atribución y el aviso de licencia pendiente.
+
+`GUIDE_PUBLIC_DEMO=true` es una excepción temporal y **nunca debe configurarse en producción**. No
+es un sistema de cuentas ni un control de acceso: cualquiera con la URL puede leer la guía mientras
+esté activo. El `noindex` es una capa adicional, no una barrera de seguridad.
 
 Es una puerta de acceso compartida de prototipo, no un sistema de cuentas de usuario. Antes de
 producción hay que definir política de acceso, rotación y limitación de intentos.
@@ -251,8 +327,10 @@ Además, compruebe manualmente:
 
 - `/`, `/estantes`, `/libros/inseparables`, `/carrito`, `/compra/demo`, confirmación y caja.
 - Un slug de estante inválido y un libro inexistente devuelven `404`.
-- La guía sin cookie redirige a `/guias/acceso`.
-- Contraseña incorrecta muestra error; contraseña correcta permite entrar.
+- Con `GUIDE_PUBLIC_DEMO=false`, la guía sin cookie redirige a `/guias/acceso`; contraseña
+  incorrecta muestra error y la correcta permite entrar.
+- Con `GUIDE_PUBLIC_DEMO=true`, `/guias/inseparables` abre directo y `/guias/acceso` redirige a la
+  guía sin pedir contraseña.
 - El carrito persiste al recargar, actualiza cantidades y elimina artículos.
 - El checkout vacío y la confirmación sin pedido muestran sus estados vacíos.
 - La vista móvil no tiene overflow horizontal.
@@ -262,9 +340,12 @@ Además, compruebe manualmente:
 
 1. Importe el repositorio en Vercel.
 2. Configure **Root Directory** en `lazox-v2`.
-3. Defina `GUIDE_ACCESS_PASSWORD` y, si corresponde, `NEXT_PUBLIC_WHATSAPP_NUMBER` y
-   `NEXT_PUBLIC_SITE_URL`.
-4. Vercel detecta Next.js y usa `pnpm install` / `pnpm build`.
+3. Defina `GUIDE_ACCESS_PASSWORD` y, si corresponde, `NEXT_PUBLIC_WHATSAPP_NUMBER`,
+   `NEXT_PUBLIC_SITE_URL` y `NEXT_PUBLIC_ENABLE_DEMO_TOUR=true`.
+4. Solo en un despliegue de demostración, defina `GUIDE_PUBLIC_DEMO=true`. Nunca lo active en
+   producción.
+5. Vercel detecta Next.js y usa `pnpm install` / `pnpm build`. Las variables `NEXT_PUBLIC_*` deben
+   existir antes del build.
 
 ## 17. Estructura del repositorio
 

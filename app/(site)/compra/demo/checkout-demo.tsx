@@ -10,8 +10,7 @@ import { DemoNotice } from "@/components/demo-notice";
 import { EmptyState } from "@/components/empty-state";
 import { OrderSummary } from "@/components/order-summary";
 import { useCart } from "@/lib/cart/cart-context";
-import { createDemoOrderId, saveDemoOrder } from "@/lib/cart/demo-order";
-import type { DemoOrder } from "@/lib/types";
+import { createDemoOrder, saveDemoOrder } from "@/lib/cart/demo-order";
 
 const labelClasses = "text-sm font-bold text-brand-ink";
 const fieldClasses =
@@ -89,14 +88,11 @@ export function CheckoutDemo() {
       return;
     }
 
-    const order: DemoOrder = {
-      id: createDemoOrderId(),
-      createdAt: new Date().toISOString(),
+    const order = createDemoOrder({
       items: summaryLines,
       subtotal,
       customer,
-      paymentMethod: "demo",
-    };
+    });
 
     saveDemoOrder(order);
     clear();
@@ -241,6 +237,7 @@ export function CheckoutDemo() {
 
           <section
             aria-labelledby="payment-title"
+            data-tour="checkout-methods"
             className="rounded-3xl border border-border bg-background p-5 md:p-6"
           >
             <h2 id="payment-title" className="font-display text-2xl font-extrabold text-brand-ink">

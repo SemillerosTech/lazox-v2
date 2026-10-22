@@ -84,7 +84,11 @@ export default async function ShelfPage({ params }: { params: Promise<{ slug: st
         {books.length > 0 ? (
           <div className="grid max-w-5xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {books.map((book) => (
-              <BookCard key={book.id} book={book} />
+              <BookCard
+                key={book.id}
+                book={book}
+                dataTour={book.slug === "inseparables" ? "inseparables-card" : undefined}
+              />
             ))}
           </div>
         ) : (

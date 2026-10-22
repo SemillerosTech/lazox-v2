@@ -36,6 +36,7 @@ export default async function BoxDemoPage() {
 
       <section
         aria-label="Contenido de la caja"
+        data-tour="unboxing"
         className="mt-10 rounded-[2.5rem] border-2 border-brand-yellow bg-brand-cream p-4 md:p-8"
       >
         <p className="mb-4 text-center text-xs font-extrabold uppercase tracking-[0.2em] text-brand-ink/60">

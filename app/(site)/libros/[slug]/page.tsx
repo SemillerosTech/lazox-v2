@@ -67,7 +67,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
           <BookCover book={book} sizes="(max-width: 1024px) 320px, 380px" />
         </div>
 
-        <div>
+        <div data-tour="product-info">
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone="neutral">{book.shelfCode}</Badge>
             {book.status === "provisional" && (
@@ -85,16 +85,20 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <AddToCartButton bookId={book.id} />
+            <AddToCartButton bookId={book.id} dataTour="product-add-cart" />
             {guide && (
-              <Link href={`/guias/${guide.slug}`} className={buttonClasses("outline", "w-full")}>
+              <Link
+                href={`/guias/${guide.slug}`}
+                data-tour="product-guide"
+                className={buttonClasses("outline", "w-full")}
+              >
                 <Download className="h-4 w-4" aria-hidden="true" />
                 Descargar la guía · sin registro
               </Link>
             )}
           </div>
 
-          <div className="mt-3">
+          <div className="mt-3" data-tour="product-whatsapp">
             <WhatsAppInquiry />
           </div>
 
@@ -148,6 +152,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
 
       <section
         aria-labelledby="conversation-title"
+        data-tour="product-question"
         className="mt-10 rounded-[2.5rem] bg-brand-yellow p-6 md:p-10"
       >
         <h2

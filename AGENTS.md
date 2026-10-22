@@ -54,8 +54,12 @@ pnpm build
 ```
 
 Para probar la guía localmente, defina `GUIDE_ACCESS_PASSWORD` en `.env.local` o en el entorno del
-proceso. Nunca escriba una contraseña real, un número de WhatsApp real ni secretos en el
-repositorio, en capturas, en documentación o en un commit.
+proceso. Para la demo ejecutiva puede usar `GUIDE_PUBLIC_DEMO=true`, que abre la guía sin
+contraseña; nunca active esa variable en producción. Nunca escriba una contraseña real, un número
+de WhatsApp real ni secretos en el repositorio, en capturas, en documentación o en un commit.
+
+El recorrido guiado de demostración solo se activa con `NEXT_PUBLIC_ENABLE_DEMO_TOUR=true` antes
+del build. Con `false`, vacío o ausente no debe montarse ni cargar Driver.js.
 
 ## 4. Mapa de arquitectura
 
@@ -72,6 +76,7 @@ app/
     pedido/                   Confirmación y caja
   sitemap.ts                  Sitemap público
 components/                   UI compartida
+features/demo-tour/           Recorrido guiado aislado, activado por variable
 lib/
   cart/                       Store, localStorage y pedido de demostración
   catalog/                    CatalogRepository y adaptador local
@@ -118,7 +123,8 @@ Estas reglas son parte del brief. No las cambie sin aprobación:
 - Use `next/link` para navegación interna y `next/image` para imágenes cuando corresponda.
 - Mantenga `metadata` y `noindex` en las páginas privadas. No confíe en `robots.txt` como control
   de acceso.
-- La guía debe seguir validando la cookie tanto en `proxy.ts` como en el servidor de la página.
+- La guía debe seguir validando la cookie tanto en `proxy.ts` como en el servidor de la página,
+  salvo cuando `GUIDE_PUBLIC_DEMO=true` en un entorno de demostración.
 - No elimine la etiqueta exacta:
   “Demostración: no se realizará ningún cargo ni se generará un pedido real.”
 - No convierta el checkout, el correo o el WhatsApp en flujos reales sin una decisión explícita.
@@ -126,6 +132,8 @@ Estas reglas son parte del brief. No las cambie sin aprobación:
 ## 7. Seguridad y datos
 
 - No exponga `GUIDE_ACCESS_PASSWORD` en componentes cliente, logs, URLs o documentación.
+- No active `GUIDE_PUBLIC_DEMO` en producción: elimina la contraseña de la guía mientras esté
+  activo.
 - No elimine `httpOnly`, `sameSite`, `secure` ni la validación server-side de la cookie.
 - No agregue secretos a `.env.example`; use valores vacíos o marcadores.
 - No escriba datos personales de prueba en logs persistentes.
@@ -150,8 +158,10 @@ Además del build:
 - `/`, `/estantes`, `/estantes/est-03`, `/libros/inseparables`, `/carrito`, `/compra/demo`,
   `/pedido/confirmacion-demo` y `/pedido/caja-demo` responden correctamente.
 - Un estante o libro inexistente devuelve `404`.
-- `/guias/inseparables` sin cookie redirige a `/guias/acceso`.
-- Contraseña incorrecta muestra error; contraseña correcta permite entrar.
+- Con `GUIDE_PUBLIC_DEMO=false`, `/guias/inseparables` sin cookie redirige a `/guias/acceso`;
+  contraseña incorrecta muestra error y la correcta permite entrar.
+- Con `GUIDE_PUBLIC_DEMO=true`, `/guias/inseparables` abre directo y `/guias/acceso` redirige a la
+  guía.
 - El carrito agrega, cambia cantidad, persiste al recargar, elimina y actualiza subtotal.
 - El checkout vacío y la confirmación sin pedido muestran estados vacíos.
 - La vista móvil no tiene overflow horizontal.

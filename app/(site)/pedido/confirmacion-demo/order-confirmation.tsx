@@ -63,7 +63,7 @@ export function OrderConfirmation() {
         ninguna comunicación.
       </DemoNotice>
 
-      <header className="mt-8 text-center">
+      <header className="mt-8 text-center" data-tour="order-confirmation">
         <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-brand-green/15">
           <CheckCircle2 className="h-9 w-9 text-brand-green" aria-hidden="true" />
         </div>

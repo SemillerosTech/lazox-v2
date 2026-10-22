@@ -3,12 +3,13 @@ import { ArrowUpRight } from "lucide-react";
 
 import type { Shelf } from "@/lib/types";
 
-export function ShelfCard({ shelf }: { shelf: Shelf }) {
+export function ShelfCard({ shelf, dataTour }: { shelf: Shelf; dataTour?: string | undefined }) {
   const bookCount = shelf.bookSlugs.length;
 
   return (
     <Link
       href={`/estantes/${shelf.slug}`}
+      data-tour={dataTour}
       className="group flex min-h-56 flex-col justify-between rounded-3xl border-2 border-border bg-background p-6 transition hover:-translate-y-1 hover:border-brand-pink hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-pink"
     >
       <div className="flex items-start justify-between gap-3">
