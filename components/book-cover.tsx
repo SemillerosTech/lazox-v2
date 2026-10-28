@@ -32,7 +32,7 @@ export function BookCover({
   return (
     <div
       role="img"
-      aria-label={`Portada de demostración de ${book.title}, de ${book.author}`}
+      aria-label={`Portada de ${book.title}, de ${book.author}`}
       className={`book-cover relative aspect-[3/4] overflow-hidden rounded-2xl bg-brand-yellow shadow-xl ${className}`}
     >
       <div aria-hidden="true" className="absolute inset-0">
@@ -57,9 +57,6 @@ export function BookCover({
           </p>
           <p className="book-cover__author mt-2 font-bold text-brand-ink/70">{book.author}</p>
         </div>
-        <span className="book-cover__demo self-start rounded-full bg-background/85 px-3 py-1 font-bold text-brand-ink/70">
-          Portada de demostración
-        </span>
       </div>
     </div>
   );

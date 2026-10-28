@@ -1,60 +1,74 @@
 import Link from "next/link";
-import { Music2 } from "lucide-react";
 
 import { Logo } from "@/components/logo";
-import { NewsletterForm } from "@/components/newsletter-form";
-import { FacebookIcon, InstagramIcon, YoutubeIcon } from "@/components/social-icons";
-import { FOOTER_NAV } from "@/lib/site-nav";
+import { WhatsAppInquiry } from "@/components/whatsapp-inquiry";
+import { FOOTER_COLUMNS, LEGAL_NAV } from "@/lib/site-nav";
+
+function FooterLink({ label, href }: { label: string; href: string }) {
+  if (href.startsWith("http")) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="hover:text-brand-pink">
+        {label}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className="hover:text-brand-pink">
+      {label}
+    </Link>
+  );
+}
 
 export function SiteFooter() {
   return (
-    <footer className="bg-background">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-3 md:items-center">
-        <div>
-          <Logo className="h-16 w-auto" />
-          <p className="mt-1 text-sm">Jugar · Crear · Aprender · Crecer juntos</p>
+    <footer className="border-t border-border bg-background">
+      <div className="mx-auto max-w-7xl px-4 py-10">
+        <div className="border-b border-border pb-8">
+          <p className="max-w-xl text-sm font-semibold text-brand-ink">
+            Lazox apoya el proyecto SILEE® de Semilleros de Sentido A.C.
+          </p>
+          <Logo className="mt-4 h-12 w-auto" />
         </div>
-        <div>
-          <p className="text-sm font-bold">Suscríbase a nuestra comunidad</p>
-          <NewsletterForm />
+
+        <div className="grid gap-8 py-8 sm:grid-cols-2 lg:grid-cols-4">
+          {FOOTER_COLUMNS.map((column) => (
+            <section key={column.title} aria-labelledby={`footer-${column.title}`}>
+              <h2
+                id={`footer-${column.title}`}
+                className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-ink"
+              >
+                {column.title}
+              </h2>
+              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                {column.items.map((item) => (
+                  <li key={item.label}>
+                    {item.kind === "whatsapp" ? (
+                      <WhatsAppInquiry
+                        label={item.label}
+                        showSampleReply={false}
+                        containerClassName="inline-block"
+                        className="text-left transition hover:text-brand-pink"
+                        panelClassName="absolute bottom-full left-0 z-50 mb-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-border bg-background p-4 text-left shadow-2xl"
+                      />
+                    ) : (
+                      <FooterLink label={item.label} href={item.href} />
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
         </div>
-        <div className="md:text-right">
-          <p className="text-sm font-bold">Síganos</p>
-          <div className="mt-2 flex gap-4 md:justify-end">
-            <a href="#" aria-label="Instagram" className="transition hover:text-brand-pink">
-              <InstagramIcon className="h-6 w-6" />
-            </a>
-            <a href="#" aria-label="Facebook" className="transition hover:text-brand-pink">
-              <FacebookIcon className="h-6 w-6" />
-            </a>
-            <a href="#" aria-label="YouTube" className="transition hover:text-brand-pink">
-              <YoutubeIcon className="h-6 w-6" />
-            </a>
-            <a href="#" aria-label="TikTok" className="transition hover:text-brand-pink">
-              <Music2 className="h-6 w-6" />
-            </a>
-          </div>
-        </div>
-      </div>
-      <div className="border-t border-border">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-xs font-semibold md:flex-row md:justify-between">
+
+        <div className="flex flex-col gap-3 border-t border-border pt-6 text-xs font-semibold text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Lazox</p>
           <div className="flex flex-wrap gap-4">
-            {FOOTER_NAV.map((item) =>
-              item.href.startsWith("/") ? (
-                <Link key={item.label} href={item.href} className="hover:text-brand-pink">
-                  {item.label}
-                </Link>
-              ) : (
-                <a key={item.label} href={item.href} className="hover:text-brand-pink">
-                  {item.label}
-                </a>
-              ),
-            )}
-          </div>
-          <div className="flex gap-4">
-            <a href="#">Términos</a>
-            <a href="#">Privacidad</a>
-            <a href="#">Contacto</a>
+            {LEGAL_NAV.map((item) => (
+              <Link key={item.label} href={item.href} className="hover:text-brand-pink">
+                {item.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

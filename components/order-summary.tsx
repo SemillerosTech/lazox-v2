@@ -40,18 +40,11 @@ export function OrderSummary({
           <dt className="text-muted-foreground">Subtotal</dt>
           <dd className="font-bold">{formatPrice(subtotal)}</dd>
         </div>
-        <div className="flex justify-between gap-4">
-          <dt className="text-muted-foreground">Envío</dt>
-          <dd className="font-bold">Por definir</dd>
-        </div>
         <div className="flex justify-between gap-4 border-t border-border pt-2 text-base">
           <dt className="font-extrabold">Total de la demostración</dt>
           <dd className="font-extrabold text-brand-pink">{formatPrice(subtotal)}</dd>
         </div>
       </dl>
-      <p className="mt-3 text-xs text-muted-foreground">
-        Los envíos e impuestos se confirmarán al integrar Shopify.
-      </p>
       {children && <div className="mt-5 space-y-3">{children}</div>}
     </section>
   );

@@ -17,27 +17,41 @@ const nunito = Nunito({
   display: "swap",
 });
 
+/**
+ * Dominio del sitio. Se toma de NEXT_PUBLIC_SITE_URL; si falta o no es una URL válida,
+ * se usa localhost para que el build no falle.
+ */
+function resolveMetadataBase(): URL {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  try {
+    return new URL(raw || "http://localhost:3000");
+  } catch {
+    return new URL("http://localhost:3000");
+  }
+}
+
 export const metadata: Metadata = {
+  metadataBase: resolveMetadataBase(),
   title: {
-    default: "LAZOX — Libros que abren conversaciones",
-    template: "%s | LAZOX",
+    default: "Lazox · Un libro para lo que le está pasando",
+    template: "%s | Lazox",
   },
-  description:
-    "Talleres, cursos, libros y materiales para familias, escuelas, empresas y comunidades.",
+  description: "Cada uno viene con preguntas para conversarlo en casa.",
   openGraph: {
-    title: "LAZOX — Libros que abren conversaciones",
-    description: "Libros, talleres y recursos para jugar, crear, aprender y crecer juntos.",
+    title: "Lazox · Un libro para lo que le está pasando",
+    description: "Cada uno viene con preguntas para conversarlo en casa.",
     type: "website",
     locale: "es_MX",
   },
   twitter: {
     card: "summary_large_image",
-    title: "LAZOX — Libros que abren conversaciones",
-    description: "Libros, talleres y recursos para jugar, crear, aprender y crecer juntos.",
+    title: "Lazox · Un libro para lo que le está pasando",
+    description: "Cada uno viene con preguntas para conversarlo en casa.",
   },
+  // Borrador: se retira el día que la tienda abra en lazox.com.
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
   },
 };
 

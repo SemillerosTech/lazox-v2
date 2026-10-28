@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-import { Badge } from "@/components/badge";
 import { BookCover } from "@/components/book-cover";
 import { Price } from "@/components/price";
 import type { Book } from "@/lib/types";
@@ -17,11 +16,6 @@ export function BookCard({ book, dataTour }: { book: Book; dataTour?: string | u
         />
       </Link>
       <div className="mt-4 flex flex-1 flex-col">
-        {book.status === "provisional" && (
-          <div className="mb-2">
-            <Badge tone="provisional">Recomendación provisional</Badge>
-          </div>
-        )}
         <h3 className="font-sans text-xl font-extrabold leading-tight">
           <Link href={`/libros/${book.slug}`} className="hover:text-brand-pink">
             {book.title}

@@ -10,7 +10,10 @@ export const books: Book[] = [
     publisher: "Tramuntana Editorial",
     year: 2015,
     isbn: "978-84-943046-0-6",
+    pages: 48,
     price: { amount: 43500, currency: "MXN" },
+    priceMode: "single",
+    availability: "available",
     ageSuggestion: "Hacia los 7 años en adelante, y por toda la familia",
     shelfCode: "EST-03",
     synopsis:

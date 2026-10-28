@@ -1,4 +1,4 @@
-import type { CartItem } from "@/lib/types";
+import type { CartItem, PriceOption } from "@/lib/types";
 
 import { clampQuantity, readCart, writeCart } from "./cart-storage";
 
@@ -49,17 +49,21 @@ export function getCartServerSnapshot(): CartSnapshot {
   return EMPTY_SNAPSHOT;
 }
 
-export function addToCart(bookId: string, quantity = 1): void {
+export function addToCart(bookId: string, quantity = 1, priceOption: PriceOption = "normal"): void {
   loadFromStorage();
 
   const existing = currentSnapshot.items.find((line) => line.bookId === bookId);
   const items = existing
     ? currentSnapshot.items.map((line) =>
         line.bookId === bookId
-          ? { ...line, quantity: clampQuantity(line.quantity + quantity) }
+          ? {
+              ...line,
+              quantity: clampQuantity(line.quantity + quantity),
+              priceOption,
+            }
           : line,
       )
-    : [...currentSnapshot.items, { bookId, quantity: clampQuantity(quantity) }];
+    : [...currentSnapshot.items, { bookId, quantity: clampQuantity(quantity), priceOption }];
 
   commit(items);
 }
@@ -71,6 +75,14 @@ export function setCartQuantity(bookId: string, quantity: number): void {
     currentSnapshot.items.map((line) =>
       line.bookId === bookId ? { ...line, quantity: clampQuantity(quantity) } : line,
     ),
+  );
+}
+
+export function setCartPriceOption(bookId: string, priceOption: PriceOption): void {
+  loadFromStorage();
+
+  commit(
+    currentSnapshot.items.map((line) => (line.bookId === bookId ? { ...line, priceOption } : line)),
   );
 }
 

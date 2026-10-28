@@ -34,7 +34,7 @@ export function CartLineItem({
             </Link>
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">{item.book.author}</p>
-          <p className="mt-2 text-sm font-bold">{formatPrice(item.book.price.amount)}</p>
+          <p className="mt-2 text-sm font-bold">{formatPrice(item.unitPrice)}</p>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 sm:flex-col sm:items-end">
           <QuantityStepper

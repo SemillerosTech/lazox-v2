@@ -1,8 +1,4 @@
 User-agent: *
-Allow: /
+Disallow: /
 
-# Contenido privado y flujos de demostración
-Disallow: /guias/
-Disallow: /carrito
-Disallow: /compra/
-Disallow: /pedido/
+# Borrador: se retira el día que la tienda abra en lazox.com.

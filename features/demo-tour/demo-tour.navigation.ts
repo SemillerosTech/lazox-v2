@@ -47,11 +47,3 @@ export function waitForElement(
     }
   });
 }
-
-export function isGuideAccessPath(pathname: string): boolean {
-  return pathname === "/guias/acceso" || pathname.startsWith("/guias/acceso/");
-}
-
-export function isTourGuidePath(pathname: string): boolean {
-  return pathname === "/guias/inseparables" || pathname.startsWith("/guias/inseparables/");
-}

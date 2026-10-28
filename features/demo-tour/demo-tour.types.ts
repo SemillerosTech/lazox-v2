@@ -41,9 +41,8 @@ export interface DemoTourStep {
 }
 
 export interface DemoTourNoticeState {
-  kind: "access" | "error";
+  kind: "error";
   title: string;
   description: string;
-  canSkipGuide?: boolean;
   canRetry?: boolean;
 }

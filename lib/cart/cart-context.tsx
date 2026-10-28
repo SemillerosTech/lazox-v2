@@ -3,7 +3,8 @@
 import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
 
 import { findBookBySlug } from "@/lib/data/books";
-import type { CartLineItem } from "@/lib/types";
+import { getBookUnitPrice, resolvePriceOption } from "@/lib/pricing";
+import type { CartLineItem, PriceOption } from "@/lib/types";
 
 import {
   addToCart,
@@ -11,6 +12,7 @@ import {
   getCartServerSnapshot,
   getCartSnapshot,
   removeFromCart,
+  setCartPriceOption,
   setCartQuantity,
   subscribeToCart,
 } from "./cart-store";
@@ -20,8 +22,9 @@ interface CartContextValue {
   items: CartLineItem[];
   subtotal: number;
   isHydrated: boolean;
-  add: (bookId: string, quantity?: number) => void;
+  add: (bookId: string, quantity?: number, priceOption?: PriceOption) => void;
   setQuantity: (bookId: string, quantity: number) => void;
+  setPriceOption: (bookId: string, priceOption: PriceOption) => void;
   remove: (bookId: string) => void;
   clear: () => void;
 }
@@ -36,11 +39,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const book = findBookBySlug(line.bookId);
       if (!book) return [];
 
+      const priceOption = resolvePriceOption(book, line.priceOption);
+      const unitPrice = getBookUnitPrice(book, priceOption);
+
       return [
         {
           ...line,
           book,
-          lineTotal: book.price.amount * line.quantity,
+          priceOption,
+          unitPrice,
+          lineTotal: unitPrice * line.quantity,
         },
       ];
     });
@@ -58,6 +66,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       isHydrated: snapshot.hydrated,
       add: addToCart,
       setQuantity: setCartQuantity,
+      setPriceOption: setCartPriceOption,
       remove: removeFromCart,
       clear: clearCart,
     }),

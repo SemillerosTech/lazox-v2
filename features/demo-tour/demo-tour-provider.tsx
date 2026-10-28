@@ -19,11 +19,18 @@ import {
   DEMO_TOUR_SESSION_KEY,
 } from "./demo-tour.config";
 import type { DemoTourDriverFactory } from "./demo-tour-driver";
-import { isGuideAccessPath, isTourGuidePath, waitForElement } from "./demo-tour.navigation";
+import { waitForElement } from "./demo-tour.navigation";
 import { DEMO_TOUR_STEPS } from "./demo-tour.steps";
-import type { DemoTourNoticeState } from "./demo-tour.types";
+import type { DemoTourNoticeState, DemoTourStep } from "./demo-tour.types";
 
 type StepHandler = (index: number) => void;
+
+function needsDemoCart(step: DemoTourStep | undefined): boolean {
+  if (!step) return false;
+  return (
+    step.action === "ensure-cart" || step.route === "/carrito" || step.route === "/compra/demo"
+  );
+}
 
 function persistStep(index: number): void {
   if (typeof window === "undefined") return;
@@ -182,7 +189,7 @@ export function DemoTourProvider() {
       persistStep(index);
       setNotice(null);
 
-      if (index === 11 || index === 12) {
+      if (needsDemoCart(step)) {
         ensureDemoCart();
       }
 
@@ -266,7 +273,8 @@ export function DemoTourProvider() {
           bookSlug: item.book.slug,
           title: item.book.title,
           quantity: item.quantity,
-          unitPrice: item.book.price.amount,
+          unitPrice: item.unitPrice,
+          priceOption: item.priceOption,
         }));
 
         if (orderLines.length === 0) {
@@ -293,11 +301,11 @@ export function DemoTourProvider() {
       }
 
       const nextIndex = index + 1;
-      if (nextIndex === 11 || nextIndex === 12) {
+      const next = DEMO_TOUR_STEPS[nextIndex];
+      if (needsDemoCart(next)) {
         ensureDemoCart();
       }
 
-      const next = DEMO_TOUR_STEPS[nextIndex];
       if (next && next.route === pathnameRef.current && driverRef.current) {
         driverRef.current.moveNext();
         return;
@@ -313,11 +321,11 @@ export function DemoTourProvider() {
       if (!isRunningRef.current || index <= 0) return;
 
       const previousIndex = index - 1;
-      if (previousIndex === 11 || previousIndex === 12) {
+      const previous = DEMO_TOUR_STEPS[previousIndex];
+      if (needsDemoCart(previous)) {
         ensureDemoCart();
       }
 
-      const previous = DEMO_TOUR_STEPS[previousIndex];
       if (previous && previous.route === pathnameRef.current && driverRef.current) {
         driverRef.current.movePrevious();
         return;
@@ -383,10 +391,6 @@ export function DemoTourProvider() {
     router.push(step.route);
   }, [beginNavigation, clearNavigationTimeout, router, startTour]);
 
-  const skipGuide = useCallback(() => {
-    goToStep(9);
-  }, [goToStep]);
-
   useEffect(() => {
     nextHandlerRef.current = handleNext;
     previousHandlerRef.current = handlePrevious;
@@ -403,20 +407,6 @@ export function DemoTourProvider() {
     const step = DEMO_TOUR_STEPS[activeIndexRef.current];
     if (!step) {
       stopTour();
-      return;
-    }
-
-    if (isGuideAccessPath(pathname) && isTourGuidePath(step.route)) {
-      expectedRouteRef.current = null;
-      clearNavigationTimeout();
-      destroyDriver();
-      setNotice({
-        kind: "access",
-        title: "La guía requiere el acceso privado",
-        description:
-          "El recorrido puede continuar después de entrar con la contraseña. También puede omitir este paso y seguir con el resto de la demostración.",
-        canSkipGuide: true,
-      });
       return;
     }
 
@@ -504,7 +494,6 @@ export function DemoTourProvider() {
       totalSteps={DEMO_TOUR_STEPS.length}
       onExit={stopTour}
       onRetry={retryTour}
-      onSkipGuide={skipGuide}
     />
   );
 }

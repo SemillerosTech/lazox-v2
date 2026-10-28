@@ -9,7 +9,7 @@ export const DEMO_TOUR_STEPS: DemoTourStep[] = [
     id: "home-hero",
     route: "/",
     target: '[data-tour="home-hero"]',
-    title: "Bienvenido a LAZOX",
+    title: "Bienvenido a Lazox",
     description:
       "Le mostraremos cómo una familia puede encontrar un libro, conocer su guía, hacer una pregunta y completar una compra. Utilizaremos Inseparables como ejemplo.",
     side: "bottom",
@@ -22,7 +22,7 @@ export const DEMO_TOUR_STEPS: DemoTourStep[] = [
     target: '[data-tour="home-shelves"]',
     title: "Una forma distinta de encontrar libros",
     description:
-      "En LAZOX los libros se organizan por lo que le está pasando al niño o la niña, no solamente por edad o editorial.",
+      "En LAZOX los libros se organizan por lo que le está pasando al niño o la niña, no por edad ni por editorial.",
     side: "top",
     align: "center",
     action: "advance",
@@ -53,9 +53,9 @@ export const DEMO_TOUR_STEPS: DemoTourStep[] = [
     id: "inseparables-card",
     route: "/estantes/est-03",
     target: '[data-tour="inseparables-card"]',
-    title: "Un libro recomendado por la casa",
+    title: "Un libro elegido por la casa",
     description:
-      "Inseparables es nuestra selección provisional para este estante. Cada recomendación será elegida por una persona, nunca automáticamente por una máquina.",
+      "Inseparables es la selección de este estante. Cada recomendación la elige una persona, nunca automáticamente una máquina.",
     side: "bottom",
     align: "center",
     action: "advance",
@@ -77,7 +77,7 @@ export const DEMO_TOUR_STEPS: DemoTourStep[] = [
     target: '[data-tour="product-question"]',
     title: "Cada libro trae una conversación",
     description:
-      "Además de leer, las familias reciben una pregunta para conversar después. Es una de las características que distinguen a LAZOX.",
+      "Además de leer, las familias reciben una pregunta para conversar después. Es una de las características que distinguen a Lazox.",
     side: "top",
     align: "center",
     action: "advance",
@@ -99,7 +99,7 @@ export const DEMO_TOUR_STEPS: DemoTourStep[] = [
     target: '[data-tour="guide-content"]',
     title: "La conversación puede empezar aquí",
     description:
-      "Esta es la página de la guía de Inseparables. Por ahora utiliza el contenido disponible de la tarjeta de Rossy; la guía definitiva ocupará esta misma dirección.",
+      "Esta es la página de la guía de Inseparables. Por ahora reúne el contenido aprobado de la tarjeta del libro; la guía definitiva ocupará esta misma dirección.",
     side: "bottom",
     align: "start",
     action: "advance",
@@ -110,7 +110,7 @@ export const DEMO_TOUR_STEPS: DemoTourStep[] = [
     target: '[data-tour="product-whatsapp"]',
     title: "Una persona puede orientarle",
     description:
-      "Si tiene preguntas sobre el libro, puede escribirnos por WhatsApp. Las recomendaciones siempre las hace una persona de LAZOX.",
+      "Si tiene preguntas sobre el libro, puede escribirnos por WhatsApp. Las recomendaciones siempre las hace una persona de Lazox.",
     side: "bottom",
     align: "center",
     action: "advance",
@@ -164,7 +164,7 @@ export const DEMO_TOUR_STEPS: DemoTourStep[] = [
     id: "order-confirmation",
     route: "/pedido/confirmacion-demo",
     target: '[data-tour="order-confirmation"]',
-    title: "Su pedido está confirmado",
+    title: "Gracias. Su libro va en camino.",
     description:
       "En el sistema definitivo, la familia recibirá la confirmación de su compra y el acceso a la guía del libro. También podrá solicitar su factura.",
     side: "bottom",
@@ -177,7 +177,7 @@ export const DEMO_TOUR_STEPS: DemoTourStep[] = [
     target: '[data-tour="unboxing"]',
     title: "Lo que llegará a casa",
     description:
-      "El libro llegará acompañado de su tarjeta, el espacio para el buen vecino y la tarjeta «lo que dijo», para que la conversación continúe después de abrir la caja.",
+      "El libro llegará acompañado de su guía impresa, la tarjeta del buen vecino y la tarjeta «Lo que dijo», para que la conversación continúe después de abrir la caja.",
     side: "top",
     align: "center",
     action: "advance",
@@ -185,7 +185,7 @@ export const DEMO_TOUR_STEPS: DemoTourStep[] = [
   {
     id: "tour-complete",
     route: "/pedido/caja-demo",
-    title: "Este es el primer recorrido de LAZOX",
+    title: "Este es el primer recorrido de Lazox",
     description:
       "Acabamos de recorrer Inseparables desde el descubrimiento hasta la caja. Una vez aprobado este modelo, podremos utilizar la misma estructura para incorporar los demás libros.",
     action: "finish",

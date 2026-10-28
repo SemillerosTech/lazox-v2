@@ -6,13 +6,16 @@ import { Check, ShoppingBag } from "lucide-react";
 
 import { useCart } from "@/lib/cart/cart-context";
 import { buttonClasses } from "@/lib/styles";
+import type { PriceOption } from "@/lib/types";
 
 export function AddToCartButton({
   bookId,
+  priceOption = "normal",
   className = "",
   dataTour,
 }: {
   bookId: string;
+  priceOption?: PriceOption;
   className?: string;
   dataTour?: string | undefined;
 }) {
@@ -32,7 +35,7 @@ export function AddToCartButton({
         data-tour={dataTour}
         className={buttonClasses("primary", "w-full")}
         onClick={() => {
-          add(bookId);
+          add(bookId, 1, priceOption);
           setAdded(true);
         }}
       >

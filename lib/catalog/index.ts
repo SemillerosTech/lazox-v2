@@ -1,7 +1,7 @@
 import type { Book, EditorialRecommendation, Guide, Shelf } from "@/lib/types";
 
-import { findBookBySlug } from "../data/books";
-import { findGuideByBookSlug, findGuideBySlug } from "../data/guides";
+import { books, findBookBySlug } from "../data/books";
+import { findGuideByBookSlug, findGuideBySlug, guides } from "../data/guides";
 import { findRecommendation } from "../data/recommendations";
 import { findShelfBySlug, shelves } from "../data/shelves";
 
@@ -12,6 +12,8 @@ import { findShelfBySlug, shelves } from "../data/shelves";
  * Shopify Storefront API sin cambiar las páginas ni los componentes.
  */
 export interface CatalogRepository {
+  listBooks(): Promise<Book[]>;
+  listGuides(): Promise<Guide[]>;
   listShelves(): Promise<Shelf[]>;
   getShelf(slug: string): Promise<Shelf | null>;
   listBooksByShelf(shelfCode: string): Promise<Book[]>;
@@ -22,6 +24,14 @@ export interface CatalogRepository {
 }
 
 export const localCatalog: CatalogRepository = {
+  async listBooks() {
+    return [...books];
+  },
+
+  async listGuides() {
+    return [...guides];
+  },
+
   async listShelves() {
     return [...shelves].sort((a, b) => a.order - b.order);
   },

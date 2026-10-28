@@ -1,5 +1,9 @@
 export type Currency = "MXN";
 
+export type PriceOption = "normal" | "economic";
+
+export type BookAvailability = "available" | "out_of_stock";
+
 export interface BookPrice {
   /** Precio en centavos para evitar errores de punto flotante. */
   amount: number;
@@ -15,7 +19,14 @@ export interface Book {
   publisher?: string;
   year?: number;
   isbn?: string;
+  pages?: number;
+  format?: string;
+  binding?: string;
   price: BookPrice;
+  priceMode?: "single" | "libre";
+  /** Fecha de impresión o reimpresión del lote, en formato ISO. */
+  printedAt?: string;
+  availability?: BookAvailability;
   ageSuggestion: string;
   shelfCode: string;
   synopsis: string;
@@ -32,6 +43,7 @@ export interface Shelf {
   slug: string;
   name: string;
   order: number;
+  line?: string;
   bookSlugs: string[];
 }
 
@@ -67,10 +79,13 @@ export interface EditorialRecommendation {
 export interface CartItem {
   bookId: string;
   quantity: number;
+  priceOption?: PriceOption;
 }
 
 export interface CartLineItem extends CartItem {
   book: Book;
+  priceOption: PriceOption;
+  unitPrice: number;
   lineTotal: number;
 }
 
@@ -89,6 +104,12 @@ export interface DemoOrderLine {
   title: string;
   quantity: number;
   unitPrice: number;
+  priceOption?: PriceOption;
+}
+
+export interface DemoOrderNotifications {
+  whatsapp: boolean;
+  email: boolean;
 }
 
 export interface DemoOrder {
@@ -97,5 +118,7 @@ export interface DemoOrder {
   items: DemoOrderLine[];
   subtotal: number;
   customer: DemoOrderCustomer;
-  paymentMethod: "demo";
+  paymentMethod: "demo" | "card" | "wallet" | "oxxo" | "transfer";
+  notifications?: DemoOrderNotifications;
+  referralSource?: string;
 }
