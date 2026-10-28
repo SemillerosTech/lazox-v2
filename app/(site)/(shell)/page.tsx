@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, Download } from "lucide-react";
 
@@ -13,12 +14,6 @@ import { WHATSAPP_SCHOOL_MESSAGE } from "@/lib/whatsapp";
 export const metadata: Metadata = {
   title: "Lazox · Un libro para lo que le está pasando",
   description: "Cada uno viene con preguntas para conversarlo en casa.",
-  openGraph: {
-    title: "Lazox · Un libro para lo que le está pasando",
-    description: "Cada uno viene con preguntas para conversarlo en casa.",
-    type: "website",
-    locale: "es_MX",
-  },
 };
 
 const ENTRY_SHELVES = [
@@ -70,10 +65,24 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="grid aspect-[4/3] place-items-center rounded-3xl border-2 border-dashed border-border bg-brand-cream p-6 text-center">
-            <p className="max-w-xs text-sm font-bold text-muted-foreground">
-              Toma L1 · Inseparables abierto sobre una mesa
-            </p>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-brand-cream">
+            <Image
+              src="/images/l1-inseparables-mesa.webp"
+              alt="Inseparables sobre una mesa de madera, con luz de día."
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+              className="object-cover"
+            />
+            <Image
+              src="/images/anfitrion-leyendo.webp"
+              alt=""
+              aria-hidden="true"
+              width={1254}
+              height={1254}
+              sizes="(max-width: 768px) 96px, 128px"
+              className="pointer-events-none absolute -bottom-8 -left-3 w-24 sm:w-28 md:w-32"
+            />
           </div>
         </div>
       </section>
@@ -190,10 +199,14 @@ export default async function Home() {
 
       <section aria-labelledby="que-trae-la-caja" className="mx-auto max-w-7xl px-4 py-14 md:py-20">
         <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-          <div className="grid aspect-[4/3] place-items-center rounded-3xl border-2 border-dashed border-border bg-brand-cream p-6 text-center">
-            <p className="max-w-xs text-sm font-bold text-muted-foreground">
-              Toma C1 · La caja abierta con sus tres piezas
-            </p>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-brand-cream">
+            <Image
+              src="/images/c1-caja-abierta.webp"
+              alt="La caja de Lazox abierta con el libro y sus materiales."
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
           </div>
           <div>
             <h2

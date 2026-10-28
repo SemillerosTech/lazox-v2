@@ -11,6 +11,7 @@ export const books: Book[] = [
     year: 2015,
     isbn: "978-84-943046-0-6",
     pages: 48,
+    coverImage: "/images/portada-inseparables.jpg",
     price: { amount: 43500, currency: "MXN" },
     priceMode: "single",
     availability: "available",

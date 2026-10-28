@@ -336,8 +336,11 @@ Estas reglas vienen del brief y de las 27 tarjetas. No deben cambiarse sin aprob
   definitiva están pendientes.
 - El libro vecino y la tarjeta del buen vecino están pendientes de definición. Si no existen, no se
   muestran.
-- La portada actual es una composición CSS; no hay imágenes oficiales. L1 y C1 son huecos visibles.
-- El anfitrión no se muestra hasta que exista un asset aprobado.
+- Las imágenes actuales son maquetas: la portada, la L1, la C1 y el anfitrión están integrados
+  para ver el sitio armado, pero no son los definitivos. La portada oficial y su permiso siguen
+  pendientes de Tramuntana.
+- El anfitrión se muestra como maqueta; falta el asset aprobado y el personaje actual todavía no
+  cumple las reglas de la tarjeta 5.
 - SILEE y la asociación solo se nombran en la línea del pie y en páginas sin precio.
 - No inventar opiniones, estrellas, testimonios, productos, títulos, autores, precios ni cifras.
 

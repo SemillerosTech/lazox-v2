@@ -152,12 +152,11 @@ Estas reglas son parte del brief y de las 27 tarjetas. No las cambie sin aprobac
   contenido extenso y la licencia definitiva están pendientes.
 - **SILEE y la asociación:** solo se nombran en la línea del pie y en páginas sin precio. La línea
   literal es: “Lazox apoya el proyecto SILEE® de Semilleros de Sentido A.C.”
-- **Portada:** composición CSS marcada como demostración. No hay imágenes oficiales. La toma L1 y
-  la toma C1 son huecos visibles.
-- **Anfitrión:** no se muestra hasta que exista un asset aprobado. No inventar personajes ni caras
-  de niños.
-- **Caja:** «Qué trae la caja» se muestra en el borrador con el hueco C1 y los cuatro renglones
-  aprobados.
+- **Portada:** las imágenes actuales son maquetas para ver el sitio armado. La portada, la toma L1,
+  la toma C1 y el anfitrión no son definitivos y se reemplazan cuando lleguen los assets aprobados.
+- **Anfitrión:** hoy se muestra una maqueta no aprobada. No inventar personajes ni caras de niños.
+- **Caja:** «Qué trae la caja» se muestra con la maqueta C1 y los cuatro renglones aprobados. La
+  foto real de la caja impresa sigue pendiente.
 - **Cinco preguntas:** la página dice «En preparación» hasta que Rossy firme la tarjeta. No hay
   PDF inventado.
 - **Sin buscador, cuenta ni newsletter:** no hay flujo asociado. No agregue formularios que pidan

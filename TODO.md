@@ -80,6 +80,17 @@ puntos marcados abajo.
 
 ## P0 — Contenido y aprobaciones editoriales
 
+- [ ] **Reemplazar las imágenes de maqueta por las definitivas.** El 28 de octubre de 2026 se
+      integraron cuatro imágenes para ver el sitio armado. Todas son provisionales:
+  - `l1-inseparables-mesa.webp`: el libro aparece **cerrado**, pero la tarjeta 5 pide la toma con
+    el libro **abierto** sobre la mesa.
+  - `anfitrion-leyendo.webp`: incumple cinco reglas de la tarjeta 5 — tiene ojos grandes con
+    brillos en lugar de ojos de punto, dos brillos por ojo, chapitas rosas, boca abierta y está de
+    cuerpo entero en lugar de asomándose. Se usa por decisión de Gero del 28 de octubre de 2026.
+  - `portada-inseparables.jpg`: parece una **reproducción generada**, no el archivo de la
+    editorial. El crédito dice «Maria Girón» sin acento. No se publica como definitiva hasta tener
+    el archivo y el permiso de Tramuntana.
+  - `c1-caja-abierta.webp`: maqueta de la caja, no la caja impresa real.
 - [ ] **Aprobar la recomendación de `EST-03` con Rossy.** Hoy la ficha y el estante no muestran
       marcas de trabajo; el estado interno sigue en `lib/data/recommendations.ts` y
       `lib/data/books.ts`. Actualizar el estado interno cuando exista aprobación.

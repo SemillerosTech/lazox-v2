@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { ButtonLink } from "@/components/button-link";
@@ -33,10 +34,14 @@ export default function BoxDemoPage() {
         data-tour="unboxing"
         className="mt-10 grid gap-8 lg:grid-cols-2 lg:items-center"
       >
-        <div className="grid aspect-[4/3] place-items-center rounded-3xl border-2 border-dashed border-border bg-brand-cream p-6 text-center">
-          <p className="max-w-xs text-sm font-bold text-muted-foreground">
-            Toma C1 · La caja abierta con sus tres piezas
-          </p>
+        <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-brand-cream">
+          <Image
+            src="/images/c1-caja-abierta.webp"
+            alt="La caja de Lazox abierta con el libro y sus materiales."
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover"
+          />
         </div>
 
         <ul className="space-y-4 text-lg font-semibold text-brand-ink">

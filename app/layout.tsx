@@ -42,11 +42,20 @@ export const metadata: Metadata = {
     description: "Cada uno viene con preguntas para conversarlo en casa.",
     type: "website",
     locale: "es_MX",
+    images: [
+      {
+        url: "/images/og-inseparables.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Inseparables sobre una mesa de madera, con luz de día.",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Lazox · Un libro para lo que le está pasando",
     description: "Cada uno viene con preguntas para conversarlo en casa.",
+    images: ["/images/og-inseparables.jpg"],
   },
   // Borrador: se retira el día que la tienda abra en lazox.com.
   robots: {
