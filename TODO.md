@@ -37,8 +37,11 @@
       5 de noviembre de 2026. Evidencia: `vercel env ls`; token privado sensible enviado por
       stdin sin mostrarlo. Proyecto `lazox-v2`, Root Directory `.`. No se modificó `.env.local`
       ni las variables de WhatsApp, dominio o factura.
-- [ ] Comprobar el despliegue del nuevo SHA después del push; un push no garantiza un build
-      correcto. El archivo `.env.local` del equipo de desarrollo no viaja con Git.
+- [x] Push autorizado y despliegue comprobados el 5 de noviembre de 2026: commit `f75b016`,
+      deployment `dpl_64aMci7tViT9s1K2WvfCvhF5xq5p`, estado Ready y check de GitHub exitoso.
+      Las 36 rutas también pasaron en https://lazox-v2.vercel.app, incluidos diagnóstico con
+      token privado, guías vacías, compras cerradas y páginas no encontradas en Chrome.
+      Token ausente de HTML y scripts públicos; `noindex` y `robots.txt` conservados.
 
 No se cerró el vocabulario editorial de recomendaciones; no se habilitaron compras reales.
 
@@ -49,8 +52,8 @@ No se cerró el vocabulario editorial de recomendaciones; no se habilitaron comp
 - **Listo para producción:** no.
 - **Principal bloqueo:** aprobación editorial, licencia de la guía, assets oficiales, número de
   WhatsApp, facturación/Shopify y flujos reales de compra y contacto.
-- **Deuda técnica principal:** no hay pruebas automatizadas, CI ni prueba funcional de Shopify
-  contra la tienda real. La integración está implementada y apagada.
+- **Deuda técnica principal:** no hay suite automatizada ni CI. El catálogo parcial de Shopify
+  está probado en local y Vercel contra la tienda real; carrito y checkout reales siguen cerrados.
 
 ## Registro de esta entrega (27 de octubre de 2026)
 
@@ -205,19 +208,20 @@ publicado en el canal Headless y no se creó ningún carrito real.
 - [ ] **Definir la política de la guía para producción.** Hoy es pública, sin contraseña, con
       `noindex` y licencia pendiente. Decidir si seguirá abierta, si requerirá cuenta o si se
       retirará hasta la firma.
-- [ ] **Confirmar que `NEXT_PUBLIC_ENABLE_DUAL_PRICING` esté apagado en producción.** Solo debe
-      encenderse cuando abogado y contador cierren la cuenta del 30 %.
+- [x] **Confirmar que `NEXT_PUBLIC_ENABLE_DUAL_PRICING` esté apagado en producción.** Configurado
+      en `false` el 5 de noviembre de 2026 en Production y Preview; build y ficha desplegados
+      comprobados. Solo encender cuando abogado y contador cierren la cuenta del 30 %.
 - [ ] **Definir el número oficial de WhatsApp** y probar los mensajes de cada pantalla. No usar
       números de ejemplo en el repositorio.
 - [ ] **Definir el sistema de facturación.** Mientras no exista Shopify, «Solicitar factura» lleva
       a `/factura`; configurar `NEXT_PUBLIC_SHOPIFY_INVOICE_URL` cuando esté disponible.
-- [ ] **Publicar el catálogo en el canal Headless de Shopify.** Inseparables, las diez colecciones
-      y los metaobjetos deben estar visibles para Storefront API. Sin esta autorización, el modo
-      `shopify` devuelve estados vacíos. No publicar sin aprobación del propietario.
-- [ ] **Confirmar las credenciales de Shopify en cada entorno.**
-      `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_PRIVATE_TOKEN` y
-      `SHOPIFY_STOREFRONT_API_VERSION` ya responden en local (el token vive en `.env.local`, no se
-      versiona). Falta cargarlas en Vercel si el despliegue usará Shopify.
+- [x] **Publicar el catálogo parcial en el canal Headless de Shopify.** Entrega recibida y
+      verificada por Storefront el 5 de noviembre de 2026: Inseparables, diez colecciones y
+      portada `global`. No se crearon guías ni recomendaciones; siguen sin contenido aprobado.
+- [x] **Configurar las credenciales de Shopify en cada entorno.** El 5 de noviembre de 2026:
+      `pnpm shopify:check` valida local; Production conecta en `/revision/catalogo` y las 36
+      rutas. Preview tiene las mismas variables configuradas (`vercel env ls`), sin despliegue
+      Preview adicional. El token no se versiona ni se imprime.
 - [x] **Completar las claves de metaobjetos** en `lib/shopify/metaobject-fields.ts`. Verificadas
       el 5 de noviembre de 2026: `guia_de_lectura` (10 claves), `recomendacion_lazox` (6) y
       `contenido_de_portada_lazox` (7). Falta contrastarlas contra entradas publicadas en
@@ -228,9 +232,9 @@ publicado en el canal Headless y no se creó ningún carrito real.
       llama. Falta estado de carrito en cliente, revalidación, errores y prueba real.
 - [ ] **Decidir si se abren `LAZOX_ENABLE_CART` y `LAZOX_ENABLE_CHECKOUT`.** Solo después de una
       decisión explícita, con impuestos, envío, pedidos, correo y facturación resueltos.
-- [ ] **Decidir el despliegue del borrador.** Si `local-draft` sigue en Vercel, definir
-      `LAZOX_ALLOW_LOCAL_DRAFT_ON_VERCEL=true`; si ya se usa Shopify, configurar la fuente y las
-      credenciales. Sin esa decisión, un despliegue con `local-draft` falla a propósito.
+- [x] **Decidir el despliegue del borrador.** Autorizado y verificado el 5 de noviembre de 2026:
+      Shopify en Vercel con compras cerradas; `local-draft` solo en `.env.local`. Evidencia:
+      despliegue `f75b016` y `/revision/catalogo` en producción.
 - [ ] **Definir la estrategia de caché e invalidación** para producción. Hoy el transporte usa
       `cache: "no-store"`; no hay webhooks ni app administrativa.
 - [ ] **Reemplazar el checkout ficticio** por el flujo real aprobado, o mantenerlo claramente
@@ -329,9 +333,9 @@ Estas decisiones bloquean varias tareas. No las resuelva por su cuenta:
 - Los dos precios están construidos; encenderlos sin aprobación legal y contable es un riesgo.
 - Sin número de WhatsApp, los botones muestran un panel de demostración y no abren un chat.
 - El carrito vive solo en el navegador; no se sincroniza entre dispositivos.
-- La integración Shopify está sin probar contra la tienda real: las credenciales locales responden,
-  pero falta publicar el contenido en el canal Headless. Las claves de metaobjetos ya están
-  verificadas, pero no se pudieron contrastar contra entradas reales.
+- El catálogo parcial Shopify funciona contra la tienda real en local y Vercel. Sin entradas de
+  guías o recomendaciones no se pueden probar sus contenidos ni contrastar sus claves contra
+  datos reales. La lectura de portada `global` sí se verificó.
 - El carrito de Shopify está preparado pero sin UI; encenderlo sin conectar las acciones no habilita
   una compra real.
 - Un despliegue con `local-draft` falla salvo `LAZOX_ALLOW_LOCAL_DRAFT_ON_VERCEL=true`; es

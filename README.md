@@ -5,8 +5,9 @@
 > repetidas dentro de cada petición y la ficha sin existencias mantiene el precio sin anunciar
 > una guía inexistente. Inseparables y los diez estantes están publicados en Lazox Headless.
 > Storefront verificado con el token privado y 36 rutas probadas localmente. Production y Preview
-> de Vercel ya tienen las variables del catálogo y las compras cerradas; el nuevo despliegue se
-> comprueba después del push. El entorno local conserva `local-draft`.
+> de Vercel ya tienen las variables del catálogo y las compras cerradas. El commit `f75b016`
+> se desplegó con build correcto y 36 rutas verificadas en https://lazox-v2.vercel.app.
+> El entorno local conserva `local-draft`.
 > Detalle actualizado en [`lib/shopify/README.md`](./lib/shopify/README.md).
 
 Tienda de libros, estantes, guías y conversaciones para crecer juntos. Incluye el borrador
@@ -73,7 +74,7 @@ recomendaciones inventadas**. Su estado es “selección en preparación”.
 - `noindex, nofollow` global y `robots.txt` bloqueado mientras sea borrador.
 - Recorrido guiado de 16 pasos para la demostración ejecutiva, aislado y activado por variable.
 - Páginas «En preparación» para las rutas que aún no tienen contenido aprobado.
-- Integración con Shopify Storefront preparada y **apagada**: selección explícita de fuente
+- Integración con Shopify Storefront **activa como catálogo parcial en Vercel**: selección explícita de fuente
   (`local-draft` o `shopify`), transporte GraphQL de servidor, mapeo de productos, colecciones,
   metacampos y metaobjetos, HTML saneado, carrito cerrado en servidor y diagnóstico interno.
   Detalle en [`lib/shopify/README.md`](./lib/shopify/README.md).
@@ -90,12 +91,13 @@ recomendaciones inventadas**. Su estado es “selección en preparación”.
 - Checkout, confirmación, caja, sesión sin pedido y estados vacíos.
 - Revisión responsive a 390 px y 1440 px, sin overflow horizontal ni errores de consola.
 - WhatsApp sin número: panel de demostración con el mensaje preparado.
-- Modo `shopify` probado con las credenciales locales: Storefront responde, no hay recursos
-  publicados y las rutas muestran estados vacíos sin datos locales; las compras quedan
-  deshabilitadas. No se creó ningún carrito ni se modificó Shopify.
+- Modo `shopify` probado con token privado en local y Vercel: diez estantes ordenados,
+  Inseparables a $435 MXN sin existencias ni guía, guías vacías y compras deshabilitadas.
+  Se verificaron 36 rutas y ausencia del token en HTML y scripts públicos. No se creó ningún
+  carrito ni se modificó Shopify desde el agente local.
 
-No existe todavía una suite automatizada de pruebas ni integración real con Shopify publicada. La
-capa de integración está implementada y se enciende con variables de entorno; ver
+No existe todavía una suite automatizada de pruebas. El catálogo parcial de Shopify está
+publicado; el carrito y checkout reales siguen cerrados. Ver
 [`lib/shopify/README.md`](./lib/shopify/README.md).
 
 ## 3. Stack
@@ -411,8 +413,9 @@ Estas reglas vienen del brief y de las 27 tarjetas. No deben cambiarse sin aprob
 
 ## 14. Shopify
 
-La capa de integración con Storefront API está **implementada y apagada**. No hay catálogo
-publicado, no hay compras reales y no se modificó Shopify.
+La capa de integración con Storefront API está **activa para el catálogo parcial en Vercel**:
+Inseparables, diez estantes y la portada `global`. No hay guías ni recomendaciones publicadas,
+ni compras reales. `.env.local` conserva `local-draft` y sus flujos de demostración.
 
 Qué quedó hecho:
 
@@ -425,15 +428,13 @@ Qué quedó hecho:
 6. Hay diagnóstico interno en `/revision/catalogo` y por terminal con `pnpm shopify:check`.
 7. `NEXT_PUBLIC_SHOPIFY_INVOICE_URL` sigue siendo el enlace de facturación cuando exista.
 
-Qué falta para encenderlo:
+Qué falta para completar la tienda:
 
-1. Credenciales de Storefront y publicación de productos, colecciones y metaobjetos en el canal
-   Headless.
-2. Publicar en el canal Headless los productos, colecciones y metaobjetos. Las claves técnicas de
-   los tres metaobjetos ya están configuradas en `lib/shopify/metaobject-fields.ts`.
-3. Definir el vocabulario de estados de recomendación aprobados.
-4. Conectar la UI del carrito Shopify y decidir si se abre la compra real.
-5. Resolver impuestos, envío, pedidos, correo y facturación reales.
+1. Completar el contenido editorial aprobado y la licencia antes de publicar guías.
+2. Definir el vocabulario de estados de recomendación aprobados. Las claves técnicas de los tres
+   metaobjetos ya están configuradas en `lib/shopify/metaobject-fields.ts`.
+3. Conectar la UI del carrito Shopify y decidir si se abre la compra real.
+4. Resolver impuestos, envío, pedidos, correo y facturación reales.
 
 La guía completa de configuración, variables y edición está en
 [`lib/shopify/README.md`](./lib/shopify/README.md). El contrato de catálogo está en
@@ -448,10 +449,11 @@ pnpm typecheck
 pnpm build
 ```
 
-Además, compruebe manualmente:
+Además, compruebe manualmente los flujos de demostración en `local-draft`:
 
 - `/`, `/estantes`, `/libros/inseparables`, `/carrito`, `/compra/demo`, confirmación, caja y guía.
-- Un slug de estante inválido y un libro inexistente devuelven `404`.
+- Un slug de estante inválido y un libro inexistente muestran la página de no encontrado con
+  `noindex`. Next puede responder HTTP 200 cuando ya inició streaming.
 - `/guias/inseparables` abre sin contraseña y muestra el aviso de licencia.
 - El carrito persiste al recargar, actualiza cantidades y elimina artículos.
 - El checkout vacío y la confirmación sin pedido muestran sus estados vacíos.
@@ -464,20 +466,22 @@ Además, compruebe manualmente:
 - `/revision/catalogo` responde, declara `noindex` y no está enlazada; en `local-draft` no llama a
   Shopify.
 - En modo `shopify`, `/carrito`, `/compra/demo` y la ficha muestran la compra deshabilitada.
+- En el catálogo parcial de `shopify`, `/guias` está vacío y las rutas de guía y descarga de
+  Inseparables devuelven `404`, sin mostrar la guía local.
 - `pnpm shopify:check` valida la configuración sin imprimir el token (solo con credenciales).
 - No aparecen «EST-», «provisional», «pendiente», «Precio único», opiniones ni estrellas.
 
 ## 16. Despliegue en Vercel
 
 1. Importe el repositorio en Vercel.
-2. Configure **Root Directory** en `lazox-v2`.
-3. Defina `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_SITE_URL`,
-   `NEXT_PUBLIC_ENABLE_DEMO_TOUR=true` y `NEXT_PUBLIC_SHOPIFY_INVOICE_URL` si corresponde.
+2. Configure **Root Directory** en `.`: este repositorio contiene `package.json` en la raíz.
+3. Conserve `NEXT_PUBLIC_SITE_URL` y las variables de contacto y factura que ya estén aprobadas.
+   Use `NEXT_PUBLIC_ENABLE_DEMO_TOUR=false` para el catálogo parcial de Shopify.
 4. Deje `NEXT_PUBLIC_ENABLE_DUAL_PRICING=false` hasta la aprobación legal y contable.
-5. Elija la fuente con `LAZOX_CATALOG_SOURCE`. Si el borrador local sigue desplegado, agregue
-   `LAZOX_ALLOW_LOCAL_DRAFT_ON_VERCEL=true`; sin esa variable el despliegue con `local-draft` falla
-   a propósito. Si ya usa Shopify, configure también `SHOPIFY_STORE_DOMAIN` y
-   `SHOPIFY_STOREFRONT_PRIVATE_TOKEN` (solo servidor).
+5. Production y Preview usan `LAZOX_CATALOG_SOURCE=shopify`, `SHOPIFY_STORE_DOMAIN`,
+   `SHOPIFY_STOREFRONT_API_VERSION` y `SHOPIFY_STOREFRONT_PRIVATE_TOKEN` (sensible y solo servidor).
+   Mantenga `LAZOX_ENABLE_CART=false` y `LAZOX_ENABLE_CHECKOUT=false`. No use
+   `LAZOX_ALLOW_LOCAL_DRAFT_ON_VERCEL=true` para ocultar una conexión Shopify que falla.
 6. Vercel detecta Next.js y usa `pnpm install` / `pnpm build`. Las variables `NEXT_PUBLIC_*` deben
    existir antes del build.
 7. Mientras sea borrador, mantenga `noindex, nofollow` y `robots.txt` bloqueado. Retírelos el día
@@ -485,11 +489,10 @@ Además, compruebe manualmente:
 
 ## 17. Estructura del repositorio
 
-La raíz de Git contiene tres áreas:
+La raíz actual de Git contiene la aplicación:
 
-- `lazox-v2/`: aplicación Next.js desplegable. **Este es el proyecto activo.**
-- `prework/`: presentación estática independiente de estrategia. No forma parte del build de
-  Vercel ni debe mezclarse con la aplicación.
+- `package.json`, `app/`, `components/`, `lib/` y `public/`: aplicación Next.js desplegable.
+- `prework/` pertenecía a la estructura histórica y no forma parte de este repositorio ni del build.
 - `docs/lo-de-adentro-afuera.md`: hoja de referencia de las 27 tarjetas. No se formatea ni se
   reescribe.
 

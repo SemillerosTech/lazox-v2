@@ -37,9 +37,16 @@ con el token privado marcado como sensible. Root Directory es `.` (raíz real de
 `LAZOX_CATALOG_SOURCE=shopify`. No se cambiaron las variables de WhatsApp, dominio o factura.
 GitHub permite el push autorizado a `main` con la identidad Git local.
 
-Las secciones siguientes conservan el diagnóstico inicial de la integración como registro
-histórico. La comprobación del despliegue del nuevo SHA se realiza después del push; configurar
-variables no demuestra por sí solo que la nueva versión esté publicada.
+El commit `f75b016` quedó publicado y desplegado el 5 de noviembre de 2026. Vercel confirmó
+Ready para `dpl_64aMci7tViT9s1K2WvfCvhF5xq5p` y GitHub mostró el check exitoso.
+Se repitieron las 36 rutas, las comprobaciones de robots y de exposición del token, y los
+estados no encontrados en Chrome sobre https://lazox-v2.vercel.app. No hubo compras ni
+mutaciones de Shopify. Los aliases largos de Vercel pueden pedir autenticación; se usó la URL
+pública existente sin desactivar protecciones.
+
+Las secciones identificadas como iniciales conservan el diagnóstico anterior como registro
+histórico. Configurar variables no demuestra por sí solo que una nueva versión esté publicada:
+cada push requiere comprobar su SHA, build y rutas.
 
 > Documento de trabajo de la integración. Explica qué quedó implementado, cómo se enciende y
 > qué debe completarse a mano. Las reglas editoriales de Lazox siguen vigentes: este documento
@@ -386,7 +393,7 @@ No cambie `NEXT_PUBLIC_ENABLE_DUAL_PRICING` sin aprobación legal y contable.
 
 ## 12. Pendientes posteriores al catálogo parcial
 
-- Verificar el nuevo despliegue de Vercel después del push autorizado a `main`.
+- Repetir la verificación del SHA y las rutas después de futuros despliegues.
 - Contenido aprobado y licencia de guías; no se crean entradas incompletas para llenar la tienda.
 - Vocabulario aprobado de estados de recomendación.
 - Decisión sobre carrito y checkout reales.
