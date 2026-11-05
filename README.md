@@ -1,5 +1,14 @@
 # LAZOX
 
+> **Avance del 5 de noviembre de 2026:** se prepara el catálogo parcial de Shopify sin esperar
+> las guías completas. Las claves de metaobjetos ya estaban configuradas. Se reducen consultas
+> repetidas dentro de cada petición y la ficha sin existencias mantiene el precio sin anunciar
+> una guía inexistente. Inseparables y los diez estantes están publicados en Lazox Headless.
+> Storefront verificado con el token privado y 36 rutas probadas localmente. Production y Preview
+> de Vercel ya tienen las variables del catálogo y las compras cerradas; el nuevo despliegue se
+> comprueba después del push. El entorno local conserva `local-draft`.
+> Detalle actualizado en [`lib/shopify/README.md`](./lib/shopify/README.md).
+
 Tienda de libros, estantes, guías y conversaciones para crecer juntos. Incluye el borrador
 navegable de **Inseparables**: portada, ficha, guía pública, carrito, compra de demostración,
 confirmación y representación de la caja.

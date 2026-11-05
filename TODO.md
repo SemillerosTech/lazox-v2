@@ -7,6 +7,41 @@
 
 **Última actualización:** 5 de noviembre de 2026.
 
+## Avance del catálogo parcial (5 de noviembre de 2026)
+
+- [x] Inseparables activo y publicado únicamente en Lazox Headless. Evidencia: estado Activo y
+      canal Lazox Headless en el administrador después de guardar. No se cambió el inventario.
+- [x] Compartir lecturas de libro, estantes y productos de colección dentro de cada petición.
+      Evidencia: `React.cache` en `lib/catalog/shopify.ts`; no se cachean mutaciones ni visitas.
+- [x] Mantener el precio sin existencias y no anunciar una guía que no existe. Evidencia:
+      condición `guide` en la ficha. Las guías incompletas no se crean en Shopify.
+- [x] Formato, lint, TypeScript y build correctos. Prueba de 26 rutas en modo Shopify con fixture
+      externo al repositorio: diez estantes, libro sin existencias, guías vacías, compras cerradas
+      y páginas inexistentes. Se verificó una sola consulta de producto entre metadata y página.
+      No sustituye la prueba contra la tienda real. El estante inexistente muestra la página de
+      no encontrado y `noindex`, pero Next puede responder HTTP 200 al haber iniciado streaming.
+- [x] Diez colecciones publicadas únicamente en Lazox Headless; orden 2 de EST-09 completado.
+      Evidencia: comprobación de las colecciones por Storefront API real.
+- [x] Entrada de portada `global` activa con su prefijo existente; campos vacíos sin cambios.
+- [x] Verificar Storefront real con token público: diez estantes, libro a $435 MXN y 26 rutas
+      probadas sin guías ni compras reales. Adaptador de autenticación de prueba fuera del repo;
+      no se usó ni se copió el token privado.
+- [x] Acceso de escritura a GitHub confirmado el 5 de noviembre de 2026 mediante `gh api`;
+      push a `main` autorizado por el propietario.
+- [x] Validación local con token privado el 5 de noviembre de 2026: `pnpm shopify:check`,
+      formato, lint, TypeScript, build y 36 rutas en modo Shopify real. Los diez estantes
+      respetan el orden; Inseparables conserva $435 MXN sin guía ni compra. Chrome verifica
+      las páginas no encontradas y sus dos salidas. Token ausente de HTML y assets públicos;
+      `noindex` y `robots.txt` conservados. Script de comprobación fuera del repositorio.
+- [x] Configurar las ocho variables del paquete en Production y Preview de Vercel el
+      5 de noviembre de 2026. Evidencia: `vercel env ls`; token privado sensible enviado por
+      stdin sin mostrarlo. Proyecto `lazox-v2`, Root Directory `.`. No se modificó `.env.local`
+      ni las variables de WhatsApp, dominio o factura.
+- [ ] Comprobar el despliegue del nuevo SHA después del push; un push no garantiza un build
+      correcto. El archivo `.env.local` del equipo de desarrollo no viaja con Git.
+
+No se cerró el vocabulario editorial de recomendaciones; no se habilitaron compras reales.
+
 ## Resumen
 
 - **Fachada del borrador:** las 27 tarjetas de `docs/lo-de-adentro-afuera.md` están implementadas

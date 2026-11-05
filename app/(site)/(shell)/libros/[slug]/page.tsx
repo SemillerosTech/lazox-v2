@@ -10,6 +10,7 @@ import { ButtonLink } from "@/components/button-link";
 import { WhatsAppInquiry } from "@/components/whatsapp-inquiry";
 import { catalog, catalogSource } from "@/lib/catalog";
 import { isBookOutOfStock } from "@/lib/pricing";
+import { Price } from "@/components/price";
 import { getBookWhatsAppMessage } from "@/lib/whatsapp";
 import { PageWhatsApp } from "@/lib/whatsapp-context";
 
@@ -56,9 +57,11 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
 
   if (!book) notFound();
 
-  const guide = await catalog.getGuideForBook(book.slug);
   const shelfSlug = book.shelfCode?.toLowerCase();
-  const shelf = shelfSlug ? await catalog.getShelf(shelfSlug) : null;
+  const [guide, shelf] = await Promise.all([
+    catalog.getGuideForBook(book.slug),
+    shelfSlug ? catalog.getShelf(shelfSlug) : Promise.resolve(null),
+  ]);
   const outOfStock = isBookOutOfStock(book);
   const credits = illustrationLine(book);
 
@@ -137,8 +140,11 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
 
       {outOfStock ? (
         <section className="mt-8 rounded-3xl border-2 border-border bg-background p-6">
-          <p className="text-lg font-bold text-brand-ink">
-            Este libro se agotó por ahora. Su guía sigue disponible.
+          <Price price={book.price} className="text-3xl" />
+          <p className="mt-4 text-lg font-bold text-brand-ink">
+            {guide
+              ? "Este libro se agotó por ahora. Su guía sigue disponible."
+              : "Este libro se agotó por ahora."}
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             {guide && (

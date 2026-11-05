@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import type { Book, EditorialRecommendation, Guide, HomepageContent, Shelf } from "@/lib/types";
 
 import { shopifyFetch, type ShopifyFetchOptions } from "@/lib/shopify/client";
@@ -59,7 +61,9 @@ async function collectConnection<T>(
   return items;
 }
 
-async function fetchAllShelves(): Promise<Shelf[]> {
+// Solo se comparte dentro del render de una petición; la siguiente visita
+// vuelve a Shopify. Evita repetir lecturas entre metadata, layout y página.
+const fetchAllShelves = cache(async (): Promise<Shelf[]> => {
   const collections = await collectConnection<ShopifyCollection>((after) =>
     read<{ collections: ShopifyConnection<ShopifyCollection> }>({
       query: SHELVES_QUERY,
@@ -85,9 +89,9 @@ async function fetchAllShelves(): Promise<Shelf[]> {
     seen.add(shelf.code);
     return true;
   });
-}
+});
 
-async function fetchCollectionProducts(collectionId: string): Promise<Book[]> {
+const fetchCollectionProducts = cache(async (collectionId: string): Promise<Book[]> => {
   const products = await collectConnection<ShopifyProduct>((after) =>
     read<{ collection: { products: ShopifyConnection<ShopifyProduct> } | null }>({
       query: COLLECTION_PRODUCTS_QUERY,
@@ -108,7 +112,7 @@ async function fetchCollectionProducts(collectionId: string): Promise<Book[]> {
   );
 
   return products.map(mapProduct).filter((book): book is Book => book !== null);
-}
+});
 
 async function fetchAllMetaobjects(
   query: string,
@@ -149,7 +153,7 @@ async function mapGuideWithBook(metaobject: ShopifyMetaobject): Promise<Guide | 
   return mapGuide(metaobject, book);
 }
 
-async function shopifyGetBook(slug: string): Promise<Book | null> {
+const shopifyGetBook = cache(async (slug: string): Promise<Book | null> => {
   const data = await read<{ product: ShopifyProduct | null }>({
     query: PRODUCT_BY_HANDLE_QUERY,
     variables: { handle: slug, identifiers: PRODUCT_METAFIELD_IDENTIFIERS },
@@ -157,7 +161,7 @@ async function shopifyGetBook(slug: string): Promise<Book | null> {
   });
 
   return data.product ? mapProduct(data.product) : null;
-}
+});
 
 export const shopifyCatalog: CatalogRepository = {
   async listBooks() {

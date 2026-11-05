@@ -1,10 +1,51 @@
 # Integración con Shopify Storefront API
 
+## Avance del catálogo parcial — 5 de noviembre de 2026
+
+Se avanza con el libro y los estantes existentes sin esperar las guías completas.
+Inseparables quedó activo y publicado únicamente en Lazox Headless desde el administrador.
+Las diez colecciones están publicadas solo en ese canal. Se completó el orden 2 de EST-09,
+que estaba vacío. La entrada de portada `global` está activa con su prefijo existente; no se
+rellenaron textos vacíos. No se crearon guías ni recomendaciones ni se aprobó contenido editorial.
+
+Storefront real verificado con el token público: diez estantes con orden, Inseparables a $435 MXN
+y metacampos editoriales disponibles. Se probaron 26 rutas de la aplicación contra la API real
+mediante un adaptador de autenticación de prueba externo al repositorio, sin usar ni copiar el
+token privado. Esa prueba corresponde al entorno que preparó el paquete.
+
+El agente local también verificó el token privado existente con `pnpm shopify:check` y 36 rutas
+contra Shopify real el 5 de noviembre de 2026: diez estantes ordenados, ficha a $435 MXN sin
+existencias ni guía, colección de guías vacía y compras cerradas. Se comprobaron `noindex`,
+`robots.txt`, ausencia del token en HTML y assets públicos, y estados no encontrados con sus
+dos salidas tras hidratar en Chrome. Las pruebas temporales no forman parte del repositorio.
+
+Las lecturas de libro, estantes y productos de colección usan `React.cache` durante una petición
+para compartir resultados entre metadata y página. La siguiente visita consulta Shopify de nuevo;
+no hay caché persistente ni se modifica el transporte de carrito.
+
+La ficha conserva el precio cuando no hay existencias y solo anuncia una guía disponible si la
+consulta devuelve esa guía. El carrito y el checkout siguen cerrados en modo Shopify.
+
+Para desplegar este modo, Vercel necesita `LAZOX_CATALOG_SOURCE=shopify`,
+`SHOPIFY_STORE_DOMAIN` y `SHOPIFY_STOREFRONT_PRIVATE_TOKEN` (solo servidor).
+Un push no carga las variables que existen únicamente en `.env.local` de otra computadora.
+Mantener `LAZOX_ENABLE_CART=false` y `LAZOX_ENABLE_CHECKOUT=false`.
+
+Production y Preview del proyecto Vercel `lazox-v2` ya tienen las ocho variables del paquete,
+con el token privado marcado como sensible. Root Directory es `.` (raíz real de Git y de
+`package.json`). Se conserva `.env.local` en `local-draft`: las pruebas usan un override
+`LAZOX_CATALOG_SOURCE=shopify`. No se cambiaron las variables de WhatsApp, dominio o factura.
+GitHub permite el push autorizado a `main` con la identidad Git local.
+
+Las secciones siguientes conservan el diagnóstico inicial de la integración como registro
+histórico. La comprobación del despliegue del nuevo SHA se realiza después del push; configurar
+variables no demuestra por sí solo que la nueva versión esté publicada.
+
 > Documento de trabajo de la integración. Explica qué quedó implementado, cómo se enciende y
 > qué debe completarse a mano. Las reglas editoriales de Lazox siguen vigentes: este documento
 > no autoriza publicar catálogo, cambiar precios ni abrir compras.
 
-## 1. Estado actual
+## 1. Estado inicial de la integración (antes del catálogo parcial)
 
 - La integración está **implementada y apagada**. El sitio sigue usando el borrador local.
 - `LAZOX_CATALOG_SOURCE` decide la fuente. Por defecto es `local-draft`.
@@ -343,17 +384,16 @@ No cambie `NEXT_PUBLIC_ENABLE_DUAL_PRICING` sin aprobación legal y contable.
 | Reglas de precio                        | `lib/pricing.ts` (no en el adaptador).                                                    |
 | Variables                               | `.env.example` y este documento.                                                          |
 
-## 12. Lo que falta para probar de verdad
+## 12. Pendientes posteriores al catálogo parcial
 
-- Publicación expresa de Inseparables, las diez colecciones y los metaobjetos en el canal Headless.
-  Las credenciales locales ya responden; el contenido no es visible.
+- Verificar el nuevo despliegue de Vercel después del push autorizado a `main`.
+- Contenido aprobado y licencia de guías; no se crean entradas incompletas para llenar la tienda.
 - Vocabulario aprobado de estados de recomendación.
 - Decisión sobre carrito y checkout reales.
-- Decisión sobre el despliegue del borrador en Vercel.
 
 Las claves técnicas de los tres metaobjetos ya están configuradas (sección 7).
 
-## 13. Verificación ejecutada
+## 13. Verificación inicial (anterior a la publicación en Headless)
 
 Con `LAZOX_CATALOG_SOURCE=local-draft`:
 
