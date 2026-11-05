@@ -11,7 +11,15 @@ import { getBookPriceOptions, isDualPricingEnabled } from "@/lib/pricing";
 import { buttonClasses } from "@/lib/styles";
 import type { Book, PriceOption } from "@/lib/types";
 
-export function BookPurchase({ book, guideSlug }: { book: Book; guideSlug?: string | undefined }) {
+export function BookPurchase({
+  book,
+  guideSlug,
+  purchasesEnabled = true,
+}: {
+  book: Book;
+  guideSlug?: string | undefined;
+  purchasesEnabled?: boolean;
+}) {
   const [selected, setSelected] = useState<PriceOption>("normal");
   const options = getBookPriceOptions(book);
   const showTwoPrices = options.length > 1 && isDualPricingEnabled();
@@ -29,6 +37,7 @@ export function BookPurchase({ book, guideSlug }: { book: Book; guideSlug?: stri
           bookId={book.id}
           priceOption={showTwoPrices ? selected : "normal"}
           dataTour="product-add-cart"
+          enabled={purchasesEnabled}
         />
         {guideSlug && (
           <Link

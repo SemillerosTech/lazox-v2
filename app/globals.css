@@ -165,4 +165,59 @@
       font-size: clamp(0.65rem, 15cqw, 1.5rem);
     }
   }
+
+  /*
+   * Contenido enriquecido que llega de Shopify (descripciones y guías).
+   * El HTML ya viene saneado; aquí solo se ajusta la tipografía.
+   */
+  .rich-text > * + * {
+    margin-top: 1rem;
+  }
+
+  .rich-text h2 {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .rich-text h3,
+  .rich-text h4 {
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+
+  .rich-text ul,
+  .rich-text ol {
+    padding-left: 1.25rem;
+  }
+
+  .rich-text ul {
+    list-style: disc;
+  }
+
+  .rich-text ol {
+    list-style: decimal;
+  }
+
+  .rich-text li + li {
+    margin-top: 0.5rem;
+  }
+
+  .rich-text blockquote {
+    border-left: 4px solid var(--color-brand-yellow);
+    padding-left: 1rem;
+    font-style: italic;
+  }
+
+  .rich-text a {
+    font-weight: 700;
+    color: var(--color-brand-pink);
+    text-decoration: underline;
+  }
+
+  .rich-text strong,
+  .rich-text b {
+    font-weight: 800;
+  }
 }

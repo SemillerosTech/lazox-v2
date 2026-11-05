@@ -64,6 +64,10 @@ recomendaciones inventadas**. Su estado es “selección en preparación”.
 - `noindex, nofollow` global y `robots.txt` bloqueado mientras sea borrador.
 - Recorrido guiado de 16 pasos para la demostración ejecutiva, aislado y activado por variable.
 - Páginas «En preparación» para las rutas que aún no tienen contenido aprobado.
+- Integración con Shopify Storefront preparada y **apagada**: selección explícita de fuente
+  (`local-draft` o `shopify`), transporte GraphQL de servidor, mapeo de productos, colecciones,
+  metacampos y metaobjetos, HTML saneado, carrito cerrado en servidor y diagnóstico interno.
+  Detalle en [`lib/shopify/README.md`](./lib/shopify/README.md).
 - Documentación de catálogo, despliegue y pendientes.
 
 ### Verificaciones realizadas
@@ -77,8 +81,13 @@ recomendaciones inventadas**. Su estado es “selección en preparación”.
 - Checkout, confirmación, caja, sesión sin pedido y estados vacíos.
 - Revisión responsive a 390 px y 1440 px, sin overflow horizontal ni errores de consola.
 - WhatsApp sin número: panel de demostración con el mensaje preparado.
+- Modo `shopify` probado con las credenciales locales: Storefront responde, no hay recursos
+  publicados y las rutas muestran estados vacíos sin datos locales; las compras quedan
+  deshabilitadas. No se creó ningún carrito ni se modificó Shopify.
 
-No existe todavía una suite automatizada de pruebas ni integración real con Shopify.
+No existe todavía una suite automatizada de pruebas ni integración real con Shopify publicada. La
+capa de integración está implementada y se enciende con variables de entorno; ver
+[`lib/shopify/README.md`](./lib/shopify/README.md).
 
 ## 3. Stack
 
@@ -88,6 +97,8 @@ No existe todavía una suite automatizada de pruebas ni integración real con Sh
 - Tailwind CSS v4.
 - [lucide-react](https://lucide.dev) para iconografía.
 - [Driver.js](https://driverjs.com) solo para el recorrido de demostración.
+- [sanitize-html](https://github.com/apostrophecms/sanitize-html) para el HTML enriquecido que llega
+  de Shopify; `server-only` protege los módulos con credenciales.
 - pnpm 11 como gestor de paquetes.
 
 No se usa Lovable, Vite, Bun, TanStack, shadcn/ui ni Radix. No agregue esas dependencias sin una
@@ -113,18 +124,27 @@ abre directamente y conserva su aviso de licencia pendiente.
 
 ## 6. Variables de entorno
 
-| Variable                          | Obligatoria | Uso                                                                                                                      |
-| --------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `NEXT_PUBLIC_WHATSAPP_NUMBER`     | No          | Número oficial con código de país, sin `+` ni espacios. Si está vacío, se muestra el panel de demostración.              |
-| `NEXT_PUBLIC_SITE_URL`            | No          | URL pública para el sitemap y metadatos canónicos.                                                                       |
-| `NEXT_PUBLIC_ENABLE_DEMO_TOUR`    | No          | `"true"` activa el recorrido guiado de demostración. Cualquier otro valor o su ausencia lo desactiva.                    |
-| `NEXT_PUBLIC_ENABLE_DUAL_PRICING` | No          | `"true"` enciende los dos precios en la ficha. Debe quedar apagado para el público hasta la aprobación legal y contable. |
-| `NEXT_PUBLIC_SHOPIFY_INVOICE_URL` | No          | URL del sistema de facturación de Shopify. Si está vacía, «Solicitar factura» lleva a `/factura`.                        |
+| Variable                            | Obligatoria  | Uso                                                                                                                      |
+| ----------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER`       | No           | Número oficial con código de país, sin `+` ni espacios. Si está vacío, se muestra el panel de demostración.              |
+| `NEXT_PUBLIC_SITE_URL`              | No           | URL pública para el sitemap y metadatos canónicos.                                                                       |
+| `NEXT_PUBLIC_ENABLE_DEMO_TOUR`      | No           | `"true"` activa el recorrido guiado de demostración. Cualquier otro valor o su ausencia lo desactiva.                    |
+| `NEXT_PUBLIC_ENABLE_DUAL_PRICING`   | No           | `"true"` enciende los dos precios en la ficha. Debe quedar apagado para el público hasta la aprobación legal y contable. |
+| `NEXT_PUBLIC_SHOPIFY_INVOICE_URL`   | No           | URL del sistema de facturación de Shopify. Si está vacía, «Solicitar factura» lleva a `/factura`.                        |
+| `LAZOX_CATALOG_SOURCE`              | No           | `local-draft` (defecto) o `shopify`. Sin fallback silencioso.                                                            |
+| `SHOPIFY_STORE_DOMAIN`              | Para Shopify | Hostname canónico `*.myshopify.com`.                                                                                     |
+| `SHOPIFY_STOREFRONT_PRIVATE_TOKEN`  | Para Shopify | Token privado de Storefront API. **Solo servidor**, nunca `NEXT_PUBLIC_*`.                                               |
+| `SHOPIFY_STOREFRONT_API_VERSION`    | No           | Formato `YYYY-MM`; por defecto `2026-10`.                                                                                |
+| `LAZOX_ENABLE_CART`                 | No           | `"true"` habilita mutaciones del carrito Shopify. Hoy cerrado.                                                           |
+| `LAZOX_ENABLE_CHECKOUT`             | No           | `"true"` permite devolver `checkoutUrl`. Hoy cerrado.                                                                    |
+| `LAZOX_TRUST_PROXY`                 | No           | `"true"` reenvía la IP del comprador a Shopify desde un proxy de confianza.                                              |
+| `LAZOX_ALLOW_LOCAL_DRAFT_ON_VERCEL` | No           | `"true"` permite desplegar el borrador local. Sin ella, un despliegue con `local-draft` falla.                           |
 
 `NEXT_PUBLIC_*` se incorpora en tiempo de build. Defina esas variables antes de `pnpm dev` o
 `pnpm build`.
 
-No agregue contraseñas, números reales ni secretos a `.env.example`.
+No agregue contraseñas, números reales ni secretos a `.env.example`. La integración completa se
+documenta en [`lib/shopify/README.md`](./lib/shopify/README.md).
 
 ## 7. Rutas
 
@@ -154,6 +174,7 @@ No agregue contraseñas, números reales ni secretos a `.env.example`.
 | `/pedido/confirmacion-demo` | No index | Confirmación de la compra ficticia                                |
 | `/pedido/caja-demo`         | No index | Representación conceptual de la caja                              |
 | `/revision/precios`         | Interna  | Vista de los dos precios con un libro de prueba; no está enlazada |
+| `/revision/catalogo`        | Interna  | Diagnóstico de la fuente de catálogo; no está enlazada            |
 
 Los códigos de estante son estables. Los slugs actuales son `est-01`…`est-10`; solo `est-03`
 tiene un libro. El código vive en la dirección, los datos y la medición, nunca en la vista.
@@ -163,6 +184,7 @@ tiene un libro. El código vive en la dirección, los datos y la medición, nunc
 ```text
 app/
   layout.tsx                  Layout raíz, fuentes y metadata global con noindex
+  actions/cart.ts             Server Actions del carrito Shopify (cerrado, sin UI)
   (site)/
     layout.tsx                CartProvider, WhatsAppProvider y DemoTourMount
     (shell)/
@@ -187,6 +209,7 @@ app/
       privacidad/             Privacidad pendiente
       terminos/               Términos pendientes
       revision/precios/       Vista interna de dos precios
+      revision/catalogo/      Diagnóstico interno de la fuente de catálogo
     guias/[slug]/             Guía pública en borrador, sin shell de tienda
     guias/[slug]/descargar/   Versión imprimible
   sitemap.ts                  Sitemap público, condicionado a NEXT_PUBLIC_SITE_URL
@@ -198,14 +221,16 @@ features/
   demo-tour/                  Recorrido guiado aislado, cargado solo con la flag activa
 lib/
   cart/                       Store, persistencia y pedido de demostración
-  catalog/                    Contrato CatalogRepository y adaptador local
+  catalog/                    Contrato CatalogRepository, adaptador local y Shopify
   data/                       Datos editoriales provisionales
+  shopify/                    Configuración, transporte, consultas, mapeo y carrito
   pricing.ts                  Precio normal, precio libre y 30 % económico
   site-nav.ts                 Navegación del header y columnas del pie
   whatsapp.ts                 URL, mensajes y número
   whatsapp-context.tsx        Mensaje por pantalla y WhatsApp fijo
   types.ts                    Modelos de dominio
 public/                       Logo, robots.txt y favicon
+scripts/check-shopify.mjs     Comprobación de configuración por terminal
 ```
 
 ### Decisiones técnicas relevantes
@@ -213,7 +238,13 @@ public/                       Logo, robots.txt y favicon
 - **Server Components por defecto.** Los componentes cliente se limitan a carrito, formularios,
   menú móvil, WhatsApp, selección de precio, impresión y recorrido guiado.
 - **Datos desacoplados.** Las páginas consumen `CatalogRepository` (`lib/catalog/index.ts`). La
-  implementación activa es `localCatalog`, respaldada por `lib/data/`.
+  fuente se elige con `LAZOX_CATALOG_SOURCE`: `local-draft` (defecto, respaldado por `lib/data/`)
+  o `shopify` (Storefront API). No hay fallback silencioso.
+- **Shopify solo en servidor.** `lib/shopify/*` importa `server-only`; el token privado nunca llega
+  al navegador. El HTML enriquecido se sanea con `sanitize-html` antes de renderizarse.
+- **Carrito de demostración separado.** El carrito real de Shopify está preparado en servidor y
+  cerrado por flags. En modo `shopify`, `CartProvider` se monta deshabilitado y el recorrido de
+  demostración no se carga.
 - **Carrito externo.** `lib/cart/cart-store.ts` usa `useSyncExternalStore` para evitar parpadeos de
   hidratación y compartir estado entre páginas.
 - **Precio en centavos.** `43500` representa `$435 MXN`; nunca use números flotantes para dinero.
@@ -230,11 +261,17 @@ public/                       Logo, robots.txt y favicon
 - `lib/data/guides.ts`: guía construida a partir del contenido aprobado del libro.
 - `lib/data/recommendations.ts`: recomendación interna provisional de `EST-03`.
 - `lib/data/pricing-preview.ts`: libro de prueba para la vista interna de dos precios.
-- `lib/catalog/index.ts`: contrato que deberá cumplir un futuro adaptador de Shopify.
-- `lib/catalog/README.md`: mapeo previsto a Shopify Storefront API.
+- `lib/catalog/index.ts`: selección explícita entre el borrador local y Shopify.
+- `lib/catalog/local-draft.ts`: adaptador del borrador sobre `lib/data/`.
+- `lib/catalog/shopify.ts`: adaptador de Storefront API.
+- `lib/shopify/`: configuración, transporte, consultas, mapeo, diagnóstico y carrito cerrado.
+- `lib/shopify/README.md`: guía de configuración, variables y claves de metaobjetos.
+- `lib/catalog/README.md`: contrato de catálogo y mapeo a Shopify.
 
-No invente sinopsis, preguntas, reglas, libros, autores, ISBN, precios ni recomendaciones. Si falta
-contenido editorial, use un estado vacío o deje el pendiente en `TODO.md`.
+En modo `shopify`, los datos editoriales viven en Shopify: productos, colecciones y metaobjetos.
+En `local-draft`, viven en `lib/data/`. No invente sinopsis, preguntas, reglas, libros, autores,
+ISBN, precios ni recomendaciones. Si falta contenido editorial, use un estado vacío o deje el
+pendiente en `TODO.md`.
 
 ## 10. Carrito y compra de demostración
 
@@ -247,6 +284,9 @@ contenido editorial, use un estado vacío o deje el pendiente en `TODO.md`.
 - El checkout no envía datos a ningún servidor.
 - Formas de pago: tarjeta, billeteras digitales, OXXO y transferencia. Sin meses sin intereses.
 - «Solicitar factura» usa `NEXT_PUBLIC_SHOPIFY_INVOICE_URL` o `/factura`.
+- Este flujo existe **solo** en `local-draft`. En modo `shopify`, `CartProvider` se monta con
+  `enabled={false}`, la ficha muestra «Compra no disponible» y `/carrito` y `/compra/demo` muestran
+  un estado vacío neutral. El carrito real de Shopify está preparado pero cerrado en servidor.
 - La etiqueta obligatoria es:
 
   > Demostración: no se realizará ningún cargo ni se generará un pedido real.
@@ -362,15 +402,33 @@ Estas reglas vienen del brief y de las 27 tarjetas. No deben cambiarse sin aprob
 
 ## 14. Shopify
 
-Shopify **no está integrado todavía**. La preparación actual consiste en:
+La capa de integración con Storefront API está **implementada y apagada**. No hay catálogo
+publicado, no hay compras reales y no se modificó Shopify.
 
-1. Mantener la UI dependiendo de `CatalogRepository`.
-2. Implementar un adaptador de Shopify Storefront API que cumpla el mismo contrato.
-3. Cambiar la exportación `catalog` al nuevo adaptador.
-4. Resolver el carrito y checkout reales, incluyendo líneas, variantes, impuestos, envío y pedidos.
-5. Conectar `NEXT_PUBLIC_SHOPIFY_INVOICE_URL` al sistema de facturación.
+Qué quedó hecho:
 
-El detalle del mapeo está en `lib/catalog/README.md`.
+1. La UI sigue dependiendo de `CatalogRepository`.
+2. Existe el adaptador `lib/catalog/shopify.ts` con productos, colecciones, metacampos y metaobjetos.
+3. La fuente se elige de forma explícita con `LAZOX_CATALOG_SOURCE`; no hay fallback silencioso.
+4. El carrito real está preparado en servidor (`lib/shopify/cart.ts`, `app/actions/cart.ts`) y
+   cerrado por `LAZOX_ENABLE_CART`/`LAZOX_ENABLE_CHECKOUT`.
+5. El HTML enriquecido se sanea con `sanitize-html`; el token privado vive solo en servidor.
+6. Hay diagnóstico interno en `/revision/catalogo` y por terminal con `pnpm shopify:check`.
+7. `NEXT_PUBLIC_SHOPIFY_INVOICE_URL` sigue siendo el enlace de facturación cuando exista.
+
+Qué falta para encenderlo:
+
+1. Credenciales de Storefront y publicación de productos, colecciones y metaobjetos en el canal
+   Headless.
+2. Publicar en el canal Headless los productos, colecciones y metaobjetos. Las claves técnicas de
+   los tres metaobjetos ya están configuradas en `lib/shopify/metaobject-fields.ts`.
+3. Definir el vocabulario de estados de recomendación aprobados.
+4. Conectar la UI del carrito Shopify y decidir si se abre la compra real.
+5. Resolver impuestos, envío, pedidos, correo y facturación reales.
+
+La guía completa de configuración, variables y edición está en
+[`lib/shopify/README.md`](./lib/shopify/README.md). El contrato de catálogo está en
+[`lib/catalog/README.md`](./lib/catalog/README.md).
 
 ## 15. Validación antes de entregar
 
@@ -394,6 +452,10 @@ Además, compruebe manualmente:
 - Las páginas privadas y de demostración tienen `noindex`.
 - Con WhatsApp vacío, los botones muestran el panel de demostración.
 - `/revision/precios` muestra los dos montos y no está enlazada.
+- `/revision/catalogo` responde, declara `noindex` y no está enlazada; en `local-draft` no llama a
+  Shopify.
+- En modo `shopify`, `/carrito`, `/compra/demo` y la ficha muestran la compra deshabilitada.
+- `pnpm shopify:check` valida la configuración sin imprimir el token (solo con credenciales).
 - No aparecen «EST-», «provisional», «pendiente», «Precio único», opiniones ni estrellas.
 
 ## 16. Despliegue en Vercel
@@ -403,9 +465,13 @@ Además, compruebe manualmente:
 3. Defina `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_SITE_URL`,
    `NEXT_PUBLIC_ENABLE_DEMO_TOUR=true` y `NEXT_PUBLIC_SHOPIFY_INVOICE_URL` si corresponde.
 4. Deje `NEXT_PUBLIC_ENABLE_DUAL_PRICING=false` hasta la aprobación legal y contable.
-5. Vercel detecta Next.js y usa `pnpm install` / `pnpm build`. Las variables `NEXT_PUBLIC_*` deben
+5. Elija la fuente con `LAZOX_CATALOG_SOURCE`. Si el borrador local sigue desplegado, agregue
+   `LAZOX_ALLOW_LOCAL_DRAFT_ON_VERCEL=true`; sin esa variable el despliegue con `local-draft` falla
+   a propósito. Si ya usa Shopify, configure también `SHOPIFY_STORE_DOMAIN` y
+   `SHOPIFY_STOREFRONT_PRIVATE_TOKEN` (solo servidor).
+6. Vercel detecta Next.js y usa `pnpm install` / `pnpm build`. Las variables `NEXT_PUBLIC_*` deben
    existir antes del build.
-6. Mientras sea borrador, mantenga `noindex, nofollow` y `robots.txt` bloqueado. Retírelos el día
+7. Mientras sea borrador, mantenga `noindex, nofollow` y `robots.txt` bloqueado. Retírelos el día
    que la tienda abra en `lazox.com`.
 
 ## 17. Estructura del repositorio
@@ -428,6 +494,8 @@ que `HEAD` refleja el estado actual: revise siempre `git status` y el árbol de 
 - [`opencode.jsonc`](./opencode.jsonc): configuración mínima que carga este README y el TODO como
   instrucciones.
 - [`lib/catalog/README.md`](./lib/catalog/README.md): contrato de catálogo y mapeo a Shopify.
+- [`lib/shopify/README.md`](./lib/shopify/README.md): configuración de la integración, variables,
+  claves de metaobjetos y diagnóstico.
 - [`docs/lo-de-adentro-afuera.md`](./docs/lo-de-adentro-afuera.md): hoja de las 27 tarjetas.
 
 Si cambia una ruta, variable, flujo o decisión editorial, actualice esta documentación y `TODO.md`

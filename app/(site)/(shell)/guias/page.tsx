@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { ButtonLink } from "@/components/button-link";
+import { EmptyState } from "@/components/empty-state";
 import { catalog } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Guías",
   description: "Guías para conversar en familia después de leer.",
 };
+
+export const dynamic = "force-dynamic";
 
 export default async function GuidesPage() {
   const guides = await catalog.listGuides();
@@ -23,25 +27,40 @@ export default async function GuidesPage() {
         </p>
       </header>
 
-      <ul className="mt-8 space-y-4">
-        {guides.map((guide) => (
-          <li key={guide.slug}>
-            <Link
-              href={`/guias/${guide.slug}`}
-              className="block rounded-3xl border-2 border-border bg-background p-6 transition hover:border-brand-pink hover:shadow-lg"
-            >
-              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-brand-pink">
-                Guía para conversar en familia
-              </p>
-              <h2 className="mt-2 text-2xl font-extrabold text-brand-ink">{guide.title}</h2>
-              <p className="mt-2 text-sm font-semibold text-muted-foreground">{guide.author}</p>
-              <p className="mt-4 font-display text-xl font-extrabold leading-tight text-brand-ink">
-                {guide.conversationQuestion}
-              </p>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {guides.length === 0 ? (
+        <div className="mt-8">
+          <EmptyState
+            title="Todavía no hay guías publicadas"
+            description="Mientras llega la primera guía, puede explorar los libros y sus preguntas."
+          >
+            <ButtonLink href="/estantes">Ver los libros</ButtonLink>
+          </EmptyState>
+        </div>
+      ) : (
+        <ul className="mt-8 space-y-4">
+          {guides.map((guide) => (
+            <li key={guide.slug}>
+              <Link
+                href={`/guias/${guide.slug}`}
+                className="block rounded-3xl border-2 border-border bg-background p-6 transition hover:border-brand-pink hover:shadow-lg"
+              >
+                <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-brand-pink">
+                  Guía para conversar en familia
+                </p>
+                <h2 className="mt-2 text-2xl font-extrabold text-brand-ink">{guide.title}</h2>
+                {guide.author && (
+                  <p className="mt-2 text-sm font-semibold text-muted-foreground">{guide.author}</p>
+                )}
+                {guide.conversationQuestion && (
+                  <p className="mt-4 font-display text-xl font-extrabold leading-tight text-brand-ink">
+                    {guide.conversationQuestion}
+                  </p>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

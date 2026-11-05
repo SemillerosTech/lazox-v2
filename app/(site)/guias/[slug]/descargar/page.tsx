@@ -6,12 +6,7 @@ import { Logo } from "@/components/logo";
 import { PrintGuideButton } from "@/components/print-guide-button";
 import { catalog } from "@/lib/catalog";
 
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-  const guides = await catalog.listGuides();
-  return guides.map((guide) => ({ slug: guide.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -29,6 +24,16 @@ export async function generateMetadata({
     title: `Descargar la guía de ${guide.title}`,
     robots: { index: false, follow: false },
   };
+}
+
+function RichBlock({ html }: { html: string }) {
+  return (
+    <div
+      className="rich-text mt-2 text-lg leading-relaxed text-brand-ink"
+      // HTML saneado en el adaptador de servidor.
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }
 
 export default async function GuideDownloadPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -67,26 +72,63 @@ export default async function GuideDownloadPage({ params }: { params: Promise<{ 
               Guía para conversar en familia
             </p>
             <h1 className="mt-2 text-4xl font-extrabold text-brand-ink">{guide.title}</h1>
-            <p className="mt-2 text-lg font-semibold text-brand-ink">{guide.author}</p>
-            <p className="text-sm text-muted-foreground">Ilustraciones de {guide.illustrator}</p>
+            {guide.author && (
+              <p className="mt-2 text-lg font-semibold text-brand-ink">{guide.author}</p>
+            )}
+            {guide.illustrator && (
+              <p className="text-sm text-muted-foreground">Ilustraciones de {guide.illustrator}</p>
+            )}
+            {guide.ageSuggestion && (
+              <p className="mt-2 text-sm font-semibold text-muted-foreground">
+                {guide.ageSuggestion}
+              </p>
+            )}
           </header>
 
-          <section>
-            <h2 className="font-display text-2xl font-extrabold text-brand-ink">Sinopsis</h2>
-            <p className="mt-2 text-lg leading-relaxed text-brand-ink">{guide.synopsis}</p>
-          </section>
+          {guide.introHtml && (
+            <section>
+              <RichBlock html={guide.introHtml} />
+            </section>
+          )}
 
-          <section>
-            <h2 className="font-display text-2xl font-extrabold text-brand-ink">
-              Pregunta para conversar
-            </h2>
-            <p className="mt-2 font-display text-2xl font-extrabold leading-tight text-brand-pink">
-              {guide.conversationQuestion}
-            </p>
-            <p className="mt-3 rounded-2xl bg-brand-mint px-4 py-3 text-sm font-semibold text-brand-ink print:bg-transparent print:p-0">
-              {guide.conversationRule}
-            </p>
-          </section>
+          {guide.synopsis && (
+            <section>
+              <h2 className="font-display text-2xl font-extrabold text-brand-ink">Sinopsis</h2>
+              <p className="mt-2 text-lg leading-relaxed text-brand-ink">{guide.synopsis}</p>
+            </section>
+          )}
+
+          {guide.conversationQuestion && (
+            <section>
+              <h2 className="font-display text-2xl font-extrabold text-brand-ink">
+                Pregunta para conversar
+              </h2>
+              <p className="mt-2 font-display text-2xl font-extrabold leading-tight text-brand-pink">
+                {guide.conversationQuestion}
+              </p>
+              {guide.conversationRule && (
+                <p className="mt-3 rounded-2xl bg-brand-mint px-4 py-3 text-sm font-semibold text-brand-ink print:bg-transparent print:p-0">
+                  {guide.conversationRule}
+                </p>
+              )}
+            </section>
+          )}
+
+          {guide.contentHtml && (
+            <section>
+              <h2 className="font-display text-2xl font-extrabold text-brand-ink">
+                Para conversar
+              </h2>
+              <RichBlock html={guide.contentHtml} />
+            </section>
+          )}
+
+          {guide.questionsHtml && (
+            <section>
+              <h2 className="font-display text-2xl font-extrabold text-brand-ink">Preguntas</h2>
+              <RichBlock html={guide.questionsHtml} />
+            </section>
+          )}
 
           {guide.sections.map((section, index) => (
             <section key={section.heading ?? index}>
@@ -114,6 +156,7 @@ export default async function GuideDownloadPage({ params }: { params: Promise<{ 
 
           <footer className="border-t border-border pt-6">
             <p className="text-sm font-semibold text-brand-ink">{guide.license.attribution}</p>
+            {guide.credits && <p className="mt-2 text-sm text-muted-foreground">{guide.credits}</p>}
           </footer>
         </article>
       </main>

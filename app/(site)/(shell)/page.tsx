@@ -16,21 +16,7 @@ export const metadata: Metadata = {
   description: "Cada uno viene con preguntas para conversarlo en casa.",
 };
 
-const ENTRY_SHELVES = [
-  { href: "/estantes/est-10", name: "solo quiere reírse", code: "EST-10" },
-  { href: "/estantes/est-09", name: "todavía no lee, pero ya lee", code: "EST-09" },
-];
-
-const OTHER_SHELVES = [
-  { href: "/estantes/est-06", name: "está empezando de nuevo", code: "EST-06" },
-  { href: "/estantes/est-04", name: "tiene miedo de algo", code: "EST-04" },
-  { href: "/estantes/est-08", name: "pregunta cosas grandes", code: "EST-08" },
-  { href: "/estantes/est-03", name: "teme perder lo que ama", code: "EST-03" },
-  { href: "/estantes/est-02", name: "cree que no puede", code: "EST-02" },
-  { href: "/estantes/est-05", name: "se siente distinto a todos", code: "EST-05" },
-  { href: "/estantes/est-07", name: "vio algo que no le pareció justo", code: "EST-07" },
-  { href: "/estantes/est-01", name: "siente que solo sabe romper", code: "EST-01" },
-];
+export const dynamic = "force-dynamic";
 
 const BOX_ITEMS = [
   "El libro.",
@@ -40,7 +26,18 @@ const BOX_ITEMS = [
 ];
 
 export default async function Home() {
-  const book = await catalog.getBook("inseparables");
+  const [book, shelves, homepage] = await Promise.all([
+    catalog.getBook("inseparables"),
+    catalog.listShelves(),
+    catalog.getHomepageContent(),
+  ]);
+
+  const entryShelves = shelves.slice(0, 2);
+  const otherShelves = shelves.slice(2);
+  const shelfPrefix = homepage?.shelfPrefix ?? "Para el niño o la niña que…";
+  const bookShelf = book?.shelfCode
+    ? shelves.find((shelf) => shelf.code === book.shelfCode)
+    : undefined;
 
   return (
     <>
@@ -98,15 +95,13 @@ export default async function Home() {
         >
           ¿Por dónde empezamos?
         </h2>
-        <p className="mt-3 text-center text-sm font-bold text-muted-foreground">
-          Para el niño o la niña que…
-        </p>
+        <p className="mt-3 text-center text-sm font-bold text-muted-foreground">{shelfPrefix}</p>
 
         <div className="mx-auto mt-8 grid max-w-4xl gap-5 sm:grid-cols-2">
-          {ENTRY_SHELVES.map((shelf) => (
+          {entryShelves.map((shelf) => (
             <ShelfDoor
-              key={shelf.href}
-              href={shelf.href}
+              key={shelf.slug}
+              href={`/estantes/${shelf.slug}`}
               name={shelf.name}
               shelfCode={shelf.code}
             />
@@ -131,12 +126,12 @@ export default async function Home() {
           <h2 id="otros-estantes" className="sr-only">
             Los otros estantes
           </h2>
-          <p className="text-sm font-bold text-muted-foreground">Para el niño o la niña que…</p>
+          <p className="text-sm font-bold text-muted-foreground">{shelfPrefix}</p>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {OTHER_SHELVES.map((shelf) => (
+            {otherShelves.map((shelf) => (
               <ShelfDoor
-                key={shelf.href}
-                href={shelf.href}
+                key={shelf.slug}
+                href={`/estantes/${shelf.slug}`}
                 name={shelf.name}
                 shelfCode={shelf.code}
                 size="small"
@@ -159,22 +154,28 @@ export default async function Home() {
               >
                 {book.title}
               </h2>
-              <p className="mt-3 font-display text-2xl font-extrabold leading-tight text-brand-ink">
-                {book.conversationQuestion}
-              </p>
+              {book.conversationQuestion && (
+                <p className="mt-3 font-display text-2xl font-extrabold leading-tight text-brand-ink">
+                  {book.conversationQuestion}
+                </p>
+              )}
               <p className="mt-2 font-semibold text-muted-foreground">
-                {book.author} · Ilustraciones de {book.illustrator}
+                {[book.author, book.illustrator ? `Ilustraciones de ${book.illustrator}` : null]
+                  .filter(Boolean)
+                  .join(" · ")}
               </p>
               <div className="mt-5 flex flex-wrap items-center gap-4">
                 <Price price={book.price} />
                 <ButtonLink href={`/libros/${book.slug}`}>Conocer el libro</ButtonLink>
               </div>
-              <Link
-                href={`/estantes/${book.shelfCode.toLowerCase()}`}
-                className="mt-4 inline-block text-sm font-bold text-brand-pink hover:underline"
-              >
-                Para el niño o la niña que teme perder lo que ama
-              </Link>
+              {bookShelf && (
+                <Link
+                  href={`/estantes/${bookShelf.slug}`}
+                  className="mt-4 inline-block text-sm font-bold text-brand-pink hover:underline"
+                >
+                  {shelfPrefix.replace(/…$/, "")} {bookShelf.name}
+                </Link>
+              )}
             </div>
           </div>
         </section>

@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     "Diez estantes para encontrar el libro que acompaña lo que un niño o una niña está viviendo.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function ShelvesPage() {
   const shelves = await catalog.listShelves();
 

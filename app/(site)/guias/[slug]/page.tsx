@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Download } from "lucide-react";
+import { Download, Printer } from "lucide-react";
 
 import { Logo } from "@/components/logo";
-import { catalog } from "@/lib/catalog";
+import { catalog, catalogSource } from "@/lib/catalog";
 import { buttonClasses } from "@/lib/styles";
 
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-  const guides = await catalog.listGuides();
-  return guides.map((guide) => ({ slug: guide.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -39,7 +34,10 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
 
   if (!guide) notFound();
 
-  const book = await catalog.getBook(guide.bookSlug);
+  const book = guide.bookSlug ? await catalog.getBook(guide.bookSlug) : null;
+  const downloadHref = guide.downloadUrl;
+  const printableHref = `/guias/${guide.slug}/descargar`;
+  const canPrint = catalogSource === "local-draft" || Boolean(guide.contentHtml);
 
   return (
     <div className="min-h-screen bg-background text-brand-ink">
@@ -62,9 +60,15 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           Guía para conversar en familia
         </p>
         <h1 className="mt-2 text-4xl font-extrabold text-brand-ink md:text-5xl">{guide.title}</h1>
-        <p className="mt-3 text-lg font-semibold text-brand-ink">{guide.author}</p>
-        <p className="text-sm text-muted-foreground">Ilustraciones de {guide.illustrator}</p>
-        <p className="mt-3 text-sm font-semibold text-muted-foreground">{guide.ageSuggestion}</p>
+        {guide.author && (
+          <p className="mt-3 text-lg font-semibold text-brand-ink">{guide.author}</p>
+        )}
+        {guide.illustrator && (
+          <p className="text-sm text-muted-foreground">Ilustraciones de {guide.illustrator}</p>
+        )}
+        {guide.ageSuggestion && (
+          <p className="mt-3 text-sm font-semibold text-muted-foreground">{guide.ageSuggestion}</p>
+        )}
 
         <div
           role="note"
@@ -74,25 +78,75 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           A.C. todavía debe confirmarse como firmada antes de publicarla.
         </div>
 
-        <article className="mt-10 space-y-10" data-tour="guide-content">
-          <section aria-labelledby="guide-synopsis">
-            <h2 id="guide-synopsis" className="font-display text-3xl font-extrabold text-brand-ink">
-              Sinopsis
-            </h2>
-            <p className="mt-3 text-lg leading-relaxed text-brand-ink">{guide.synopsis}</p>
-          </section>
+        {guide.introHtml && (
+          <div
+            className="rich-text mt-8 text-lg leading-relaxed text-brand-ink"
+            // HTML saneado en el adaptador de servidor.
+            dangerouslySetInnerHTML={{ __html: guide.introHtml }}
+          />
+        )}
 
-          <section aria-labelledby="guide-question">
-            <h2 id="guide-question" className="font-display text-3xl font-extrabold text-brand-ink">
-              Pregunta para conversar
-            </h2>
-            <p className="mt-3 font-display text-2xl font-extrabold leading-tight text-brand-pink md:text-3xl">
-              {guide.conversationQuestion}
-            </p>
-            <p className="mt-4 rounded-2xl bg-brand-mint px-4 py-3 text-sm font-semibold text-brand-ink">
-              {guide.conversationRule}
-            </p>
-          </section>
+        <article className="mt-10 space-y-10" data-tour="guide-content">
+          {guide.synopsis && (
+            <section aria-labelledby="guide-synopsis">
+              <h2
+                id="guide-synopsis"
+                className="font-display text-3xl font-extrabold text-brand-ink"
+              >
+                Sinopsis
+              </h2>
+              <p className="mt-3 text-lg leading-relaxed text-brand-ink">{guide.synopsis}</p>
+            </section>
+          )}
+
+          {guide.conversationQuestion && (
+            <section aria-labelledby="guide-question">
+              <h2
+                id="guide-question"
+                className="font-display text-3xl font-extrabold text-brand-ink"
+              >
+                Pregunta para conversar
+              </h2>
+              <p className="mt-3 font-display text-2xl font-extrabold leading-tight text-brand-pink md:text-3xl">
+                {guide.conversationQuestion}
+              </p>
+              {guide.conversationRule && (
+                <p className="mt-4 rounded-2xl bg-brand-mint px-4 py-3 text-sm font-semibold text-brand-ink">
+                  {guide.conversationRule}
+                </p>
+              )}
+            </section>
+          )}
+
+          {guide.contentHtml && (
+            <section aria-labelledby="guide-content">
+              <h2
+                id="guide-content"
+                className="font-display text-3xl font-extrabold text-brand-ink"
+              >
+                Para conversar
+              </h2>
+              <div
+                className="rich-text mt-3 text-lg leading-relaxed text-brand-ink"
+                dangerouslySetInnerHTML={{ __html: guide.contentHtml }}
+              />
+            </section>
+          )}
+
+          {guide.questionsHtml && (
+            <section aria-labelledby="guide-questions">
+              <h2
+                id="guide-questions"
+                className="font-display text-3xl font-extrabold text-brand-ink"
+              >
+                Preguntas
+              </h2>
+              <div
+                className="rich-text mt-3 text-lg leading-relaxed text-brand-ink"
+                dangerouslySetInnerHTML={{ __html: guide.questionsHtml }}
+              />
+            </section>
+          )}
 
           {guide.sections.map((section, index) => (
             <section key={section.heading ?? index} aria-label={section.heading}>
@@ -122,18 +176,31 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           </section>
         </article>
 
-        <div className="mt-10">
-          <Link
-            href={`/guias/${guide.slug}/descargar`}
-            className={buttonClasses("outline", "w-full sm:w-auto")}
-          >
-            <Download className="h-4 w-4" aria-hidden="true" />
-            Descargar la guía · sin registro
-          </Link>
-        </div>
+        {(downloadHref || canPrint) && (
+          <div className="mt-10">
+            <Link
+              href={downloadHref ?? printableHref}
+              {...(downloadHref ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className={buttonClasses("outline", "w-full sm:w-auto")}
+            >
+              {downloadHref ? (
+                <>
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  Descargar la guía
+                </>
+              ) : (
+                <>
+                  <Printer className="h-4 w-4" aria-hidden="true" />
+                  Imprimir la guía · sin registro
+                </>
+              )}
+            </Link>
+          </div>
+        )}
 
         <footer className="mt-12 border-t border-border pt-6">
           <p className="text-sm font-semibold text-brand-ink">{guide.license.attribution}</p>
+          {guide.credits && <p className="mt-2 text-sm text-muted-foreground">{guide.credits}</p>}
         </footer>
       </main>
     </div>

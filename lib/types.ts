@@ -1,4 +1,5 @@
-export type Currency = "MXN";
+/** Código ISO de la moneda que entrega Shopify (MXN en esta tienda). */
+export type Currency = string;
 
 export type PriceOption = "normal" | "economic";
 
@@ -10,12 +11,20 @@ export interface BookPrice {
   currency: Currency;
 }
 
+export interface BookNeighbor {
+  title: string;
+  slug: string;
+  reason?: string;
+}
+
 export interface Book {
+  /** Identificador estable de la aplicación. Hoy coincide con el slug. */
   id: string;
   slug: string;
   title: string;
   author: string;
   illustrator?: string;
+  translator?: string;
   publisher?: string;
   year?: number;
   isbn?: string;
@@ -28,14 +37,29 @@ export interface Book {
   printedAt?: string;
   availability?: BookAvailability;
   ageSuggestion: string;
-  shelfCode: string;
+  shelfCode?: string;
   synopsis: string;
-  forWhom: string;
+  /** HTML enriquecido y ya saneado, cuando la fuente lo entrega. */
+  descriptionHtml?: string;
+  forWhom?: string;
   conversationQuestion: string;
-  conversationRule: string;
+  conversationRule?: string;
   coverImage?: string;
+  coverImageAlt?: string;
   status: "published" | "provisional";
   guideSlug?: string;
+  sku?: string;
+  shopifyProductId?: string;
+  /** ID de la variante de Shopify. Nunca se usa el ID del producto como merchandiseId. */
+  variantId?: string;
+  variantTitle?: string;
+  weightGrams?: number | null;
+  inventoryQuantity?: number | null;
+  priceCondition?: string;
+  bookStatus?: string;
+  colophonOrigin?: string;
+  neighborBook?: BookNeighbor;
+  neighborShelfCodes?: string[];
 }
 
 export interface Shelf {
@@ -44,7 +68,9 @@ export interface Shelf {
   name: string;
   order: number;
   line?: string;
+  descriptionHtml?: string;
   bookSlugs: string[];
+  shopifyCollectionId?: string;
 }
 
 export interface GuideSection {
@@ -60,13 +86,21 @@ export interface Guide {
   illustrator?: string;
   ageSuggestion: string;
   synopsis: string;
+  /** HTML enriquecido y ya saneado, cuando la fuente lo entrega. */
+  descriptionHtml?: string;
+  introHtml?: string;
+  contentHtml?: string;
+  questionsHtml?: string;
+  downloadUrl?: string;
+  credits?: string;
   conversationQuestion: string;
-  conversationRule: string;
+  conversationRule?: string;
   sections: GuideSection[];
   license: {
     attribution: string;
     status: "pending" | "confirmed";
   };
+  status?: string;
 }
 
 export interface EditorialRecommendation {
@@ -74,6 +108,19 @@ export interface EditorialRecommendation {
   bookSlug: string;
   status: "provisional" | "confirmed";
   note: string;
+  location?: string;
+  approvedBy?: string;
+}
+
+export interface HomepageContent {
+  id: string;
+  title?: string;
+  message?: string;
+  contentHtml?: string;
+  order?: number;
+  editorialStatus?: string;
+  /** Prefijo editorial que acompaña a los estantes. */
+  shelfPrefix: string;
 }
 
 export interface CartItem {

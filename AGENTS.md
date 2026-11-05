@@ -11,7 +11,9 @@ Antes de cambiar comportamiento, contenido o arquitectura, lea:
 2. [`TODO.md`](./TODO.md): pendientes editoriales, técnicos y de lanzamiento.
 3. [`lib/catalog/README.md`](./lib/catalog/README.md): contrato de catálogo y preparación para
    Shopify.
-4. [`docs/lo-de-adentro-afuera.md`](./docs/lo-de-adentro-afuera.md): hoja de Gero con las 27
+4. [`lib/shopify/README.md`](./lib/shopify/README.md): integración con Storefront API, variables,
+   claves de metaobjetos y diagnóstico.
+5. [`docs/lo-de-adentro-afuera.md`](./docs/lo-de-adentro-afuera.md): hoja de Gero con las 27
    tarjetas de la fachada. Es el documento de referencia de esta entrega; no lo edite.
 
 Si la documentación y el código no coinciden, investigue antes de asumir que uno de los dos está
@@ -25,8 +27,9 @@ equivocado. No invente requisitos ni contenido editorial.
   independiente. No es parte de la aplicación, no se despliega con ella y no debe mezclarse.
 - **Estado de Git:** el último commit puede ser el snapshot anterior a la migración. Revise
   `git status`; no asuma que `HEAD` contiene el estado actual.
-- **Alcance actual:** borrador navegable de la tienda Lazox. No hay Shopify, checkout real, correo
-  real, pedidos reales, cuentas de usuario ni búsqueda.
+- **Alcance actual:** borrador navegable de la tienda Lazox. La integración con Shopify Storefront
+  está implementada pero apagada (`LAZOX_CATALOG_SOURCE=local-draft`). No hay catálogo publicado,
+  checkout real, correo real, pedidos reales, cuentas de usuario ni búsqueda.
 - **Borrador cerrado a buscadores:** el layout raíz declara `noindex, nofollow` y
   `public/robots.txt` bloquea el rastreo. Esa protección se retira el día que la tienda abra en
   `lazox.com`.
@@ -37,6 +40,9 @@ equivocado. No invente requisitos ni contenido editorial.
   un lote es de precio libre y `NEXT_PUBLIC_ENABLE_DUAL_PRICING=true`. Para el público debe quedar
   apagado hasta que abogado y contador cierren la cuenta del 30 %. La vista interna de revisión es
   `/revision/precios`.
+- **Catálogo con fuente explícita:** `LAZOX_CATALOG_SOURCE` vale `local-draft` o `shopify`. El
+  borrador local es el defecto. La integración con Storefront está implementada y apagada; el
+  carrito real está cerrado por flags de servidor. Diagnóstico interno: `/revision/catalogo`.
 - **WhatsApp sin número oficial:** con `NEXT_PUBLIC_WHATSAPP_NUMBER` vacío se muestra un panel de
   demostración con el mensaje preparado. No se abre WhatsApp ni se envía nada.
 - **Stack:** Next.js 16 App Router, React 19, TypeScript estricto, Tailwind CSS v4, pnpm 11.
@@ -56,6 +62,7 @@ pnpm lint
 pnpm typecheck
 pnpm format
 pnpm format:check
+pnpm shopify:check
 ```
 
 Antes de dar por terminado un cambio, ejecute como mínimo:
@@ -81,6 +88,7 @@ capturas, en documentación o en un commit. `.env.local` no se versiona.
 ```text
 app/
   layout.tsx                  Metadata global, fuentes y layout raíz
+  actions/cart.ts             Server Actions del carrito Shopify (cerrado, sin UI)
   (site)/
     layout.tsx                CartProvider, WhatsAppProvider y DemoTourMount
     (shell)/                  Shell público: header, footer y WhatsApp fijo
@@ -104,6 +112,7 @@ app/
       privacidad/             Aviso de privacidad (borrador legal)
       terminos/               Términos (borrador legal)
       revision/precios/       Vista interna de los dos precios
+      revision/catalogo/      Diagnóstico interno de la fuente de catálogo
     guias/[slug]/             Guía pública en borrador, sin shell de tienda
     guias/[slug]/descargar/   Versión imprimible de la guía
   sitemap.ts                  Sitemap público, condicionado a NEXT_PUBLIC_SITE_URL
@@ -111,14 +120,16 @@ components/                   UI compartida
 features/demo-tour/           Recorrido guiado aislado, activado por variable
 lib/
   cart/                       Store, localStorage y pedido de demostración
-  catalog/                    CatalogRepository y adaptador local
+  catalog/                    CatalogRepository, adaptador local y adaptador Shopify
   data/                       Datos editoriales provisionales
+  shopify/                    Configuración, transporte, consultas, mapeo y carrito
   pricing.ts                  Precio normal, precio libre y 30 % económico
   site-nav.ts                 Navegación del header y columnas del pie
   whatsapp.ts                 URL, mensajes y número
   whatsapp-context.tsx        Mensaje por pantalla y WhatsApp fijo
   types.ts                    Modelos de dominio
 public/                       Assets estáticos, robots.txt y favicon
+scripts/check-shopify.mjs     Comprobación de configuración por terminal
 ```
 
 No existe `proxy.ts` ni módulo de acceso a la guía. La guía es pública en este borrador.
@@ -171,8 +182,24 @@ Estas reglas son parte del brief y de las 27 tarjetas. No las cambie sin aprobac
 - Los precios se guardan en **centavos**. No use `number` flotante para dinero.
 - Las páginas deben consumir `CatalogRepository` (`lib/catalog/index.ts`). No agregue nuevos
   imports directos de `lib/data/` en páginas o componentes.
-  - Excepción conocida: `lib/cart/cart-context.tsx` resuelve el libro para mostrar el carrito con
-    `findBookBySlug`. Si integra Shopify, primero desacople ese punto.
+  - Excepción conocida: `lib/data/pricing-preview.ts` alimenta la vista interna
+    `/revision/precios`. El carrito ya no importa `lib/data/`: recibe los libros desde el layout
+    de servidor.
+- **Fuente de catálogo:** `LAZOX_CATALOG_SOURCE` es `local-draft` o `shopify`. No agregue fallback
+  silencioso ni datos locales encubiertos en modo `shopify`.
+- **Shopify solo en servidor:** los módulos de `lib/shopify/` importan `server-only`. El token
+  privado nunca usa `NEXT_PUBLIC_*` ni se imprime. No importe esos módulos desde componentes
+  cliente.
+- **Carrito Shopify cerrado:** `LAZOX_ENABLE_CART` y `LAZOX_ENABLE_CHECKOUT` se validan en
+  servidor. Un botón deshabilitado no es barrera suficiente. No abra compras sin decisión
+  explícita.
+- **HTML enriquecido:** todo HTML que venga de Shopify pasa por `sanitize-html`; no agregue
+  `dangerouslySetInnerHTML` con contenido sin sanear.
+- **Metacampos y metaobjetos:** las claves faltantes son `null`, no se inventan. El mapa vive en
+  `lib/shopify/metaobject-fields.ts` y se contrasta en `/revision/catalogo` o con
+  `pnpm shopify:check`.
+- **Rutas de catálogo dinámicas:** no agregue `generateStaticParams` ni `dynamicParams = false` a
+  las rutas que dependen de `catalog`; declaran `force-dynamic`.
 - La selección de precio viaja al carrito como `priceOption` (`normal` o `economic`). El carrito
   vuelve a validar que el libro sea de precio libre y que la opción esté encendida.
 - Conserve los tokens `brand-*` y el lenguaje visual en `app/globals.css`.
@@ -236,6 +263,12 @@ Además del build:
 - En ninguna página visible aparecen «EST-», «provisional», «pendiente», «Precio único»,
   opiniones, estrellas ni descuentos.
 - `/revision/precios` muestra los dos montos y no está enlazada desde el menú ni el sitemap.
+- `/revision/catalogo` responde con `noindex` y no está enlazada. En `local-draft` no llama a
+  Shopify; en `shopify` reporta conexión, estantes y claves sin exponer el token.
+- En modo `shopify` sin carrito conectado, la ficha muestra «Compra no disponible» y `/carrito` y
+  `/compra/demo` muestran su estado neutral.
+- `pnpm shopify:check` corre sin credenciales solo para reportar variables faltantes; con
+  credenciales, no imprime el token.
 
 ## 10. Dónde está lo pendiente
 

@@ -51,10 +51,28 @@ const PAYMENT_METHODS: Array<{
 ];
 
 export function CheckoutDemo() {
-  const { items, subtotal, isHydrated, clear } = useCart();
+  const { items, subtotal, isHydrated, isEnabled, clear } = useCart();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const invoiceUrl = process.env.NEXT_PUBLIC_SHOPIFY_INVOICE_URL || "/factura";
+
+  if (!isEnabled) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-10 md:py-16">
+        <h1 className="text-4xl font-extrabold text-brand-ink md:text-5xl">
+          Compra de demostración
+        </h1>
+        <div className="mt-8">
+          <EmptyState
+            title="La compra en línea no está disponible en esta vista."
+            description="El catálogo sí se puede recorrer. Los libros y sus guías siguen abiertos para consultarlos."
+          >
+            <ButtonLink href="/estantes">Ver los libros</ButtonLink>
+          </EmptyState>
+        </div>
+      </div>
+    );
+  }
 
   if (!isHydrated) {
     return (

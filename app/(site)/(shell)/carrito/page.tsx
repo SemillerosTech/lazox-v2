@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// La fuente de catálogo y el flag de compra se leen en servidor.
+export const dynamic = "force-dynamic";
+
 export default function CartRoute() {
   return <CartPage />;
 }

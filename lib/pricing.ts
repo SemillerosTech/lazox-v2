@@ -23,7 +23,10 @@ function monthsSince(isoDate: string, now: Date): number {
 }
 
 export function isPriceLibre(book: Book, now = new Date()): boolean {
+  // La fuente Shopify entrega una condición explícita. Si existe, se respeta y
+  // no se calcula la regla de 36 meses por fecha.
   if (book.priceMode === "libre") return true;
+  if (book.priceMode === "single") return false;
   if (!book.printedAt) return false;
 
   return monthsSince(book.printedAt, now) >= PRICE_LIBRE_MONTHS;

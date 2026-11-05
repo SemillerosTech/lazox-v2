@@ -13,11 +13,13 @@ export function AddToCartButton({
   priceOption = "normal",
   className = "",
   dataTour,
+  enabled = true,
 }: {
   bookId: string;
   priceOption?: PriceOption;
   className?: string;
   dataTour?: string | undefined;
+  enabled?: boolean;
 }) {
   const { add } = useCart();
   const [added, setAdded] = useState(false);
@@ -27,6 +29,24 @@ export function AddToCartButton({
     const timeout = window.setTimeout(() => setAdded(false), 3000);
     return () => window.clearTimeout(timeout);
   }, [added]);
+
+  if (!enabled) {
+    return (
+      <div className={`flex flex-col gap-2 ${className}`}>
+        <button
+          type="button"
+          disabled
+          data-tour={dataTour}
+          className={buttonClasses("primary", "w-full cursor-not-allowed opacity-60")}
+        >
+          <ShoppingBag className="h-4 w-4" aria-hidden="true" /> Compra no disponible
+        </button>
+        <p className="min-h-5 text-center text-xs font-semibold text-muted-foreground">
+          La compra en línea no está disponible en esta vista.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>

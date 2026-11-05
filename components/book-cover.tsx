@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import type { Book } from "@/lib/types";
 
-type BookCoverBook = Pick<Book, "title" | "author" | "coverImage">;
+type BookCoverBook = Pick<Book, "title" | "author" | "coverImage" | "coverImageAlt">;
 
 export function BookCover({
   book,
@@ -20,7 +20,7 @@ export function BookCover({
       >
         <Image
           src={book.coverImage}
-          alt={`Portada de ${book.title}`}
+          alt={book.coverImageAlt ?? `Portada de ${book.title}`}
           fill
           sizes={sizes}
           className="object-cover"

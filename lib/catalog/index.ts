@@ -1,68 +1,19 @@
-import type { Book, EditorialRecommendation, Guide, Shelf } from "@/lib/types";
+import { getCatalogSource } from "@/lib/shopify/config";
 
-import { books, findBookBySlug } from "../data/books";
-import { findGuideByBookSlug, findGuideBySlug, guides } from "../data/guides";
-import { findRecommendation } from "../data/recommendations";
-import { findShelfBySlug, shelves } from "../data/shelves";
+import { localDraftCatalog } from "./local-draft";
+import { shopifyCatalog } from "./shopify";
+import type { CatalogRepository } from "./types";
+
+export type { CatalogRepository } from "./types";
 
 /**
- * Contrato de catálogo independiente de la fuente de datos.
+ * Selección explícita de la fuente de catálogo.
  *
- * Hoy se resuelve con datos locales; mañana puede implementarse con
- * Shopify Storefront API sin cambiar las páginas ni los componentes.
+ * No hay fallback silencioso: si LAZOX_CATALOG_SOURCE=shopify y la
+ * configuración falta, el error se propaga. Si la fuente es local-draft, los
+ * datos viven en lib/data y la compra es de demostración.
  */
-export interface CatalogRepository {
-  listBooks(): Promise<Book[]>;
-  listGuides(): Promise<Guide[]>;
-  listShelves(): Promise<Shelf[]>;
-  getShelf(slug: string): Promise<Shelf | null>;
-  listBooksByShelf(shelfCode: string): Promise<Book[]>;
-  getBook(slug: string): Promise<Book | null>;
-  getGuide(slug: string): Promise<Guide | null>;
-  getGuideForBook(bookSlug: string): Promise<Guide | null>;
-  getRecommendation(shelfCode: string): Promise<EditorialRecommendation | null>;
-}
+export const catalogSource = getCatalogSource();
 
-export const localCatalog: CatalogRepository = {
-  async listBooks() {
-    return [...books];
-  },
-
-  async listGuides() {
-    return [...guides];
-  },
-
-  async listShelves() {
-    return [...shelves].sort((a, b) => a.order - b.order);
-  },
-
-  async getShelf(slug) {
-    return findShelfBySlug(slug) ?? null;
-  },
-
-  async listBooksByShelf(shelfCode) {
-    const shelf = shelves.find((item) => item.code === shelfCode);
-    if (!shelf) return [];
-    return shelf.bookSlugs
-      .map((slug) => findBookBySlug(slug))
-      .filter((book): book is Book => book !== undefined);
-  },
-
-  async getBook(slug) {
-    return findBookBySlug(slug) ?? null;
-  },
-
-  async getGuide(slug) {
-    return findGuideBySlug(slug) ?? null;
-  },
-
-  async getGuideForBook(bookSlug) {
-    return findGuideByBookSlug(bookSlug) ?? null;
-  },
-
-  async getRecommendation(shelfCode) {
-    return findRecommendation(shelfCode) ?? null;
-  },
-};
-
-export const catalog: CatalogRepository = localCatalog;
+export const catalog: CatalogRepository =
+  catalogSource === "shopify" ? shopifyCatalog : localDraftCatalog;

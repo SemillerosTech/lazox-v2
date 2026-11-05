@@ -9,7 +9,23 @@ import { OrderSummary } from "@/components/order-summary";
 import { useCart } from "@/lib/cart/cart-context";
 
 export function CartPage() {
-  const { items, subtotal, isHydrated, setQuantity, remove } = useCart();
+  const { items, subtotal, isHydrated, isEnabled, setQuantity, remove } = useCart();
+
+  if (!isEnabled) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-10 md:py-16">
+        <h1 className="text-4xl font-extrabold text-brand-ink md:text-5xl">Su carrito</h1>
+        <div className="mt-8">
+          <EmptyState
+            title="La compra en línea no está disponible en esta vista."
+            description="El catálogo sí se puede recorrer. Los libros y sus guías siguen abiertos para consultarlos."
+          >
+            <ButtonLink href="/estantes">Ver los libros</ButtonLink>
+          </EmptyState>
+        </div>
+      </div>
+    );
+  }
 
   if (!isHydrated) {
     return (

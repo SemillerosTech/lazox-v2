@@ -5,7 +5,7 @@
 > **Regla:** no marque una tarea como completada sin verificarla. Al cerrar una tarea, agregue una
 > nota breve con la fecha y la evidencia (comando, ruta o aprobación recibida).
 
-**Última actualización:** 27 de octubre de 2026.
+**Última actualización:** 5 de noviembre de 2026.
 
 ## Resumen
 
@@ -14,7 +14,8 @@
 - **Listo para producción:** no.
 - **Principal bloqueo:** aprobación editorial, licencia de la guía, assets oficiales, número de
   WhatsApp, facturación/Shopify y flujos reales de compra y contacto.
-- **Deuda técnica principal:** no hay pruebas automatizadas, CI ni integración de Shopify.
+- **Deuda técnica principal:** no hay pruebas automatizadas, CI ni prueba funcional de Shopify
+  contra la tienda real. La integración está implementada y apagada.
 
 ## Registro de esta entrega (27 de octubre de 2026)
 
@@ -77,6 +78,39 @@ puntos marcados abajo.
       recorrido abajo a la izquierda y WhatsApp abajo a la derecha.
 - [x] Recorrido de 16 pasos: inicia en la portada, muestra «1 de 16» y cierra sin dejar overlays.
       Evidencia: Chrome sin interfaz.
+
+## Registro de la integración Shopify (5 de noviembre de 2026)
+
+Implementado en el árbol de trabajo. La conexión de Storefront responde con las credenciales
+locales, pero la prueba funcional de catálogo y carrito queda pendiente porque el contenido no está
+publicado en el canal Headless y no se creó ningún carrito real.
+
+- [x] Selección explícita de fuente `local-draft`/`shopify` sin fallback silencioso. Evidencia:
+      `lib/catalog/index.ts`, `lib/shopify/config.ts`.
+- [x] Guardia de despliegue: `local-draft` falla en Vercel salvo
+      `LAZOX_ALLOW_LOCAL_DRAFT_ON_VERCEL=true`. Evidencia: `lib/shopify/config.ts`.
+- [x] Transporte GraphQL de servidor con timeout, errores saneados y token privado fuera del
+      bundle cliente. Evidencia: `lib/shopify/client.ts`, `lib/shopify/request.ts`.
+- [x] Consultas paginadas de colecciones, productos, guías, recomendaciones y portada. Evidencia:
+      `lib/shopify/queries.ts`, `lib/catalog/shopify.ts`.
+- [x] Mapeo de metacampos y metaobjetos; claves faltantes en `null`, sin inventarlas. Evidencia:
+      `lib/shopify/mappers.ts`, `lib/shopify/metaobject-fields.ts`.
+- [x] HTML enriquecido saneado con `sanitize-html` y estilos `.rich-text`. Evidencia:
+      `lib/shopify/mappers.ts`, `app/globals.css`.
+- [x] Carrito Shopify preparado y cerrado por flags de servidor; cookie `httpOnly`. Evidencia:
+      `lib/shopify/cart.ts`, `app/actions/cart.ts`.
+- [x] Modo `shopify` deshabilita compras en ficha, carrito y checkout; el recorrido de demostración
+      no se monta. Evidencia: `app/(site)/layout.tsx`, `components/book-purchase.tsx`,
+      `app/(site)/(shell)/carrito/cart-page.tsx`,
+      `app/(site)/(shell)/compra/demo/checkout-demo.tsx`.
+- [x] Diagnóstico interno `/revision/catalogo` y comando `pnpm shopify:check`. Evidencia:
+      `app/(site)/(shell)/revision/catalogo/page.tsx`, `scripts/check-shopify.mjs`.
+- [x] Prueba de humo en modo `shopify` con las credenciales locales: Storefront responde, no
+      devuelve recursos publicados, las rutas muestran estados vacíos y las compras quedan
+      deshabilitadas. No se creó ningún carrito ni se modificó Shopify.
+- [x] `.env.example` documentado sin secretos y documentación de la integración. Evidencia:
+      `.env.example`, `lib/shopify/README.md`, `lib/catalog/README.md`.
+- [x] `format:check`, `lint`, `typecheck` y `build` sin errores el 5 de noviembre de 2026.
 
 ## P0 — Contenido y aprobaciones editoriales
 
@@ -142,8 +176,28 @@ puntos marcados abajo.
       números de ejemplo en el repositorio.
 - [ ] **Definir el sistema de facturación.** Mientras no exista Shopify, «Solicitar factura» lleva
       a `/factura`; configurar `NEXT_PUBLIC_SHOPIFY_INVOICE_URL` cuando esté disponible.
-- [ ] **Definir si se usará Shopify.** Si sí, implementar el adaptador de Storefront API y el flujo
-      real de carrito, checkout y pedidos.
+- [ ] **Publicar el catálogo en el canal Headless de Shopify.** Inseparables, las diez colecciones
+      y los metaobjetos deben estar visibles para Storefront API. Sin esta autorización, el modo
+      `shopify` devuelve estados vacíos. No publicar sin aprobación del propietario.
+- [ ] **Confirmar las credenciales de Shopify en cada entorno.**
+      `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_PRIVATE_TOKEN` y
+      `SHOPIFY_STOREFRONT_API_VERSION` ya responden en local (el token vive en `.env.local`, no se
+      versiona). Falta cargarlas en Vercel si el despliegue usará Shopify.
+- [x] **Completar las claves de metaobjetos** en `lib/shopify/metaobject-fields.ts`. Verificadas
+      el 5 de noviembre de 2026: `guia_de_lectura` (10 claves), `recomendacion_lazox` (6) y
+      `contenido_de_portada_lazox` (7). Falta contrastarlas contra entradas publicadas en
+      `/revision/catalogo` cuando existan.
+- [ ] **Definir el vocabulario de estados aprobados** de recomendaciones en
+      `APPROVED_RECOMMENDATION_STATUSES`. Hoy está vacío y la tienda no muestra recomendaciones.
+- [ ] **Conectar la UI del carrito Shopify.** Las Server Actions existen, pero ningún botón las
+      llama. Falta estado de carrito en cliente, revalidación, errores y prueba real.
+- [ ] **Decidir si se abren `LAZOX_ENABLE_CART` y `LAZOX_ENABLE_CHECKOUT`.** Solo después de una
+      decisión explícita, con impuestos, envío, pedidos, correo y facturación resueltos.
+- [ ] **Decidir el despliegue del borrador.** Si `local-draft` sigue en Vercel, definir
+      `LAZOX_ALLOW_LOCAL_DRAFT_ON_VERCEL=true`; si ya se usa Shopify, configurar la fuente y las
+      credenciales. Sin esa decisión, un despliegue con `local-draft` falla a propósito.
+- [ ] **Definir la estrategia de caché e invalidación** para producción. Hoy el transporte usa
+      `cache: "no-store"`; no hay webhooks ni app administrativa.
 - [ ] **Reemplazar el checkout ficticio** por el flujo real aprobado, o mantenerlo claramente
       aislado como demostración.
 - [ ] **Configurar correo transaccional** y notificaciones de pedido si habrá compra real.
@@ -188,8 +242,10 @@ puntos marcados abajo.
   - E2E para la guía pública y su versión imprimible;
   - E2E para el panel de WhatsApp sin número.
 - [ ] **Configurar CI** con `pnpm format:check`, `pnpm lint`, `pnpm typecheck` y `pnpm build`.
-- [ ] **Desacoplar el carrito de `lib/data/`.** `lib/cart/cart-context.tsx` usa `findBookBySlug`
-      directamente para mostrar las líneas. Resolverlo antes de integrar Shopify.
+- [ ] **Agregar pruebas de la integración Shopify.** Prioridad: selección de fuente y guardia de
+      despliegue; conversión de dinero a centavos; faltantes de metacampos; HTML saneado; flags de
+      carrito/checkout en servidor; errores GraphQL con HTTP 200 sin filtrar secretos. No llamar a
+      Shopify desde pruebas unitarias ni crear carritos reales.
 - [ ] **Auditoría de accesibilidad** con teclado, foco visible, lector de pantalla y contraste.
 - [ ] **Auditoría Lighthouse** de rendimiento, accesibilidad, SEO y buenas prácticas.
 - [ ] **Revisión de seguridad** de la guía pública, la exposición de variables y los flujos de
@@ -238,6 +294,13 @@ Estas decisiones bloquean varias tareas. No las resuelva por su cuenta:
 - Los dos precios están construidos; encenderlos sin aprobación legal y contable es un riesgo.
 - Sin número de WhatsApp, los botones muestran un panel de demostración y no abren un chat.
 - El carrito vive solo en el navegador; no se sincroniza entre dispositivos.
+- La integración Shopify está sin probar contra la tienda real: las credenciales locales responden,
+  pero falta publicar el contenido en el canal Headless. Las claves de metaobjetos ya están
+  verificadas, pero no se pudieron contrastar contra entradas reales.
+- El carrito de Shopify está preparado pero sin UI; encenderlo sin conectar las acciones no habilita
+  una compra real.
+- Un despliegue con `local-draft` falla salvo `LAZOX_ALLOW_LOCAL_DRAFT_ON_VERCEL=true`; es
+  intencional, pero hay que decidirlo antes de desplegar.
 - La confirmación usa `sessionStorage`; no hay pedido ni correo real.
 - La portada, L1 y C1 son placeholders; no hay arte oficial.
 - El sitemap queda vacío si `NEXT_PUBLIC_SITE_URL` no se define en build.

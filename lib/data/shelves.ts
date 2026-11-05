@@ -7,6 +7,7 @@ import type { Shelf } from "@/lib/types";
 export const shelves: Shelf[] = [
   {
     code: "EST-10",
+    shopifyCollectionId: "gid://shopify/Collection/544768983259",
     slug: "est-10",
     name: "solo quiere reírse",
     order: 1,
@@ -14,6 +15,7 @@ export const shelves: Shelf[] = [
   },
   {
     code: "EST-09",
+    shopifyCollectionId: "gid://shopify/Collection/544769048795",
     slug: "est-09",
     name: "todavía no lee, pero ya lee",
     order: 2,
@@ -21,6 +23,7 @@ export const shelves: Shelf[] = [
   },
   {
     code: "EST-06",
+    shopifyCollectionId: "gid://shopify/Collection/544769081563",
     slug: "est-06",
     name: "está empezando de nuevo",
     order: 3,
@@ -28,6 +31,7 @@ export const shelves: Shelf[] = [
   },
   {
     code: "EST-04",
+    shopifyCollectionId: "gid://shopify/Collection/544769114331",
     slug: "est-04",
     name: "tiene miedo de algo",
     order: 4,
@@ -35,6 +39,7 @@ export const shelves: Shelf[] = [
   },
   {
     code: "EST-08",
+    shopifyCollectionId: "gid://shopify/Collection/544769147099",
     slug: "est-08",
     name: "pregunta cosas grandes",
     order: 5,
@@ -42,6 +47,7 @@ export const shelves: Shelf[] = [
   },
   {
     code: "EST-03",
+    shopifyCollectionId: "gid://shopify/Collection/544769179867",
     slug: "est-03",
     name: "teme perder lo que ama",
     order: 6,
@@ -49,6 +55,7 @@ export const shelves: Shelf[] = [
   },
   {
     code: "EST-02",
+    shopifyCollectionId: "gid://shopify/Collection/544769212635",
     slug: "est-02",
     name: "cree que no puede",
     order: 7,
@@ -56,6 +63,7 @@ export const shelves: Shelf[] = [
   },
   {
     code: "EST-05",
+    shopifyCollectionId: "gid://shopify/Collection/544769245403",
     slug: "est-05",
     name: "se siente distinto a todos",
     order: 8,
@@ -63,6 +71,7 @@ export const shelves: Shelf[] = [
   },
   {
     code: "EST-07",
+    shopifyCollectionId: "gid://shopify/Collection/544769278171",
     slug: "est-07",
     name: "vio algo que no le pareció justo",
     order: 9,
@@ -70,6 +79,7 @@ export const shelves: Shelf[] = [
   },
   {
     code: "EST-01",
+    shopifyCollectionId: "gid://shopify/Collection/544769310939",
     slug: "est-01",
     name: "siente que solo sabe romper",
     order: 10,

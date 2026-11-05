@@ -2,7 +2,8 @@ export function formatPrice(amountInCents: number, currency = "MXN"): string {
   const formatted = new Intl.NumberFormat("es-MX", {
     style: "currency",
     currency,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(amountInCents / 100);
 
   return `${formatted} ${currency}`;

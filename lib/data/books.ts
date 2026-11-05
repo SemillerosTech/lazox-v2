@@ -12,11 +12,16 @@ export const books: Book[] = [
     isbn: "978-84-943046-0-6",
     pages: 48,
     coverImage: "/images/portada-inseparables.jpg",
+    coverImageAlt: "Portada de Inseparables, de Mar Pavón.",
     price: { amount: 43500, currency: "MXN" },
     priceMode: "single",
     availability: "available",
     ageSuggestion: "Hacia los 7 años en adelante, y por toda la familia",
     shelfCode: "EST-03",
+    sku: "TRAM-INS-002",
+    shopifyProductId: "gid://shopify/Product/10385515708635",
+    weightGrams: null,
+    inventoryQuantity: null,
     synopsis:
       "Dos zapatillas que iban juntas a todas partes, hasta que un día algo las separa. Una de ellas cuenta el viaje: el camino lejos de casa, la espera, las manos desconocidas. Un cuento sobre lo que la guerra les quita a los más pequeños, y sobre lo que todavía puede llegar cuando ya casi nadie lo esperaba.",
     forWhom:

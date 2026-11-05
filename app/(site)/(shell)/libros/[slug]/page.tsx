@@ -8,17 +8,12 @@ import { BookPurchase } from "@/components/book-purchase";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ButtonLink } from "@/components/button-link";
 import { WhatsAppInquiry } from "@/components/whatsapp-inquiry";
-import { catalog } from "@/lib/catalog";
+import { catalog, catalogSource } from "@/lib/catalog";
 import { isBookOutOfStock } from "@/lib/pricing";
 import { getBookWhatsAppMessage } from "@/lib/whatsapp";
 import { PageWhatsApp } from "@/lib/whatsapp-context";
 
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-  const books = await catalog.listBooks();
-  return books.map((book) => ({ slug: book.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -30,15 +25,29 @@ export async function generateMetadata({
 
   if (!book) return { title: "Libro no encontrado" };
 
+  const description = book.conversationQuestion || book.synopsis;
+
   return {
     title: `${book.title} · Lazox`,
-    description: book.conversationQuestion,
+    description,
     openGraph: {
       title: `${book.title} · Lazox`,
-      description: book.conversationQuestion,
+      description,
       type: "book",
     },
   };
+}
+
+function illustrationLine(book: {
+  illustrator?: string;
+  publisher?: string;
+  translator?: string;
+}): string | null {
+  const parts: string[] = [];
+  if (book.illustrator) parts.push(`Ilustraciones de ${book.illustrator}`);
+  if (book.translator) parts.push(`Traducción de ${book.translator}`);
+  if (book.publisher) parts.push(book.publisher);
+  return parts.length > 0 ? parts.join(" · ") : null;
 }
 
 export default async function BookPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -48,9 +57,10 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
   if (!book) notFound();
 
   const guide = await catalog.getGuideForBook(book.slug);
-  const shelfSlug = book.shelfCode.toLowerCase();
-  const shelf = await catalog.getShelf(shelfSlug);
+  const shelfSlug = book.shelfCode?.toLowerCase();
+  const shelf = shelfSlug ? await catalog.getShelf(shelfSlug) : null;
   const outOfStock = isBookOutOfStock(book);
+  const credits = illustrationLine(book);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 md:py-14">
@@ -59,7 +69,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
         items={[
           { label: "Inicio", href: "/" },
           { label: "Libros", href: "/estantes" },
-          ...(shelf ? [{ label: shelf.name, href: `/estantes/${shelfSlug}` }] : []),
+          ...(shelf ? [{ label: shelf.name, href: `/estantes/${shelf.slug}` }] : []),
           { label: book.title },
         ]}
       />
@@ -71,10 +81,10 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
 
         <div data-tour="product-info">
           <h1 className="text-4xl font-extrabold text-brand-ink md:text-5xl">{book.title}</h1>
-          <p className="mt-3 text-lg font-semibold text-brand-ink">{book.author}</p>
-          <p className="text-sm text-muted-foreground">
-            Ilustraciones de {book.illustrator} · {book.publisher}
-          </p>
+          {book.author && (
+            <p className="mt-3 text-lg font-semibold text-brand-ink">{book.author}</p>
+          )}
+          {credits && <p className="text-sm text-muted-foreground">{credits}</p>}
         </div>
       </div>
 
@@ -82,34 +92,48 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
         <h2 id="synopsis-title" className="font-display text-3xl font-extrabold text-brand-ink">
           De qué trata
         </h2>
-        <p className="mt-3 max-w-prose text-lg leading-relaxed text-brand-ink">{book.synopsis}</p>
+        {book.descriptionHtml ? (
+          <div
+            className="rich-text mt-3 max-w-prose text-lg leading-relaxed text-brand-ink"
+            // El HTML llega saneado desde el adaptador de servidor (sanitize-html).
+            dangerouslySetInnerHTML={{ __html: book.descriptionHtml }}
+          />
+        ) : (
+          <p className="mt-3 max-w-prose text-lg leading-relaxed text-brand-ink">{book.synopsis}</p>
+        )}
       </section>
 
-      <section aria-labelledby="for-whom-title" className="mt-8">
-        <h2 id="for-whom-title" className="font-display text-3xl font-extrabold text-brand-ink">
-          Para el niño o la niña que…
-        </h2>
-        <p className="mt-3 max-w-prose text-lg leading-relaxed text-brand-ink">{book.forWhom}</p>
-      </section>
+      {book.forWhom && (
+        <section aria-labelledby="for-whom-title" className="mt-8">
+          <h2 id="for-whom-title" className="font-display text-3xl font-extrabold text-brand-ink">
+            Para el niño o la niña que…
+          </h2>
+          <p className="mt-3 max-w-prose text-lg leading-relaxed text-brand-ink">{book.forWhom}</p>
+        </section>
+      )}
 
-      <section
-        aria-labelledby="conversation-title"
-        data-tour="product-question"
-        className="mt-10 rounded-[2.5rem] bg-brand-yellow p-6 md:p-10"
-      >
-        <h2
-          id="conversation-title"
-          className="text-sm font-extrabold uppercase tracking-[0.2em] text-brand-ink/70"
+      {book.conversationQuestion && (
+        <section
+          aria-labelledby="conversation-title"
+          data-tour="product-question"
+          className="mt-10 rounded-[2.5rem] bg-brand-yellow p-6 md:p-10"
         >
-          La pregunta que trae
-        </h2>
-        <p className="mt-3 max-w-3xl font-display text-3xl font-extrabold leading-tight text-brand-ink md:text-4xl">
-          {book.conversationQuestion}
-        </p>
-        <p className="mt-5 max-w-2xl text-sm font-semibold text-brand-ink/80">
-          {book.conversationRule}
-        </p>
-      </section>
+          <h2
+            id="conversation-title"
+            className="text-sm font-extrabold uppercase tracking-[0.2em] text-brand-ink/70"
+          >
+            La pregunta que trae
+          </h2>
+          <p className="mt-3 max-w-3xl font-display text-3xl font-extrabold leading-tight text-brand-ink md:text-4xl">
+            {book.conversationQuestion}
+          </p>
+          {book.conversationRule && (
+            <p className="mt-5 max-w-2xl text-sm font-semibold text-brand-ink/80">
+              {book.conversationRule}
+            </p>
+          )}
+        </section>
+      )}
 
       {outOfStock ? (
         <section className="mt-8 rounded-3xl border-2 border-border bg-background p-6">
@@ -130,7 +154,11 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
           </div>
         </section>
       ) : (
-        <BookPurchase book={book} guideSlug={guide?.slug} />
+        <BookPurchase
+          book={book}
+          guideSlug={guide?.slug}
+          purchasesEnabled={catalogSource === "local-draft"}
+        />
       )}
 
       <div className="mt-3" data-tour="product-whatsapp">
@@ -147,7 +175,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
           </h2>
           <div className="mt-3 flex flex-wrap gap-2">
             <Link
-              href={`/estantes/${shelfSlug}`}
+              href={`/estantes/${shelf.slug}`}
               className="inline-flex items-center gap-2 rounded-full border-2 border-border px-4 py-2 text-sm font-bold text-brand-ink transition hover:border-brand-pink hover:text-brand-pink"
             >
               Para el niño o la niña que {shelf.name}
@@ -157,10 +185,12 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
       )}
 
       <dl className="mt-10 grid gap-x-6 gap-y-3 border-t border-border pt-6 text-sm sm:grid-cols-2">
-        <div>
-          <dt className="font-bold text-muted-foreground">Edad sugerida</dt>
-          <dd>{book.ageSuggestion}</dd>
-        </div>
+        {book.ageSuggestion && (
+          <div>
+            <dt className="font-bold text-muted-foreground">Edad sugerida</dt>
+            <dd>{book.ageSuggestion}</dd>
+          </div>
+        )}
         {typeof book.pages === "number" && (
           <div>
             <dt className="font-bold text-muted-foreground">Páginas</dt>
@@ -179,18 +209,24 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
             <dd>{book.binding}</dd>
           </div>
         )}
-        <div>
-          <dt className="font-bold text-muted-foreground">Editorial</dt>
-          <dd>{book.publisher}</dd>
-        </div>
-        <div>
-          <dt className="font-bold text-muted-foreground">Año</dt>
-          <dd>{book.year}</dd>
-        </div>
-        <div>
-          <dt className="font-bold text-muted-foreground">ISBN</dt>
-          <dd>{book.isbn}</dd>
-        </div>
+        {book.publisher && (
+          <div>
+            <dt className="font-bold text-muted-foreground">Editorial</dt>
+            <dd>{book.publisher}</dd>
+          </div>
+        )}
+        {book.year !== undefined && (
+          <div>
+            <dt className="font-bold text-muted-foreground">Año</dt>
+            <dd>{book.year}</dd>
+          </div>
+        )}
+        {book.isbn && (
+          <div>
+            <dt className="font-bold text-muted-foreground">ISBN</dt>
+            <dd>{book.isbn}</dd>
+          </div>
+        )}
       </dl>
 
       <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-border pt-6">

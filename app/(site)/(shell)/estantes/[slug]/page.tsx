@@ -10,12 +10,7 @@ import { PageWhatsApp } from "@/lib/whatsapp-context";
 import { catalog } from "@/lib/catalog";
 import { getShelfWhatsAppMessage } from "@/lib/whatsapp";
 
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-  const shelves = await catalog.listShelves();
-  return shelves.map((shelf) => ({ slug: shelf.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
