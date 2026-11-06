@@ -2,6 +2,8 @@ import "server-only";
 
 import sanitizeHtml from "sanitize-html";
 
+import { getGuideSlug } from "./guide-slugs";
+
 import type {
   Book,
   BookPrice,
@@ -199,7 +201,6 @@ export function mapProduct(product: ShopifyProduct): Book | null {
   const fields = metafieldMap(product.metafields);
   const descriptionHtml = sanitizeRichHtml(product.descriptionHtml);
   const shelfCode = normalizeShelfCode(readText(fields, "estante_principal_codigo"));
-  const guideReference = readReference(fields, "guia");
   const neighborReference = readReference(fields, "libro_vecino");
   const neighborReason = readText(fields, "libro_vecino_motivo");
   const neighborShelfCodes = readReferences(fields, "estantes_vecinos")
@@ -231,9 +232,6 @@ export function mapProduct(product: ShopifyProduct): Book | null {
       ? { conversationRule: readText(fields, "regla_conversacion") }
       : {}),
     ...imageFields(product.featuredImage),
-    ...(guideReference?.__typename === "Metaobject" && guideReference.handle
-      ? { guideSlug: guideReference.handle }
-      : {}),
     ...(variant.sku ? { sku: variant.sku } : {}),
     shopifyProductId: product.id,
     variantId: variant.id,
@@ -303,12 +301,13 @@ function guideField(
 }
 
 export function mapGuide(metaobject: ShopifyMetaobject, book?: Book | null): Guide | null {
+  const slug = getGuideSlug(metaobject);
   const title = guideField(metaobject.fields, GUIDE_FIELD_KEYS.title);
   const contentHtml = sanitizeRichHtml(guideField(metaobject.fields, GUIDE_FIELD_KEYS.content));
   const introHtml = sanitizeRichHtml(guideField(metaobject.fields, GUIDE_FIELD_KEYS.intro));
   const questionsHtml = sanitizeRichHtml(guideField(metaobject.fields, GUIDE_FIELD_KEYS.questions));
 
-  if (!title && !contentHtml) return null;
+  if (!slug || (!title && !contentHtml)) return null;
 
   const bookReference = GUIDE_FIELD_KEYS.book
     ? metaobject.fields.find((field) => field.key === GUIDE_FIELD_KEYS.book)?.reference
@@ -323,8 +322,7 @@ export function mapGuide(metaobject: ShopifyMetaobject, book?: Book | null): Gui
   const downloadUrl = referenceUrl(downloadReference);
 
   return {
-    slug:
-      guideField(metaobject.fields, GUIDE_FIELD_KEYS.slug) ?? metaobject.handle ?? book?.slug ?? "",
+    slug,
     bookSlug,
     title: title ?? book?.title ?? "",
     author: book?.author ?? "",

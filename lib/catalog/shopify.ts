@@ -6,6 +6,7 @@ import type { Book, EditorialRecommendation, Guide, HomepageContent, Shelf } fro
 
 import { shopifyFetch, type ShopifyFetchOptions } from "@/lib/shopify/client";
 import { getBuyerIp } from "@/lib/shopify/request";
+import { indexGuideSlugs, isGuideSlug } from "@/lib/shopify/guide-slugs";
 import {
   mapGuide,
   mapHomepageContent,
@@ -13,10 +14,12 @@ import {
   mapRecommendation,
   mapShelf,
 } from "@/lib/shopify/mappers";
-import { APPROVED_RECOMMENDATION_STATUSES } from "@/lib/shopify/metaobject-fields";
+import {
+  APPROVED_RECOMMENDATION_STATUSES,
+  METAOBJECT_TYPES,
+} from "@/lib/shopify/metaobject-fields";
 import {
   COLLECTION_PRODUCTS_QUERY,
-  GUIDE_BY_HANDLE_QUERY,
   GUIDES_QUERY,
   HOMEPAGE_CONTENT_QUERY,
   PRODUCT_BY_HANDLE_QUERY,
@@ -45,6 +48,7 @@ async function read<T>(options: ShopifyFetchOptions): Promise<T> {
 
 async function collectConnection<T>(
   load: (after: string | null) => Promise<ShopifyConnection<T>>,
+  requireComplete = false,
 ): Promise<T[]> {
   const items: T[] = [];
   let after: string | null = null;
@@ -55,7 +59,12 @@ async function collectConnection<T>(
     const pageInfo: ShopifyPageInfo = connection.pageInfo;
     if (!pageInfo.hasNextPage) break;
     after = pageInfo.endCursor;
-    if (!after) break;
+    if (!after || page === MAX_PAGES - 1) {
+      if (requireComplete) {
+        throw new Error("No se pudo verificar el índice completo de guías.");
+      }
+      break;
+    }
   }
 
   return items;
@@ -111,19 +120,22 @@ const fetchCollectionProducts = cache(async (collectionId: string): Promise<Book
     ),
   );
 
-  return products.map(mapProduct).filter((book): book is Book => book !== null);
+  const books = await Promise.all(products.map(mapProductWithGuide));
+  return books.filter((book): book is Book => book !== null);
 });
 
 async function fetchAllMetaobjects(
   query: string,
   operationName: string,
 ): Promise<ShopifyMetaobject[]> {
-  return collectConnection<ShopifyMetaobject>((after) =>
-    read<{ metaobjects: ShopifyConnection<ShopifyMetaobject> }>({
-      query,
-      variables: { first: PAGE_SIZE, after },
-      operationName,
-    }).then((data) => data.metaobjects),
+  return collectConnection<ShopifyMetaobject>(
+    (after) =>
+      read<{ metaobjects: ShopifyConnection<ShopifyMetaobject> }>({
+        query,
+        variables: { first: PAGE_SIZE, after },
+        operationName,
+      }).then((data) => data.metaobjects),
+    operationName === "Guides",
   );
 }
 
@@ -136,13 +148,31 @@ function dedupeBooks(books: Book[]): Book[] {
   });
 }
 
-function dedupeGuides(guides: Guide[]): Guide[] {
-  const seen = new Set<string>();
-  return guides.filter((guide) => {
-    if (!guide.slug || seen.has(guide.slug)) return false;
-    seen.add(guide.slug);
-    return true;
-  });
+// El índice solo dura esta petición. La ruta pública usa slug; las referencias
+// de producto se resuelven por ID, nunca suponiendo que slug === handle.
+const fetchGuideIndex = cache(async () =>
+  indexGuideSlugs(await fetchAllMetaobjects(GUIDES_QUERY, "Guides")),
+);
+
+async function mapProductWithGuide(product: ShopifyProduct): Promise<Book | null> {
+  const book = mapProduct(product);
+  if (!book) return null;
+
+  const reference = product.metafields.find(
+    (field) => field?.namespace === "lazox" && field.key === "guia",
+  )?.reference;
+  if (
+    reference?.__typename !== "Metaobject" ||
+    reference.type !== METAOBJECT_TYPES.guide ||
+    !reference.id
+  ) {
+    return book;
+  }
+
+  const index = await fetchGuideIndex();
+  const metaobject = index.byId.get(reference.id);
+  const guide = metaobject ? mapGuide(metaobject) : null;
+  return guide ? { ...book, guideSlug: guide.slug } : book;
 }
 
 async function mapGuideWithBook(metaobject: ShopifyMetaobject): Promise<Guide | null> {
@@ -160,7 +190,7 @@ const shopifyGetBook = cache(async (slug: string): Promise<Book | null> => {
     operationName: "ProductByHandle",
   });
 
-  return data.product ? mapProduct(data.product) : null;
+  return data.product ? mapProductWithGuide(data.product) : null;
 });
 
 export const shopifyCatalog: CatalogRepository = {
@@ -175,10 +205,10 @@ export const shopifyCatalog: CatalogRepository = {
   },
 
   async listGuides() {
-    const metaobjects = await fetchAllMetaobjects(GUIDES_QUERY, "Guides");
-    const guides = await Promise.all(metaobjects.map(mapGuideWithBook));
+    const index = await fetchGuideIndex();
+    const guides = await Promise.all([...index.bySlug.values()].map(mapGuideWithBook));
 
-    return dedupeGuides(guides.filter((guide): guide is Guide => guide !== null));
+    return guides.filter((guide): guide is Guide => guide !== null);
   },
 
   async listShelves() {
@@ -208,14 +238,10 @@ export const shopifyCatalog: CatalogRepository = {
   },
 
   async getGuide(slug) {
-    const data = await read<{ metaobject: ShopifyMetaobject | null }>({
-      query: GUIDE_BY_HANDLE_QUERY,
-      variables: { handle: slug },
-      operationName: "GuideByHandle",
-    });
-
-    if (!data.metaobject) return null;
-    return mapGuideWithBook(data.metaobject);
+    if (!isGuideSlug(slug)) return null;
+    const index = await fetchGuideIndex();
+    const metaobject = index.bySlug.get(slug);
+    return metaobject ? mapGuideWithBook(metaobject) : null;
   },
 
   async getGuideForBook(bookSlug) {

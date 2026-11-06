@@ -159,8 +159,8 @@ en lugar de leer `lib/data/` en el navegador.
 | `listBooksByShelf(code)`                          | `collection.products` paginado con los metacampos del producto.                                                 |
 | `listBooks()`                                     | Productos de todas las colecciones de estante, sin duplicados por handle.                                       |
 | `getBook(slug)`                                   | `product(handle:)` con sus metacampos.                                                                          |
-| `listGuides()` / `getGuide(slug)`                 | Metaobjetos `guia_de_lectura`. Enriquecidos con el libro relacionado.                                           |
-| `getGuideForBook(bookSlug)`                       | `lazox.guia` del producto → handle del metaobjeto.                                                              |
+| `listGuides()` / `getGuide(slug)`                 | Metaobjetos `guia_de_lectura` indexados por el campo público `slug`, no por handle. Enriquecidos con el libro.  |
+| `getGuideForBook(bookSlug)`                       | `lazox.guia` del producto → ID del metaobjeto visible → su `slug` público validado.                             |
 | `getApprovedRecommendations(location, shelfCode)` | Metaobjetos `recomendacion_lazox`. Hoy devuelve `[]` a propósito.                                               |
 | `getHomepageContent()`                            | Metaobjeto `contenido_de_portada_lazox` con handle `global`.                                                    |
 
@@ -266,6 +266,39 @@ de 2026.
 | `archivo_descargable`  | `download`          |
 | `estado_editorial`     | `status`            |
 | `creditos`             | `credits`           |
+
+#### Slug público y referencia del libro
+
+- La URL `/guias/[slug]` y su versión `/descargar` usan exclusivamente el campo **`slug`** de la
+  guía. El `handle` nativo de Shopify puede ser distinto; no se usa como alternativa silenciosa.
+- Use letras latinas minúsculas sin acentos, números y guiones entre palabras, por ejemplo
+  `guia-publica`. Se recortan espacios exteriores, pero no se inventa ni transforma un slug.
+- El producto sigue enlazado con **`lazox.guia`**, una referencia al metaobjeto. El adaptador
+  resuelve su ID y devuelve `Book.guideSlug` con el mismo slug público que utiliza el listado.
+- Las entradas con slug ausente, inválido o duplicado se excluyen del listado y de los enlaces.
+  En una colisión se excluyen **todas** las guías afectadas; no se elige arbitrariamente la
+  primera. Pedir esa dirección devuelve el estado no encontrado, sin mostrar datos locales.
+- `/revision/catalogo` informa los handles afectados y el motivo para corregirlos en Shopify.
+  El diagnóstico no modifica datos. No es necesario que el equipo sincronice slug y handle.
+- El índice se comparte con `React.cache` solo dentro de una petición. Se leen las páginas de
+  guías visibles hasta completar el índice; si faltan cursores o se supera el tope de 20 páginas,
+  falla la lectura en lugar de dar por únicos slugs de un catálogo incompleto.
+
+La resolución de direcciones no aprueba contenido editorial ni confirma licencias. El contenido
+completo, el tratamiento de `rich_text_field` de Shopify y la prueba con guías reales aprobadas
+siguen pendientes; no crear entradas de prueba en la tienda para llenar estos huecos.
+
+#### Pruebas de resolución de guías
+
+```sh
+pnpm test:shopify-guides
+```
+
+Quince pruebas con Node Test Runner y el TypeScript ya instalado, sin dependencias adicionales.
+El loader de `tests/` permite ejecutar módulos TypeScript de servidor fuera de Next. Los datos
+son fixtures en memoria y `fetch` está simulado: no se leen credenciales, no se llama a Shopify
+y no se crean recursos. Cubren slug distinto de handle, referencias por ID, enlaces de libros y
+listado, paginación, duplicados, slugs ausentes o inválidos, diagnóstico, errores y adaptador local.
 
 ### `recomendacion_lazox`
 

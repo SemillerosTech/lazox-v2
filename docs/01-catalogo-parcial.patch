@@ -1,0 +1,210 @@
+From 241d612dcb2690b087979e10079aedd434dcafa5 Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Thu, 5 Nov 2026 12:40:33 -0600
+Subject: [PATCH] fix: support partial Shopify catalog and deduplicate reads
+
+---
+ README.md                                 |  7 ++++++
+ TODO.md                                   | 25 +++++++++++++++++++
+ app/(site)/(shell)/libros/[slug]/page.tsx | 14 +++++++----
+ lib/catalog/shopify.ts                    | 16 ++++++++-----
+ lib/shopify/README.md                     | 29 +++++++++++++++++++++++
+ 5 files changed, 81 insertions(+), 10 deletions(-)
+
+diff --git a/README.md b/README.md
+index 71d8d9c..ac40788 100644
+--- a/README.md
++++ b/README.md
+@@ -1,5 +1,12 @@
+ # LAZOX
+ 
++> **Avance del 5 de noviembre de 2026:** se prepara el catálogo parcial de Shopify sin esperar
++> las guías completas. Las claves de metaobjetos ya estaban configuradas. Se reducen consultas
++> repetidas dentro de cada petición y la ficha sin existencias mantiene el precio sin anunciar
++> una guía inexistente. Inseparables y los diez estantes están publicados en Lazox Headless; Storefront real
++> verificado. Falta configurar/verificar las variables de Vercel y publicar el push. Compras
++> reales cerradas. Detalle actualizado en [`lib/shopify/README.md`](./lib/shopify/README.md).
++
+ Tienda de libros, estantes, guías y conversaciones para crecer juntos. Incluye el borrador
+ navegable de **Inseparables**: portada, ficha, guía pública, carrito, compra de demostración,
+ confirmación y representación de la caja.
+diff --git a/TODO.md b/TODO.md
+index 85318b0..c8ed079 100644
+--- a/TODO.md
++++ b/TODO.md
+@@ -7,6 +7,31 @@
+ 
+ **Última actualización:** 5 de noviembre de 2026.
+ 
++## Avance del catálogo parcial (5 de noviembre de 2026)
++
++- [x] Inseparables activo y publicado únicamente en Lazox Headless. Evidencia: estado Activo y
++      canal Lazox Headless en el administrador después de guardar. No se cambió el inventario.
++- [x] Compartir lecturas de libro, estantes y productos de colección dentro de cada petición.
++      Evidencia: `React.cache` en `lib/catalog/shopify.ts`; no se cachean mutaciones ni visitas.
++- [x] Mantener el precio sin existencias y no anunciar una guía que no existe. Evidencia:
++      condición `guide` en la ficha. Las guías incompletas no se crean en Shopify.
++- [x] Formato, lint, TypeScript y build correctos. Prueba de 26 rutas en modo Shopify con fixture
++      externo al repositorio: diez estantes, libro sin existencias, guías vacías, compras cerradas
++      y páginas inexistentes. Se verificó una sola consulta de producto entre metadata y página.
++      No sustituye la prueba contra la tienda real. El estante inexistente muestra la página de
++      no encontrado y `noindex`, pero Next puede responder HTTP 200 al haber iniciado streaming.
++- [x] Diez colecciones publicadas únicamente en Lazox Headless; orden 2 de EST-09 completado.
++      Evidencia: comprobación de las colecciones por Storefront API real.
++- [x] Entrada de portada `global` activa con su prefijo existente; campos vacíos sin cambios.
++- [x] Verificar Storefront real con token público: diez estantes, libro a $435 MXN y 26 rutas
++      probadas sin guías ni compras reales. Adaptador de autenticación de prueba fuera del repo;
++      no se usó ni se copió el token privado.
++- [ ] Completar acceso de escritura a GitHub para el push autorizado a `main`.
++- [ ] Configurar/verificar credenciales de servidor en Vercel y comprobar el despliegue. El
++      archivo `.env.local` del equipo de desarrollo no viaja con Git.
++
++No se cerró el vocabulario editorial de recomendaciones; no se habilitaron compras reales.
++
+ ## Resumen
+ 
+ - **Fachada del borrador:** las 27 tarjetas de `docs/lo-de-adentro-afuera.md` están implementadas
+diff --git a/app/(site)/(shell)/libros/[slug]/page.tsx b/app/(site)/(shell)/libros/[slug]/page.tsx
+index bfd569f..fd7319d 100644
+--- a/app/(site)/(shell)/libros/[slug]/page.tsx
++++ b/app/(site)/(shell)/libros/[slug]/page.tsx
+@@ -10,6 +10,7 @@ import { ButtonLink } from "@/components/button-link";
+ import { WhatsAppInquiry } from "@/components/whatsapp-inquiry";
+ import { catalog, catalogSource } from "@/lib/catalog";
+ import { isBookOutOfStock } from "@/lib/pricing";
++import { Price } from "@/components/price";
+ import { getBookWhatsAppMessage } from "@/lib/whatsapp";
+ import { PageWhatsApp } from "@/lib/whatsapp-context";
+ 
+@@ -56,9 +57,11 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
+ 
+   if (!book) notFound();
+ 
+-  const guide = await catalog.getGuideForBook(book.slug);
+   const shelfSlug = book.shelfCode?.toLowerCase();
+-  const shelf = shelfSlug ? await catalog.getShelf(shelfSlug) : null;
++  const [guide, shelf] = await Promise.all([
++    catalog.getGuideForBook(book.slug),
++    shelfSlug ? catalog.getShelf(shelfSlug) : Promise.resolve(null),
++  ]);
+   const outOfStock = isBookOutOfStock(book);
+   const credits = illustrationLine(book);
+ 
+@@ -137,8 +140,11 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
+ 
+       {outOfStock ? (
+         <section className="mt-8 rounded-3xl border-2 border-border bg-background p-6">
+-          <p className="text-lg font-bold text-brand-ink">
+-            Este libro se agotó por ahora. Su guía sigue disponible.
++          <Price price={book.price} className="text-3xl" />
++          <p className="mt-4 text-lg font-bold text-brand-ink">
++            {guide
++              ? "Este libro se agotó por ahora. Su guía sigue disponible."
++              : "Este libro se agotó por ahora."}
+           </p>
+           <div className="mt-4 flex flex-wrap gap-3">
+             {guide && (
+diff --git a/lib/catalog/shopify.ts b/lib/catalog/shopify.ts
+index a943a6d..207611d 100644
+--- a/lib/catalog/shopify.ts
++++ b/lib/catalog/shopify.ts
+@@ -1,5 +1,7 @@
+ import "server-only";
+ 
++import { cache } from "react";
++
+ import type { Book, EditorialRecommendation, Guide, HomepageContent, Shelf } from "@/lib/types";
+ 
+ import { shopifyFetch, type ShopifyFetchOptions } from "@/lib/shopify/client";
+@@ -59,7 +61,9 @@ async function collectConnection<T>(
+   return items;
+ }
+ 
+-async function fetchAllShelves(): Promise<Shelf[]> {
++// Solo se comparte dentro del render de una petición; la siguiente visita
++// vuelve a Shopify. Evita repetir lecturas entre metadata, layout y página.
++const fetchAllShelves = cache(async (): Promise<Shelf[]> => {
+   const collections = await collectConnection<ShopifyCollection>((after) =>
+     read<{ collections: ShopifyConnection<ShopifyCollection> }>({
+       query: SHELVES_QUERY,
+@@ -85,9 +89,9 @@ async function fetchAllShelves(): Promise<Shelf[]> {
+     seen.add(shelf.code);
+     return true;
+   });
+-}
++});
+ 
+-async function fetchCollectionProducts(collectionId: string): Promise<Book[]> {
++const fetchCollectionProducts = cache(async (collectionId: string): Promise<Book[]> => {
+   const products = await collectConnection<ShopifyProduct>((after) =>
+     read<{ collection: { products: ShopifyConnection<ShopifyProduct> } | null }>({
+       query: COLLECTION_PRODUCTS_QUERY,
+@@ -108,7 +112,7 @@ async function fetchCollectionProducts(collectionId: string): Promise<Book[]> {
+   );
+ 
+   return products.map(mapProduct).filter((book): book is Book => book !== null);
+-}
++});
+ 
+ async function fetchAllMetaobjects(
+   query: string,
+@@ -149,7 +153,7 @@ async function mapGuideWithBook(metaobject: ShopifyMetaobject): Promise<Guide |
+   return mapGuide(metaobject, book);
+ }
+ 
+-async function shopifyGetBook(slug: string): Promise<Book | null> {
++const shopifyGetBook = cache(async (slug: string): Promise<Book | null> => {
+   const data = await read<{ product: ShopifyProduct | null }>({
+     query: PRODUCT_BY_HANDLE_QUERY,
+     variables: { handle: slug, identifiers: PRODUCT_METAFIELD_IDENTIFIERS },
+@@ -157,7 +161,7 @@ async function shopifyGetBook(slug: string): Promise<Book | null> {
+   });
+ 
+   return data.product ? mapProduct(data.product) : null;
+-}
++});
+ 
+ export const shopifyCatalog: CatalogRepository = {
+   async listBooks() {
+diff --git a/lib/shopify/README.md b/lib/shopify/README.md
+index 655c8f3..f206a5d 100644
+--- a/lib/shopify/README.md
++++ b/lib/shopify/README.md
+@@ -1,5 +1,34 @@
+ # Integración con Shopify Storefront API
+ 
++## Avance del catálogo parcial — 5 de noviembre de 2026
++
++Se avanza con el libro y los estantes existentes sin esperar las guías completas.
++Inseparables quedó activo y publicado únicamente en Lazox Headless desde el administrador.
++Las diez colecciones están publicadas solo en ese canal. Se completó el orden 2 de EST-09,
++que estaba vacío. La entrada de portada `global` está activa con su prefijo existente; no se
++rellenaron textos vacíos. No se crearon guías ni recomendaciones ni se aprobó contenido editorial.
++
++Storefront real verificado con el token público: diez estantes con orden, Inseparables a $435 MXN
++y metacampos editoriales disponibles. Se probaron 26 rutas de la aplicación contra la API real
++mediante un adaptador de autenticación de prueba externo al repositorio, sin usar ni copiar el
++token privado. La configuración privada de Vercel sigue por comprobar.
++
++Las lecturas de libro, estantes y productos de colección usan `React.cache` durante una petición
++para compartir resultados entre metadata y página. La siguiente visita consulta Shopify de nuevo;
++no hay caché persistente ni se modifica el transporte de carrito.
++
++La ficha conserva el precio cuando no hay existencias y solo anuncia una guía disponible si la
++consulta devuelve esa guía. El carrito y el checkout siguen cerrados en modo Shopify.
++
++Para desplegar este modo, Vercel necesita `LAZOX_CATALOG_SOURCE=shopify`,
++`SHOPIFY_STORE_DOMAIN` y `SHOPIFY_STOREFRONT_PRIVATE_TOKEN` (solo servidor).
++Un push no carga las variables que existen únicamente en `.env.local` de otra computadora.
++Mantener `LAZOX_ENABLE_CART=false` y `LAZOX_ENABLE_CHECKOUT=false`.
++
++Las secciones siguientes conservan el diagnóstico inicial de la integración; este avance no
++confirma todavía que Vercel esté configurado. GitHub requiere acceso de escritura para el push
++a `main` autorizado por el propietario.
++
+ > Documento de trabajo de la integración. Explica qué quedó implementado, cómo se enciende y
+ > qué debe completarse a mano. Las reglas editoriales de Lazox siguen vigentes: este documento
+ > no autoriza publicar catálogo, cambiar precios ni abrir compras.
+-- 
+2.51.1
+

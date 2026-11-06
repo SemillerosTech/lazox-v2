@@ -282,16 +282,6 @@ export const GUIDES_QUERY = /* GraphQL */ `
   ${METAOBJECT_FRAGMENT}
 `;
 
-export const GUIDE_BY_HANDLE_QUERY = /* GraphQL */ `
-  query GuideByHandle($handle: String!) {
-    metaobject(handle: { type: "guia_de_lectura", handle: $handle }) {
-      ...MetaobjectFields
-    }
-  }
-  ${REFERENCE_FRAGMENT}
-  ${METAOBJECT_FRAGMENT}
-`;
-
 export const RECOMMENDATIONS_QUERY = /* GraphQL */ `
   query Recommendations($first: Int!, $after: String) {
     metaobjects(type: "recomendacion_lazox", first: $first, after: $after) {

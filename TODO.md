@@ -52,7 +52,8 @@ No se cerró el vocabulario editorial de recomendaciones; no se habilitaron comp
 - **Listo para producción:** no.
 - **Principal bloqueo:** aprobación editorial, licencia de la guía, assets oficiales, número de
   WhatsApp, facturación/Shopify y flujos reales de compra y contacto.
-- **Deuda técnica principal:** no hay suite automatizada ni CI. El catálogo parcial de Shopify
+- **Deuda técnica principal:** faltan suite integral y CI; hay pruebas focalizadas de slugs de
+  guías con `pnpm test:shopify-guides`. El catálogo parcial de Shopify
   está probado en local y Vercel contra la tienda real; carrito y checkout reales siguen cerrados.
 
 ## Registro de esta entrega (27 de octubre de 2026)
@@ -208,6 +209,22 @@ publicado en el canal Headless y no se creó ningún carrito real.
 - [ ] **Definir la política de la guía para producción.** Hoy es pública, sin contraseña, con
       `noindex` y licencia pendiente. Decidir si seguirá abierta, si requerirá cuenta o si se
       retirará hasta la firma.
+- [ ] **Preparar las guías como páginas/secciones del sitio.** Cada metaobjeto
+      `guia_de_lectura` debe identificar y alimentar su página en `/guias/[slug]`; los enlaces
+      desde la ficha del libro y el listado de guías deben dirigir a la página correspondiente,
+      no solo a un archivo descargable. Partir de las rutas existentes y completar el mapeo de
+      contenido, las secciones y la navegación al recibir guías aprobadas. Considerarlo en los
+      siguientes pasos, sin inventar contenido ni publicar sin aprobación editorial y licencia.
+      Solicitud del usuario del 5 de noviembre de 2026.
+  - [x] Separar slug público de handle técnico y unificar enlaces por `lazox.guia` (ID).
+        Verificado el 5 de noviembre de 2026 con `pnpm test:shopify-guides`: 15 pruebas sin red,
+        incluyendo slugs distintos de handle, vacíos, inválidos, duplicados entre páginas,
+        referencias no visibles y diagnóstico. No se publicó ninguna guía ni se aprobó contenido.
+        También pasaron formato, lint, TypeScript y build; ocho rutas con fixture aislado
+        comprobaron listado, ficha, guía, descarga y diagnóstico. Prueba de regresión local
+        de 36 rutas contra Storefront real: sin guías publicadas, sin fallback local ni compras.
+  - [ ] Completar contenido y secciones con guías aprobadas y probarlas en Shopify real. Las
+        pruebas sintéticas de resolución no sustituyen esa revisión editorial y funcional.
 - [x] **Confirmar que `NEXT_PUBLIC_ENABLE_DUAL_PRICING` esté apagado en producción.** Configurado
       en `false` el 5 de noviembre de 2026 en Production y Preview; build y ficha desplegados
       comprobados. Solo encender cuando abogado y contador cierren la cuenta del 30 %.
@@ -344,7 +361,7 @@ Estas decisiones bloquean varias tareas. No las resuelva por su cuenta:
 - La portada, L1 y C1 son placeholders; no hay arte oficial.
 - El sitemap queda vacío si `NEXT_PUBLIC_SITE_URL` no se define en build.
 - El borrador está bloqueado para buscadores; retirar `noindex` sin querer lo expone.
-- No hay pruebas automatizadas ni CI.
+- Hay pruebas automatizadas focalizadas de slugs de guías; faltan la suite integral y CI.
 - El clic de las puertas de estante no se registra en ninguna analítica.
 - Varias páginas legales e institucionales dicen «En preparación».
 - El repositorio puede tener el snapshot anterior en `HEAD`; el estado real está en el árbol de

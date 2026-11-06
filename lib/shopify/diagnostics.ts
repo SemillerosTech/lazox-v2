@@ -1,5 +1,7 @@
 import "server-only";
 
+import { indexGuideSlugs, type GuideSlugIssue } from "./guide-slugs";
+
 import { shopifyFetch } from "./client";
 import {
   getShopifyConfig,
@@ -159,6 +161,7 @@ export async function getShelfDiagnostics(): Promise<ShelfDiagnostic> {
 export interface MetaobjectKeysDiagnostic {
   type: string;
   configured: Record<string, MetaobjectFieldKey>;
+  guideSlugIssues?: GuideSlugIssue[];
   entries: Array<{
     handle: string;
     keys: Array<{ key: string; type: string; hasValue: boolean }>;
@@ -217,6 +220,9 @@ export async function getMetaobjectKeysDiagnostics(): Promise<MetaobjectKeysDiag
         type,
         configured: configuredKeysFor(type),
         entries: entries.map(describeMetaobject),
+        ...(type === METAOBJECT_TYPES.guide
+          ? { guideSlugIssues: indexGuideSlugs(entries).issues }
+          : {}),
       });
     } catch (error) {
       results.push({

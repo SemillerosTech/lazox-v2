@@ -96,8 +96,9 @@ recomendaciones inventadas**. Su estado es “selección en preparación”.
   Se verificaron 36 rutas y ausencia del token en HTML y scripts públicos. No se creó ningún
   carrito ni se modificó Shopify desde el agente local.
 
-No existe todavía una suite automatizada de pruebas. El catálogo parcial de Shopify está
-publicado; el carrito y checkout reales siguen cerrados. Ver
+Hay pruebas automatizadas focalizadas en la resolución de guías (`pnpm test:shopify-guides`),
+sin llamadas a Shopify. La suite integral y CI siguen pendientes. El catálogo parcial de Shopify
+está publicado; el carrito y checkout reales siguen cerrados. Ver
 [`lib/shopify/README.md`](./lib/shopify/README.md).
 
 ## 3. Stack
@@ -427,6 +428,9 @@ Qué quedó hecho:
 5. El HTML enriquecido se sanea con `sanitize-html`; el token privado vive solo en servidor.
 6. Hay diagnóstico interno en `/revision/catalogo` y por terminal con `pnpm shopify:check`.
 7. `NEXT_PUBLIC_SHOPIFY_INVOICE_URL` sigue siendo el enlace de facturación cuando exista.
+8. Las guías se resuelven por su campo público `slug`, aunque sea distinto del handle nativo.
+   La referencia `lazox.guia` se sigue por ID y los enlaces comparten ese slug. Las entradas
+   sin slug válido y único no se enlazan y se reportan en `/revision/catalogo`.
 
 Qué falta para completar la tienda:
 
@@ -446,6 +450,7 @@ La guía completa de configuración, variables y edición está en
 pnpm format:check
 pnpm lint
 pnpm typecheck
+pnpm test:shopify-guides
 pnpm build
 ```
 

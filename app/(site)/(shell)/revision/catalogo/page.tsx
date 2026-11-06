@@ -248,6 +248,30 @@ export default async function CatalogReviewPage() {
                   ))}
                 </dl>
 
+                {group.guideSlugIssues && group.guideSlugIssues.length > 0 && (
+                  <div className="mt-3 rounded-2xl bg-brand-yellow/30 p-4 text-sm text-brand-ink">
+                    <p className="font-bold">Guías sin ruta pública: revise el campo slug.</p>
+                    <ul className="mt-2 list-inside list-disc">
+                      {group.guideSlugIssues.map((issue) => (
+                        <li key={issue.handle}>
+                          <Value>{issue.handle}</Value>:{" "}
+                          {issue.reason === "missing"
+                            ? "falta slug"
+                            : issue.reason === "invalid"
+                              ? "formato de slug inválido"
+                              : "slug duplicado"}
+                          {issue.slug && (
+                            <>
+                              {" "}
+                              (<Value>{issue.slug}</Value>)
+                            </>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {group.entries.length === 0 ? (
                   <p className="mt-3 text-sm text-muted-foreground">
                     No hay entradas visibles para Storefront. Publíquelas en el canal Headless.

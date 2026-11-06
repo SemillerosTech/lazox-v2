@@ -12,6 +12,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test:shopify-guides": "node --conditions=react-server --test tests/shopify-guides.test.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "shopify:check": "node --env-file-if-exists=.env.local scripts/check-shopify.mjs"

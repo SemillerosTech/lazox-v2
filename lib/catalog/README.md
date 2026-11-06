@@ -43,6 +43,11 @@ No hay fallback silencioso. Si `LAZOX_CATALOG_SOURCE=shopify` y algo falla, el e
   no se muestra ninguna recomendación.
 - **Guía.** `Guide.license.status` debe permanecer en `pending` mientras no exista la firma con
   Semilleros de Sentido A.C. La guía es pública en el borrador, sin contraseña, con `noindex`.
+- **Slug de guía.** En Shopify, `Guide.slug` y `Book.guideSlug` usan el campo público `slug`
+  de `guia_de_lectura`, no el handle técnico. `getGuide(slug)` busca por ese campo;
+  `getGuideForBook()` resuelve la referencia `lazox.guia` por ID y entrega la misma identidad.
+  Slugs ausentes, inválidos o duplicados no generan rutas ni enlaces: se reportan en
+  `/revision/catalogo`. Nunca se reemplazan por el handle o el slug del libro.
 - **Secciones de guía.** `Guide.sections` está vacío hasta que llegue el contenido aprobado. El
   contenido enriquecido de Shopify llega en `introHtml`, `contentHtml` y `questionsHtml`, saneado.
 - **HTML.** Cualquier HTML de Shopify pasa por `sanitize-html` antes de renderizarse.
