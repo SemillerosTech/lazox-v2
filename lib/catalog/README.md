@@ -91,3 +91,11 @@ El detalle de claves, variables y diagnóstico está en
   los campos nuevos siguen vacíos. No se cargaron recursos ni se cambió la selección editorial.
 - Sin fotografía se muestra el recuadro L1. La caja se controla en servidor con
   `LAZOX_BOX_PRINTED_CONFIRMED`; su vista de desarrollo usa `LAZOX_PREVIEW_BOX`.
+
+## Conteo de libros por estante
+
+`listShelvesWithBookCounts(repository)` utiliza `listShelves()` y `listBooksByShelf(code)`
+para contar los títulos que efectivamente renderiza cada estante. Mantiene el orden editorial
+y propaga los errores de lectura, sin convertirlos en ceros. Incluye libros agotados.
+Portada e índice utilizan este conteo para deshabilitar las tarjetas vacías; no se usa
+`Shelf.bookSlugs` como contador de Shopify porque su mapeo inicial está vacío.

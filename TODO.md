@@ -18,6 +18,27 @@
 - [ ] Build sigue fallando en la resolución de Google Fonts con `next/font` (fallo previamente
       registrado); no hubo cambios de dependencias ni de configuración de fuentes.
 
+## Página 404 con personaje y marca (26 de noviembre de 2026)
+
+- [x] Incorporar el SVG `yelly-surprise.svg` aportado por el usuario, el código 404 visible y
+      el logotipo original arriba con enlace al inicio. Componente común para 404 global y del shell.
+- [x] Revisar nueve vistas en Chrome: ruta desconocida, libro y estante inexistentes a 320, 390
+      y 1440 px. Personaje y marca visibles, sin overflow ni errores de página; salida a estantes
+      verificada. Ruta desconocida y libro devuelven HTTP 404. El estante conserva el comportamiento
+      de streaming de Next ya documentado: HTTP 200 con contenido no encontrado y `noindex`.
+- [x] Formato, lint y tipos correctos. Build ejecutado; mantiene el fallo previo de `next/font`.
+
+## Estantes vacíos y contadores (26 de noviembre de 2026)
+
+- [x] Portada e índice cuentan títulos con `listBooksByShelf` de la fuente activa; no usan
+      `bookSlugs` vacío de Shopify ni confunden títulos agotados con estantes sin libros.
+- [x] Tarjetas vacías más claras, sin enlace, flecha ni foco de teclado, con `aria-disabled`.
+      Contador discreto con singular/plural; las tarjetas con libros conservan su navegación.
+- [x] Formato, lint, tipos y 27 pruebas correctas. Chrome a 320, 390, 768 y 1440 px, portada e
+      índice: nueve tarjetas deshabilitadas con cero libros, una con un libro, clic sin navegación
+      en vacías, enlace activo funcional y sin overflow ni errores de página.
+- [ ] Build ejecutado: mantiene el fallo previo de Google Fonts / `next/font`.
+
 ## Ajustes de apertura del 30 de noviembre
 
 Registro actual por tarjeta: [implementación](./docs/implementacion-30-noviembre.md).

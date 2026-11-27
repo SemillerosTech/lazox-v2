@@ -48,6 +48,15 @@ decorativos de varios colores de la paleta `brand-*`. No representan inventario.
 muestra dos columnas desde 360 px y tres en escritorio; por debajo de 360 px usa una columna
 para conservar la legibilidad.
 
+La página no encontrada muestra el código **404** y el personaje SVG `yelly-surprise.svg`
+aportado por el usuario, con el logotipo original arriba, el mensaje y las dos salidas existentes. El componente compartido
+`NotFoundContent` se usa tanto en la 404 global como en los libros y estantes inexistentes.
+
+Los contadores discretos de las tarjetas de estantes se calculan desde los libros de cada
+estante en el catálogo activo. Los estantes con cero libros aparecen más claros, sin flecha ni
+enlace y con `aria-disabled`; recuperan su enlace al recibir libros. Se cuentan títulos, incluidos
+los agotados, sin confundir cantidad de libros con inventario. Esto aplica a portada e índice.
+
 ## 1. Contexto del proyecto
 
 LAZOX trabaja con familias, escuelas y comunidades. La propuesta editorial organiza los libros en

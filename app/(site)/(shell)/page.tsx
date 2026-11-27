@@ -9,6 +9,7 @@ import { Price } from "@/components/price";
 import { ShelfDoor } from "@/components/shelf-door";
 import { WhatsAppInquiry } from "@/components/whatsapp-inquiry";
 import { catalog } from "@/lib/catalog";
+import { listShelvesWithBookCounts } from "@/lib/catalog/shelf-counts";
 import { isRentalOnly } from "@/lib/rental";
 import { WHATSAPP_SCHOOL_MESSAGE } from "@/lib/whatsapp";
 
@@ -38,7 +39,7 @@ const BOX_ITEMS = [
 
 export default async function Home() {
   const [shelves, homepage] = await Promise.all([
-    catalog.listShelves(),
+    listShelvesWithBookCounts(catalog),
     catalog.getHomepageContent(),
   ]);
 
@@ -125,6 +126,7 @@ export default async function Home() {
               href={`/estantes/${shelf.slug}`}
               name={shelf.name}
               shelfCode={shelf.code}
+              bookCount={shelf.bookCount}
             />
           ))}
         </div>
@@ -155,6 +157,7 @@ export default async function Home() {
                 href={`/estantes/${shelf.slug}`}
                 name={shelf.name}
                 shelfCode={shelf.code}
+                bookCount={shelf.bookCount}
                 size="small"
               />
             ))}

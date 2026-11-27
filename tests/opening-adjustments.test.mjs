@@ -214,3 +214,37 @@ test("los campos de portada vacíos u omitidos no inventan imágenes ni selecci�
   assert.deepEqual(mapHomepageContent({ handle: "global", fields }), expected);
   assert.equal(mapHomepageContent(null), null);
 });
+
+test("los contadores usan los libros del catálogo y conservan el orden de estantes", async () => {
+  const { listShelvesWithBookCounts } = await import("../lib/catalog/shelf-counts.ts");
+  const result = await listShelvesWithBookCounts({
+    listShelves: async () => [
+      { code: "EST-01", bookSlugs: ["dato-obsoleto"] },
+      { code: "EST-03", bookSlugs: [] },
+    ],
+    listBooksByShelf: async (code) => (code === "EST-03" ? [{ id: "uno" }, { id: "dos" }] : []),
+  });
+  assert.deepEqual(
+    result.map(({ code, bookCount }) => ({ code, bookCount })),
+    [
+      { code: "EST-01", bookCount: 0 },
+      { code: "EST-03", bookCount: 2 },
+    ],
+  );
+  const local = await listShelvesWithBookCounts(localDraftCatalog);
+  assert.equal(local.find((shelf) => shelf.code === "EST-03").bookCount, 1);
+  assert.equal(local.filter((shelf) => shelf.bookCount === 0).length, 9);
+});
+
+test("un error del catálogo no se presenta como un estante vacío", async () => {
+  const { listShelvesWithBookCounts } = await import("../lib/catalog/shelf-counts.ts");
+  await assert.rejects(
+    listShelvesWithBookCounts({
+      listShelves: async () => [{ code: "EST-01" }],
+      listBooksByShelf: async () => {
+        throw new Error("Lectura de catálogo fallida");
+      },
+    }),
+    /Lectura de catálogo fallida/,
+  );
+});

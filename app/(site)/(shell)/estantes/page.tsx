@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ShelfCard } from "@/components/shelf-card";
 import { catalog } from "@/lib/catalog";
+import { listShelvesWithBookCounts } from "@/lib/catalog/shelf-counts";
 
 export const metadata: Metadata = {
   title: "Para el niño o la niña que…",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ShelvesPage() {
-  const shelves = await catalog.listShelves();
+  const shelves = await listShelvesWithBookCounts(catalog);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 md:py-14">
@@ -36,6 +37,7 @@ export default async function ShelvesPage() {
           <ShelfCard
             key={shelf.code}
             shelf={shelf}
+            bookCount={shelf.bookCount}
             dataTour={shelf.code === "EST-03" ? "shelf-est-03" : undefined}
           />
         ))}
