@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { BookOpen, Download } from "lucide-react";
 
@@ -12,6 +12,25 @@ import { catalog } from "@/lib/catalog";
 import { listShelvesWithBookCounts } from "@/lib/catalog/shelf-counts";
 import { isRentalOnly } from "@/lib/rental";
 import { WHATSAPP_SCHOOL_MESSAGE } from "@/lib/whatsapp";
+
+import griny from "@/public/images/Mascota Griny verde menta kawaii-1.png";
+import bolin from "@/public/images/Bolin kawaii con sonrisa rosada-2.png";
+import triani from "@/public/images/Triángulo Coral Sonriente-3.png";
+import senti from "@/public/images/Senti, la cápsula turquesa sonriente-4.png";
+import trazaurusDinosaur from "@/public/images/trazaurus-rino.png";
+import yelli from "@/public/images/Yelli, la cápsula amarilla kawaii-6.png";
+
+function HomeCharacter({ image, className }: { image: StaticImageData; className: string }) {
+  return (
+    <Image
+      src={image}
+      alt=""
+      aria-hidden="true"
+      sizes="128px"
+      className={`pointer-events-none h-auto shrink-0 select-none ${className}`}
+    />
+  );
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const homepage = await catalog.getHomepageContent();
@@ -111,13 +130,19 @@ export default async function Home() {
         data-tour="home-shelves"
         className="mx-auto max-w-7xl px-4 py-14 md:py-20"
       >
-        <h2
-          id="por-donde-empezamos"
-          className="text-center text-4xl font-extrabold text-brand-pink md:text-5xl"
-        >
-          ¿Por dónde empezamos?
-        </h2>
-        <p className="mt-3 text-center text-sm font-bold text-muted-foreground">{shelfPrefix}</p>
+        <div className="mx-auto flex max-w-4xl items-center justify-center gap-3 sm:gap-6">
+          <HomeCharacter image={griny} className="w-10 -rotate-6 sm:w-16 md:w-20" />
+          <div className="min-w-0 text-center">
+            <h2
+              id="por-donde-empezamos"
+              className="text-3xl font-extrabold text-brand-pink sm:text-4xl md:text-5xl"
+            >
+              ¿Por dónde empezamos?
+            </h2>
+            <p className="mt-3 text-sm font-bold text-muted-foreground">{shelfPrefix}</p>
+          </div>
+          <HomeCharacter image={bolin} className="w-14 rotate-6 sm:w-20 md:w-28" />
+        </div>
 
         <div className="mx-auto mt-8 grid max-w-4xl gap-5 sm:grid-cols-2">
           {entryShelves.map((shelf) => (
@@ -149,7 +174,10 @@ export default async function Home() {
           <h2 id="otros-estantes" className="sr-only">
             Los otros estantes
           </h2>
-          <p className="text-sm font-bold text-muted-foreground">{shelfPrefix}</p>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-sm font-bold text-muted-foreground">{shelfPrefix}</p>
+            <HomeCharacter image={triani} className="w-20 -rotate-6 md:w-28" />
+          </div>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {otherShelves.map((shelf) => (
               <ShelfDoor
@@ -211,9 +239,12 @@ export default async function Home() {
 
       <section aria-labelledby="cinco-preguntas" className="bg-brand-yellow">
         <div className="mx-auto max-w-4xl px-4 py-14 text-center md:py-20">
-          <h2 id="cinco-preguntas" className="text-3xl font-extrabold text-brand-ink md:text-4xl">
-            Cinco preguntas para después de leer.
-          </h2>
+          <div className="flex items-center justify-center gap-4 md:gap-6">
+            <h2 id="cinco-preguntas" className="text-3xl font-extrabold text-brand-ink md:text-4xl">
+              Cinco preguntas para después de leer.
+            </h2>
+            <HomeCharacter image={yelli} className="w-10 rotate-6 md:w-16" />
+          </div>
           <p className="mx-auto mt-3 max-w-xl font-semibold text-brand-ink">
             Sirven con cualquier libro, también con el que ya tiene en casa.
           </p>
@@ -269,9 +300,12 @@ export default async function Home() {
       <section aria-label="Trazaurus y escuelas" className="bg-brand-mint">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-start md:py-16">
           <div className="max-w-md rounded-2xl bg-background p-5">
-            <h2 className="text-xl font-extrabold text-brand-ink">
-              Trazaurus: una serie para aprender a leer y escribir.
-            </h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl font-extrabold text-brand-ink">
+                Trazaurus: una serie para aprender a leer y escribir.
+              </h2>
+              <HomeCharacter image={trazaurusDinosaur} className="w-16 md:w-20" />
+            </div>
             <div className="mt-4">
               <ButtonLink href="/trazaurus" variant="outline">
                 Conocer Trazaurus
@@ -280,9 +314,12 @@ export default async function Home() {
           </div>
 
           <div className="rounded-3xl bg-background p-6 md:p-8">
-            <h2 className="text-2xl font-extrabold text-brand-ink">
-              Una feria de libros en su escuela. Llevamos los libros; cada uno trae sus preguntas.
-            </h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-extrabold text-brand-ink">
+                Una feria de libros en su escuela. Llevamos los libros; cada uno trae sus preguntas.
+              </h2>
+              <HomeCharacter image={senti} className="w-10 rotate-6 md:w-14" />
+            </div>
             <div className="mt-4">
               <WhatsAppInquiry
                 message={WHATSAPP_SCHOOL_MESSAGE}

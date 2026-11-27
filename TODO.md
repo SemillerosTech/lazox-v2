@@ -7,6 +7,19 @@
 
 **Última actualización:** 26 de noviembre de 2026.
 
+## Personajes en portada (27 de noviembre de 2026)
+
+- [x] Sustituir después a Circuli en la tarjeta de Trazaurus por el dinosaurio amarillo con
+      moño rosa del portal original, reutilizando `trazaurus-rino.png`, por petición del usuario.
+
+- [x] Integrar las seis imágenes aportadas por el usuario como decoración: Griny y Bolin junto
+      al encabezado de estantes, Triani en los otros estantes, Yelli en Cinco preguntas, Circuli
+      en Trazaurus y Senti en escuelas. Sin personajes nuevos en la sección de Inseparables.
+- [x] Conservar los PNG originales y sus proporciones, optimizados con `next/image`, sin añadir
+      interacción ni anuncios al lector de pantalla. Chrome a 320, 390, 768 y 1440 px: seis
+      imágenes cargadas y sin overflow. Formato, lint y tipos correctos.
+- [ ] Build sigue bloqueado por el fallo previo de Google Fonts / `next/font`.
+
 ## Tarjetas con libros de colores (26 de noviembre de 2026)
 
 - [x] Repisa SVG decorativa compartida entre portada e índice de estantes; seis libros con colores

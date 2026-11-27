@@ -89,6 +89,8 @@ recomendaciones inventadas**. Su estado es “selección en preparación”.
 
 - Fachada alineada a las 27 tarjetas de `docs/lo-de-adentro-afuera.md`.
 - Migración a Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4 y pnpm.
+- Los personajes aportados por el usuario acompañan los encabezados de estantes, Cinco preguntas
+  y escuelas. La tarjeta de Trazaurus usa su dinosaurio original; Inseparables conserva su diseño.
 - Portada con el orden aprobado: primera franja, dos puertas de entrada, ocho estantes, Inseparables,
   cinco preguntas, qué trae la caja y bloques de Trazaurus y escuelas.
 - Menú de cinco puertas: Libros, Guías, Trazaurus, Para escuelas y Nosotros. Sin buscador, cuenta
