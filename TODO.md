@@ -39,6 +39,89 @@
       en vacías, enlace activo funcional y sin overflow ni errores de página.
 - [ ] Build ejecutado: mantiene el fallo previo de Google Fonts / `next/font`.
 
+## Iconos de marcas con Simple Icons (27 de noviembre de 2026)
+
+- [x] SVG locales de WhatsApp, Instagram, Facebook y YouTube tomados de Simple Icons, revisión
+      `801eaab5b70f4933137069397ebbd2ce5f9ad56e`. Licencia CC0 incluida en `licenses/`;
+      sin añadir paquetes ni peticiones del navegador a un CDN.
+- [x] Sustituir los globos genéricos de WhatsApp en el componente compartido de botones y
+      en la confirmación; conservar los iconos de navegación de Lucide.
+- [x] Formato, lint y tipos correctos. Chrome a 390 y 1440 px: portada, ficha, escuelas, renta y
+      confirmación muestran el trazado de Simple Icons, etiquetas accesibles y sin overflow ni
+      errores de página. Mensaje del panel de renta comprobado, sin enviar comunicaciones.
+- [ ] Build ejecutado: permanece el fallo previo de resolución de Google Fonts / `next/font`.
+
+## Contacto unificado de Para escuelas (27 de noviembre de 2026)
+
+- [x] Un solo botón compacto de WhatsApp después de las cuatro tarjetas. Renta conserva
+      únicamente su enlace a `/renta-escolar`. Acervos y Equipamiento incluyen descripciones breves.
+- [x] Mensaje general de escuelas compartido por el CTA y los accesos de WhatsApp de la página;
+      el bloque de feria de portada conserva su mensaje específico.
+- [x] Chrome a 390, 1024 y 1440 px: un CTA compacto bajo las tarjetas, textos de Acervos y
+      Equipamiento, mensaje general y destino de renta verificados; sin overflow ni errores.
+      Formato, lint y tipos correctos. Build mantiene el fallo previo de `next/font`.
+
+## Nosotros (27 de noviembre de 2026)
+
+- [x] Añadir a la cabecera el Yelli con lentes y libro adjuntado por el usuario, conservando
+      el PNG transparente original en `public/images/yelli-intelectual.png`. Junto al texto en
+      escritorio y debajo en móvil, con texto alternativo y dimensiones proporcionales.
+      Imagen cargada y diseño verificado en Chrome a 320, 390, 768 y 1440 px, sin overflow.
+- [x] Reemplazar «En preparación» por presentación, razón de ser, misión y tres valores.
+      Fuente institucional consultada: https://www.lazox.com.mx/ el 27 de noviembre de 2026.
+      Se sintetizó el contenido y se conectó con lectura y conversación del storefront.
+- [x] Conservar la paleta y el tono del proyecto, metadatos y `noindex`. Enlaces a estantes
+      y escuelas verificados. Chrome a 320, 390, 768 y 1440 px, sin overflow ni errores de página.
+- [x] Formato, lint y tipos correctos. Build conserva el fallo previo de `next/font`.
+
+## Trazaurus (27 de noviembre de 2026)
+
+- [x] Completar `/trazaurus` con la presentación aprobada de la serie, el logotipo original,
+      el acceso al material complementario y el canal de videos enlazado por el portal.
+      Fuente consultada: https://www.semillerosdesentido.org/trazaurus. Logo descargado desde
+      `/_next/static/media/logo-trazaurus.c80bda70.svg` y guardado en `public/images/trazaurus-logo.svg`.
+- [x] Ocultar el bloque de videos de YouTube a petición del usuario mediante `hidden`,
+      conservando su contenido y enlace en el código.
+- [x] Mantener el registro en el portal original: la página de Lazox explica qué datos solicita
+      y enlaza allí, sin duplicar el formulario. No se accedió a materiales tras registro ni
+      se añadieron afirmaciones sobre niveles, resultados o contenidos que no estén publicados.
+- [x] Chrome a 320, 390, 768 y 1440 px: logo, recursos externos, enlaces internos, `noindex`
+      y ausencia de overflow o errores verificados. Formato, lint y tipos correctos.
+- [ ] Build ejecutado: permanece el fallo previo de resolución de Google Fonts / `next/font`.
+
+## Preguntas frecuentes (27 de noviembre de 2026)
+
+- [x] Publicar diez respuestas desplegables basadas en las páginas existentes: Lazox, elección
+      de libros, datos de ficha, guías, registro, libros agotados, cinco preguntas, Trazaurus,
+      propuestas para escuelas y renta. Se aclara el estado actual de Cinco preguntas y no se
+      reproducen plazos o costos aún sin confirmar de los borradores legales.
+- [x] Desplegables nativos sin dependencias, enlaces a las secciones y contacto compacto.
+      Chrome a 320, 390, 768 y 1440 px: diez entradas, apertura y cierre, teclado, enlaces y
+      ausencia de overflow o errores verificados. Formato, lint y tipos correctos.
+- [ ] Build ejecutado: permanece el fallo previo de Google Fonts / `next/font`.
+
+## Qué es SILEE (27 de noviembre de 2026)
+
+- [x] Completar `/que-es-silee` con una síntesis educativa del sitio
+      https://silee.semillerosdesentido.org/, logotipo original y enlaces al sitio y su contacto.
+      Logo obtenido de `/assets/simply-logo-silee.svg`; no se incorporaron formularios ni precios.
+- [x] Por decisión explícita del usuario se muestra solo «SILEE», sin desarrollar las siglas
+      en contenido, metadatos o texto alternativo. Los dos sitios institucionales publican
+      desarrollos distintos del nombre: la definición completa queda pendiente de unificación.
+- [x] Chrome a 320, 390, 768 y 1440 px: nombre acordado, logo, enlaces externos, `noindex`,
+      ausencia de precios, overflow y errores de página verificados. Formato, lint y tipos correctos.
+- [ ] Build ejecutado: permanece el fallo previo de Google Fonts / `next/font`.
+
+## Dinosaurio de Trazaurus (27 de noviembre de 2026)
+
+- [x] Recuperar el personaje amarillo con moño rosa del recurso público original
+      https://www.semillerosdesentido.org/_next/static/media/rino.73ff7c59.png y guardarlo en
+      `public/images/trazaurus-rino.png`, sin alterar colores, fondo transparente ni proporciones.
+- [x] Integrarlo junto al material complementario en escritorio y debajo del texto en móvil.
+      Chrome a 320, 390, 768 y 1440 px: imagen completa, proporciones, límites de tarjeta y
+      enlaces verificados, sin overflow ni errores. Formato, lint y tipos correctos.
+- [ ] Build ejecutado: permanece el fallo previo de Google Fonts / `next/font`.
+
 ## Ajustes de apertura del 30 de noviembre
 
 Registro actual por tarjeta: [implementación](./docs/implementacion-30-noviembre.md).
@@ -447,6 +530,9 @@ Estas decisiones bloquean varias tareas. No las resuelva por su cuenta:
 - No commitear secretos, contraseñas reales ni datos personales de prueba.
 
 ## Limpieza del recorrido de demostración
+
+- [x] Ocultar el botón de inicio sin eliminarlo ni retirar el recorrido, por petición del usuario
+      (27 de noviembre de 2026).
 
 > Ejecutar solo cuando el recorrido para Gero ya no se necesite. No retirar el carrito, el checkout
 > de demostración, la guía pública ni la vista de precios.

@@ -6,6 +6,9 @@ export const WHATSAPP_DEFAULT_MESSAGE = "Hola, tengo una pregunta.";
 export const WHATSAPP_CONFIRMATION_MESSAGE =
   "Hola, conozco una escuela donde me gustaría que se leyera así.";
 
+export const WHATSAPP_SCHOOLS_GENERAL_MESSAGE =
+  "Hola, escribo de una escuela. Me gustaría conocer las opciones de Lazox para mi escuela.";
+
 export const WHATSAPP_SCHOOL_MESSAGE =
   "Hola, escribo de una escuela. Me interesa una feria de libros.";
 

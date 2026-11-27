@@ -61,7 +61,7 @@ export function SiteFooter() {
                           label={item.label}
                           showSampleReply={false}
                           containerClassName="inline-block"
-                          className="text-left transition hover:text-brand-pink"
+                          className="inline-flex items-center gap-2 whitespace-nowrap text-left transition hover:text-brand-pink"
                           panelClassName="absolute bottom-full left-0 z-50 mb-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-border bg-background p-4 text-left shadow-2xl"
                         />
                       ) : (

@@ -2,12 +2,13 @@
 
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { CheckCircle2, Download, Mail, MessageCircle, Receipt } from "lucide-react";
+import { CheckCircle2, Download, Mail, Receipt } from "lucide-react";
 
 import { ButtonLink } from "@/components/button-link";
 import { DemoBadge, DemoNotice } from "@/components/demo-notice";
 import { EmptyState } from "@/components/empty-state";
 import { OrderSummary } from "@/components/order-summary";
+import { WhatsAppIcon } from "@/components/social-icons";
 import { WhatsAppInquiry } from "@/components/whatsapp-inquiry";
 import {
   getDemoOrderServerSnapshot,
@@ -210,7 +211,7 @@ export function OrderConfirmation() {
             className="rounded-3xl border border-border bg-background p-6"
           >
             <div className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 text-brand-green" aria-hidden="true" />
+              <WhatsAppIcon className="h-5 w-5 shrink-0 text-brand-green" aria-hidden="true" />
               <h2
                 id="whatsapp-demo-title"
                 className="font-display text-2xl font-extrabold text-brand-ink"

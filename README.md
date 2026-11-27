@@ -145,7 +145,11 @@ está publicado; el carrito y checkout reales siguen cerrados. Ver
 - React 19.
 - TypeScript en modo estricto.
 - Tailwind CSS v4.
-- [lucide-react](https://lucide.dev) para iconografía.
+- [lucide-react](https://lucide.dev) para iconografía de interfaz.
+- [Simple Icons](https://simpleicons.org/) para WhatsApp, Instagram, Facebook y YouTube, con
+  trazados SVG locales en `lib/icons/simple-icons.ts` y componentes en `components/social-icons.tsx`.
+  No requiere paquete adicional ni CDN en el navegador. Fuente fijada por revisión y licencia
+  CC0-1.0 incluida en `licenses/simple-icons-LICENSE.md`.
 - [Driver.js](https://driverjs.com) solo para el recorrido de demostración.
 - [sanitize-html](https://github.com/apostrophecms/sanitize-html) para el HTML enriquecido que llega
   de Shopify; `server-only` protege los módulos con credenciales.
@@ -208,14 +212,14 @@ documenta en [`lib/shopify/README.md`](./lib/shopify/README.md).
 | `/guias/[slug]`             | Pública  | Guía para conversar en familia; `noindex`                         |
 | `/guias/[slug]/descargar`   | Pública  | Versión imprimible de la guía; `noindex`                          |
 | `/cinco-preguntas`          | Pública  | Regalo «Cinco preguntas»; hoy «En preparación»                    |
-| `/trazaurus`                | Pública  | Serie Trazaurus; hoy «En preparación»                             |
+| `/trazaurus`                | Pública  | Serie Trazaurus y acceso al material complementario               |
 | `/para-escuelas`            | Pública  | Ferias, acervos, renta y equipamiento, con WhatsApp por bloque    |
-| `/nosotros`                 | Pública  | Página institucional; hoy «En preparación»                        |
+| `/nosotros`                 | Pública  | Presentación, propósito, misión y valores de Lazox                |
 | `/factura`                  | Pública  | Facturación; hoy «En preparación»                                 |
 | `/envios`                   | Pública  | Envíos; borrador legal para revisión                              |
 | `/devoluciones`             | Pública  | Devoluciones; borrador legal para revisión                        |
-| `/preguntas-frecuentes`     | Pública  | Preguntas frecuentes; hoy «En preparación»                        |
-| `/que-es-silee`             | Pública  | Qué es SILEE; hoy «En preparación»                                |
+| `/preguntas-frecuentes`     | Pública  | Diez preguntas sobre libros, guías y escuelas                     |
+| `/que-es-silee`             | Pública  | Presentación de SILEE y enlaces a su sitio                        |
 | `/lo-que-esta-casa-promete` | Pública  | Promesas de la casa; hoy «En preparación»                         |
 | `/privacidad`               | Pública  | Aviso de privacidad; borrador legal para revisión                 |
 | `/terminos`                 | Pública  | Términos y condiciones; borrador legal para revisión              |
@@ -247,14 +251,14 @@ app/
       compra/demo/            Checkout ficticio
       pedido/                 Confirmación y caja
       cinco-preguntas/        Regalo pendiente
-      trazaurus/              Serie pendiente
+      trazaurus/              Presentación y recursos de Trazaurus
       para-escuelas/          Opciones para escuelas
-      nosotros/               Página institucional pendiente
+      nosotros/               Presentación y valores de Lazox
       factura/                Factura pendiente
       envios/                 Envíos pendiente
       devoluciones/           Devoluciones pendiente
-      preguntas-frecuentes/   Preguntas pendientes
-      que-es-silee/           SILEE pendiente
+      preguntas-frecuentes/   Diez respuestas sobre Lazox
+      que-es-silee/           Presentación del proyecto SILEE
       lo-que-esta-casa-promete/ Promesas pendientes
       privacidad/             Privacidad pendiente
       terminos/               Términos pendientes
@@ -351,8 +355,9 @@ El recorrido para Gero vive en `features/demo-tour/` y está aislado del resto d
 - **Activación:** solo se muestra si `NEXT_PUBLIC_ENABLE_DEMO_TOUR=true` en el entorno de
   `pnpm dev` o de `pnpm build`. Con `false`, vacío o ausente no se monta el controlador, no aparece
   el botón y no se carga Driver.js.
-- **Inicio:** botón discreto “Iniciar recorrido de muestra”. Nunca se inicia automáticamente. Al
-  comenzar vuelve a la portada y arranca en el paso 1.
+- **Inicio:** el botón “Iniciar recorrido de muestra” está oculto por petición del usuario;
+  se conserva en `features/demo-tour/demo-tour-button.tsx`. Nunca se inicia automáticamente.
+  Al restaurarlo y comenzar, vuelve a la portada y arranca en el paso 1.
 - **Reinicio y salida:** “Salir” cierra el recorrido en cualquier paso; “Finalizar recorrido” lo
   cierra al terminar. Ambos limpian overlays, listeners y el paso guardado. No hay reanudación
   automática después de recargar la página.

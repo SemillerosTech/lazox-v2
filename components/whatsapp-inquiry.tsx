@@ -1,8 +1,9 @@
 "use client";
 
 import { useId, useState } from "react";
-import { MessageCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 
+import { WhatsAppIcon } from "@/components/social-icons";
 import { DemoBadge } from "@/components/demo-notice";
 import { useWhatsApp } from "@/lib/whatsapp-context";
 import { buildWhatsAppUrl, WHATSAPP_SAMPLE_REPLY, WHATSAPP_DEFAULT_MESSAGE } from "@/lib/whatsapp";
@@ -33,7 +34,7 @@ export function WhatsAppInquiry({
   if (url) {
     return (
       <a href={url} target="_blank" rel="noopener noreferrer" className={buttonClassName}>
-        <MessageCircle className="h-4 w-4" aria-hidden="true" /> {label}
+        <WhatsAppIcon className="h-4 w-4 shrink-0" aria-hidden="true" /> {label}
       </a>
     );
   }
@@ -47,7 +48,7 @@ export function WhatsAppInquiry({
         aria-expanded={open}
         aria-controls={panelId}
       >
-        <MessageCircle className="h-4 w-4" aria-hidden="true" /> {label}
+        <WhatsAppIcon className="h-4 w-4 shrink-0" aria-hidden="true" /> {label}
       </button>
 
       {open && (
