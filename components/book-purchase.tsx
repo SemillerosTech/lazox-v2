@@ -1,5 +1,6 @@
 "use client";
 
+import { isRentalOnly } from "@/lib/rental";
 import { useState } from "react";
 import Link from "next/link";
 import { Download } from "lucide-react";
@@ -24,6 +25,8 @@ export function BookPurchase({
   const options = getBookPriceOptions(book);
   const showTwoPrices = options.length > 1 && isDualPricingEnabled();
 
+  if (isRentalOnly(book)) return null;
+
   return (
     <div className="mt-6">
       {showTwoPrices ? (
@@ -32,18 +35,19 @@ export function BookPurchase({
         <Price price={book.price} className="text-3xl" />
       )}
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+      <div className="mt-6 grid grid-cols-2 items-start gap-3">
         <AddToCartButton
           bookId={book.id}
           priceOption={showTwoPrices ? selected : "normal"}
           dataTour="product-add-cart"
+          className="[&_button]:min-h-20 sm:[&_button]:min-h-11"
           enabled={purchasesEnabled}
         />
         {guideSlug && (
           <Link
             href={`/guias/${guideSlug}/descargar`}
             data-tour="product-guide"
-            className={buttonClasses("outline", "w-full")}
+            className={buttonClasses("outline", "min-h-20 w-full sm:min-h-11")}
           >
             <Download className="h-4 w-4" aria-hidden="true" />
             Descargar la guía · sin registro

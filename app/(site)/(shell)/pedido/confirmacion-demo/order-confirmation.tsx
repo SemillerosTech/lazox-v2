@@ -126,9 +126,21 @@ export function OrderConfirmation() {
         </div>
       </section>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_320px] lg:items-start">
+      <div className="mt-8 grid gap-8">
         <div className="space-y-6">
           <OrderSummary lines={order.items} subtotal={order.subtotal} title="Lo que pidió" />
+          <section>
+            <div className="rounded-3xl bg-brand-yellow p-6">
+              <h2 className="font-display text-2xl font-extrabold text-brand-ink">
+                Lo que recibirá
+              </h2>
+              <ul className="mt-3 space-y-2 text-sm font-semibold text-brand-ink">
+                {BOX_ITEMS.map((item) => (
+                  <li key={item}>· {item}</li>
+                ))}
+              </ul>
+            </div>
+          </section>
 
           <section
             aria-labelledby="referral-title"
@@ -220,6 +232,16 @@ export function OrderConfirmation() {
             </p>
           </section>
 
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href="/pedido/caja-demo">Ver la caja</ButtonLink>
+            <Link
+              href="/estantes"
+              className="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-bold text-brand-pink hover:underline"
+            >
+              Seguir explorando
+            </Link>
+          </div>
+
           <section
             aria-labelledby="school-invite-title"
             className="rounded-3xl border-2 border-border bg-background p-6"
@@ -239,28 +261,7 @@ export function OrderConfirmation() {
               />
             </div>
           </section>
-
-          <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/pedido/caja-demo">Ver la caja</ButtonLink>
-            <Link
-              href="/estantes"
-              className="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-bold text-brand-pink hover:underline"
-            >
-              Seguir explorando
-            </Link>
-          </div>
         </div>
-
-        <aside className="lg:sticky lg:top-24">
-          <div className="rounded-3xl bg-brand-yellow p-6">
-            <h2 className="font-display text-2xl font-extrabold text-brand-ink">Lo que recibirá</h2>
-            <ul className="mt-3 space-y-2 text-sm font-semibold text-brand-ink">
-              {BOX_ITEMS.map((item) => (
-                <li key={item}>· {item}</li>
-              ))}
-            </ul>
-          </div>
-        </aside>
       </div>
     </div>
   );

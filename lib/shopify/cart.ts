@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { assertCartPurchasable, assertVariantPurchasable } from "./rental-policy";
 
 import { getCatalogSource, isCartEnabled, isCheckoutEnabled, type CatalogSource } from "./config";
 import { shopifyFetch } from "./client";
@@ -141,6 +142,7 @@ async function clearCartId(): Promise<void> {
 }
 
 function mapCart(cart: ShopifyCart, includeCheckoutUrl: boolean): ShopifyCartView {
+  if (includeCheckoutUrl && isCheckoutEnabled()) assertCartPurchasable(cart);
   const currency = cart.cost.subtotalAmount.currencyCode;
   const subtotal = moneyToCents(cart.cost.subtotalAmount.amount) ?? 0;
 
@@ -218,6 +220,7 @@ export async function addShopifyCartLine({
   const source = getCatalogSource();
   assertCartReady(source);
   assertVariantId(variantId);
+  await assertVariantPurchasable(variantId);
   const normalizedQuantity = normalizeQuantity(quantity);
   const buyerIp = await getBuyerIp();
   const cartId = await readCartId();
@@ -277,6 +280,9 @@ export async function updateShopifyCartLine({
     throw new ShopifyCartError("No hay un carrito activo.");
   }
 
+  const currentCart = await fetchCart(cartId);
+  if (!currentCart) throw new ShopifyCartError("El carrito ya no está disponible.");
+  assertCartPurchasable(currentCart);
   const buyerIp = await getBuyerIp();
   const data = await shopifyFetch<{ cartLinesUpdate: ShopifyCartMutationPayload }>({
     query: CART_LINES_UPDATE_MUTATION,
@@ -340,5 +346,7 @@ export async function getShopifyCheckoutUrl(): Promise<string | null> {
   if (!cartId) return null;
 
   const cart = await fetchCart(cartId);
-  return cart?.checkoutUrl ?? null;
+  if (!cart) return null;
+  assertCartPurchasable(cart);
+  return cart.checkoutUrl;
 }

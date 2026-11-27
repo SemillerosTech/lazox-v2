@@ -4,7 +4,8 @@
  * Las claves fueron verificadas en el administrador de Shopify (Datos
  * personalizados → Metaobjetos) el 5 de noviembre de 2026. Si Shopify cambia
  * una definición, actualice aquí y confirme en /revision/catalogo o con
- * `pnpm shopify:check`. No se adivinan claves.
+ * `pnpm shopify:check`. Las claves de portada añadidas el 26 de noviembre
+ * se tomaron del reporte de Shopify Admin. No se adivinan claves.
  */
 
 export type MetaobjectFieldKey = string | null;
@@ -32,6 +33,12 @@ export interface RecommendationFieldKeys {
 }
 
 export interface HomepageFieldKeys {
+  entryBook: MetaobjectFieldKey;
+  entryImage: MetaobjectFieldKey;
+  entryImageAlt: MetaobjectFieldKey;
+  entryOgImage: MetaobjectFieldKey;
+  hostImage: MetaobjectFieldKey;
+  boxImage: MetaobjectFieldKey;
   identifier: MetaobjectFieldKey;
   title: MetaobjectFieldKey;
   message: MetaobjectFieldKey;
@@ -64,6 +71,13 @@ export const RECOMMENDATION_FIELD_KEYS: RecommendationFieldKeys = {
 };
 
 export const HOMEPAGE_FIELD_KEYS: HomepageFieldKeys = {
+  // Claves confirmadas en Shopify Admin el 26 de noviembre de 2026.
+  entryBook: "libro_entrada",
+  entryImage: "foto_entrada",
+  entryImageAlt: "foto_entrada_alt",
+  entryOgImage: "imagen_entrada_compartir",
+  hostImage: "anfitrion_aprobado",
+  boxImage: "foto_caja",
   identifier: "identificador",
   title: "titulo",
   message: "mensaje_principal",

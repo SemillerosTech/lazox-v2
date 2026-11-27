@@ -67,6 +67,7 @@ export const localDraftCatalog: CatalogRepository = {
   async getHomepageContent(): Promise<HomepageContent> {
     return {
       id: "local-draft-global",
+      entryBookSlug: "inseparables",
       shelfPrefix: "Para el niño o la niña que…",
     };
   },

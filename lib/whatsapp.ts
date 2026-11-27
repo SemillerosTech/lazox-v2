@@ -1,3 +1,6 @@
+export const WHATSAPP_RENTAL_MESSAGE =
+  "Hola, me gustaría que la renta escolar llegara a la escuela de mis hijos.";
+
 export const WHATSAPP_DEFAULT_MESSAGE = "Hola, tengo una pregunta.";
 
 export const WHATSAPP_CONFIRMATION_MESSAGE =
@@ -31,9 +34,7 @@ export function getWhatsAppNumber(): string | undefined {
   const digits = raw.replace(/\D/g, "");
   if (digits.length === 0) return undefined;
   if (digits.length === 10) return `52${digits}`;
-  if (digits.length === 11 && digits.startsWith("1")) return `52${digits}`;
-
-  return digits;
+  return /^52\d{10}$/.test(digits) ? digits : undefined;
 }
 
 export function buildWhatsAppUrl(message = WHATSAPP_DEFAULT_MESSAGE): string | undefined {

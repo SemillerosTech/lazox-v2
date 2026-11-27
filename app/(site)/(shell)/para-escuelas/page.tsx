@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ButtonLink } from "@/components/button-link";
 
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { WhatsAppInquiry } from "@/components/whatsapp-inquiry";
@@ -64,6 +65,13 @@ export default function SchoolsPage() {
             </h2>
             {option.description && (
               <p className="mt-3 text-sm font-semibold text-brand-ink">{option.description}</p>
+            )}
+            {option.id === "renta" && (
+              <div className="mt-4">
+                <ButtonLink href="/renta-escolar" variant="outline">
+                  Así funciona la renta escolar
+                </ButtonLink>
+              </div>
             )}
             <div className="mt-4">
               <WhatsAppInquiry

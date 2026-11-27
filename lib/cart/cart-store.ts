@@ -1,4 +1,5 @@
-import type { CartItem, PriceOption } from "@/lib/types";
+import { canPurchaseBook } from "@/lib/rental";
+import type { Book, CartItem, PriceOption } from "@/lib/types";
 
 import { clampQuantity, readCart, writeCart } from "./cart-storage";
 
@@ -49,7 +50,9 @@ export function getCartServerSnapshot(): CartSnapshot {
   return EMPTY_SNAPSHOT;
 }
 
-export function addToCart(bookId: string, quantity = 1, priceOption: PriceOption = "normal"): void {
+export function addToCart(book: Book, quantity = 1, priceOption: PriceOption = "normal"): void {
+  if (!book || !canPurchaseBook(book)) return;
+  const bookId = book.id;
   loadFromStorage();
 
   const existing = currentSnapshot.items.find((line) => line.bookId === bookId);

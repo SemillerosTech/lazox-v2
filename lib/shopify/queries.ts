@@ -6,6 +6,8 @@
  */
 
 export const PRODUCT_METAFIELD_IDENTIFIERS = [
+  { namespace: "lazox", key: "solo_renta_escolar" },
+  { namespace: "lazox", key: "portada_autorizada" },
   { namespace: "lazox", key: "isbn" },
   { namespace: "lazox", key: "autora" },
   { namespace: "lazox", key: "ilustradora" },
@@ -203,6 +205,9 @@ const CART_FRAGMENT = /* GraphQL */ `
               id
               handle
               title
+              rentalOnly: metafield(namespace: "lazox", key: "solo_renta_escolar") {
+                value
+              }
               featuredImage {
                 ...ImageFields
               }

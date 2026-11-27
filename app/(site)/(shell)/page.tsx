@@ -9,12 +9,23 @@ import { Price } from "@/components/price";
 import { ShelfDoor } from "@/components/shelf-door";
 import { WhatsAppInquiry } from "@/components/whatsapp-inquiry";
 import { catalog } from "@/lib/catalog";
+import { isRentalOnly } from "@/lib/rental";
 import { WHATSAPP_SCHOOL_MESSAGE } from "@/lib/whatsapp";
 
-export const metadata: Metadata = {
-  title: "Lazox · Un libro para lo que le está pasando",
-  description: "Cada uno viene con preguntas para conversarlo en casa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const homepage = await catalog.getHomepageContent();
+  return {
+    title: { absolute: "Lazox · Un libro para lo que le está pasando" },
+    description: "Cada uno viene con preguntas para conversarlo en casa.",
+    openGraph: {
+      title: "Lazox · Un libro para lo que le está pasando",
+      description: "Cada uno viene con preguntas para conversarlo en casa.",
+      images: homepage?.entryOgImage
+        ? [{ url: homepage.entryOgImage, width: 1200, height: 630, alt: homepage.entryImageAlt }]
+        : [],
+    },
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -26,12 +37,15 @@ const BOX_ITEMS = [
 ];
 
 export default async function Home() {
-  const [book, shelves, homepage] = await Promise.all([
-    catalog.getBook("inseparables"),
+  const [shelves, homepage] = await Promise.all([
     catalog.listShelves(),
     catalog.getHomepageContent(),
   ]);
 
+  const book = await catalog.getBook(homepage?.entryBookSlug ?? "inseparables");
+  const showBox =
+    process.env.LAZOX_BOX_PRINTED_CONFIRMED === "true" ||
+    (process.env.NODE_ENV === "development" && process.env.LAZOX_PREVIEW_BOX === "true");
   const entryShelves = shelves.slice(0, 2);
   const otherShelves = shelves.slice(2);
   const shelfPrefix = homepage?.shelfPrefix ?? "Para el niño o la niña que…";
@@ -62,24 +76,31 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-brand-cream">
-            <Image
-              src="/images/l1-inseparables-mesa.webp"
-              alt="Inseparables sobre una mesa de madera, con luz de día."
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-              className="object-cover"
-            />
-            <Image
-              src="/images/anfitrion-leyendo.webp"
-              alt=""
-              aria-hidden="true"
-              width={1254}
-              height={1254}
-              sizes="(max-width: 768px) 96px, 128px"
-              className="pointer-events-none absolute -bottom-8 -left-3 w-24 sm:w-28 md:w-32"
-            />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-gray-200">
+            {homepage?.entryImage && homepage.entryImageAlt ? (
+              <Image
+                src={homepage.entryImage}
+                alt={homepage.entryImageAlt}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center p-8 text-center font-semibold text-brand-ink">
+                Toma L1 · {book?.title ?? "Inseparables"} abierto sobre una mesa
+              </div>
+            )}
+            {homepage?.hostImage && (
+              <Image
+                src={homepage.hostImage}
+                alt=""
+                aria-hidden="true"
+                width={128}
+                height={128}
+                className="pointer-events-none absolute -bottom-3 left-0 w-20 md:w-24"
+              />
+            )}
           </div>
         </div>
       </section>
@@ -165,7 +186,11 @@ export default async function Home() {
                   .join(" · ")}
               </p>
               <div className="mt-5 flex flex-wrap items-center gap-4">
-                <Price price={book.price} />
+                {isRentalOnly(book) ? (
+                  <span className="font-bold">Solo en renta escolar</span>
+                ) : (
+                  <Price price={book.price} />
+                )}
                 <ButtonLink href={`/libros/${book.slug}`}>Conocer el libro</ButtonLink>
               </div>
               {bookShelf && (
@@ -198,34 +223,45 @@ export default async function Home() {
         </div>
       </section>
 
-      <section aria-labelledby="que-trae-la-caja" className="mx-auto max-w-7xl px-4 py-14 md:py-20">
-        <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-brand-cream">
-            <Image
-              src="/images/c1-caja-abierta.webp"
-              alt="La caja de Lazox abierta con el libro y sus materiales."
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-            />
+      {showBox && (
+        <section
+          aria-labelledby="que-trae-la-caja"
+          className="mx-auto max-w-7xl px-4 py-14 md:py-20"
+        >
+          <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-brand-cream">
+              {homepage?.boxImage ? (
+                <Image
+                  src={homepage.boxImage}
+                  alt="La caja de Lazox abierta con sus piezas."
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center bg-gray-200 p-8 text-center font-semibold text-brand-ink">
+                  Toma C1 · La caja abierta con sus tres piezas
+                </div>
+              )}
+            </div>
+            <div>
+              <h2
+                id="que-trae-la-caja"
+                className="text-3xl font-extrabold text-brand-ink md:text-4xl"
+              >
+                Qué trae la caja
+              </h2>
+              <ul className="mt-6 space-y-4 text-lg font-semibold text-brand-ink">
+                {BOX_ITEMS.map((item) => (
+                  <li key={item} className="border-b border-border pb-4 last:border-b-0">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <div>
-            <h2
-              id="que-trae-la-caja"
-              className="text-3xl font-extrabold text-brand-ink md:text-4xl"
-            >
-              Qué trae la caja
-            </h2>
-            <ul className="mt-6 space-y-4 text-lg font-semibold text-brand-ink">
-              {BOX_ITEMS.map((item) => (
-                <li key={item} className="border-b border-border pb-4 last:border-b-0">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section aria-label="Trazaurus y escuelas" className="bg-brand-mint">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-start md:py-16">

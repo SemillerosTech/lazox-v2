@@ -13,6 +13,7 @@ export interface FooterColumn {
 export const SITE_NAV: NavItem[] = [
   { label: "Libros", href: "/estantes" },
   { label: "Guías", href: "/guias" },
+  { label: "Renta escolar", href: "/renta-escolar" },
   { label: "Trazaurus", href: "/trazaurus" },
   { label: "Para escuelas", href: "/para-escuelas" },
   { label: "Nosotros", href: "/nosotros" },
@@ -25,6 +26,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: "Los diez estantes", href: "/estantes" },
       { label: "Trazaurus", href: "/trazaurus" },
       { label: "Guías", href: "/guias" },
+      { label: "Renta escolar", href: "/renta-escolar" },
     ],
   },
   {
@@ -32,7 +34,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     items: [
       { label: "Ferias", href: "/para-escuelas#ferias" },
       { label: "Acervos", href: "/para-escuelas#acervos" },
-      { label: "Renta", href: "/para-escuelas#renta" },
+      { label: "Renta", href: "/renta-escolar" },
       { label: "Equipamiento", href: "/para-escuelas#equipamiento" },
     ],
   },

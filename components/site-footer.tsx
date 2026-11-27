@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { Logo } from "@/components/logo";
 import { WhatsAppInquiry } from "@/components/whatsapp-inquiry";
@@ -21,13 +24,16 @@ function FooterLink({ label, href }: { label: string; href: string }) {
 }
 
 export function SiteFooter() {
+  const hideAssociation = usePathname() === "/renta-escolar";
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 py-10">
         <div className="border-b border-border pb-8">
-          <p className="max-w-xl text-sm font-semibold text-brand-ink">
-            Lazox apoya el proyecto SILEE® de Semilleros de Sentido A.C.
-          </p>
+          {!hideAssociation && (
+            <p className="max-w-xl text-sm font-semibold text-brand-ink">
+              Lazox apoya el proyecto SILEE® de Semilleros de Sentido A.C.
+            </p>
+          )}
           <Logo className="mt-4 h-12 w-auto" />
         </div>
 
@@ -41,21 +47,28 @@ export function SiteFooter() {
                 {column.title}
               </h2>
               <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-                {column.items.map((item) => (
-                  <li key={item.label}>
-                    {item.kind === "whatsapp" ? (
-                      <WhatsAppInquiry
-                        label={item.label}
-                        showSampleReply={false}
-                        containerClassName="inline-block"
-                        className="text-left transition hover:text-brand-pink"
-                        panelClassName="absolute bottom-full left-0 z-50 mb-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-border bg-background p-4 text-left shadow-2xl"
-                      />
-                    ) : (
-                      <FooterLink label={item.label} href={item.href} />
-                    )}
-                  </li>
-                ))}
+                {column.items
+                  .filter(
+                    (item) =>
+                      !hideAssociation ||
+                      (item.href !== "/que-es-silee" &&
+                        !item.href.includes("semillerosdesentido.org")),
+                  )
+                  .map((item) => (
+                    <li key={item.label}>
+                      {item.kind === "whatsapp" ? (
+                        <WhatsAppInquiry
+                          label={item.label}
+                          showSampleReply={false}
+                          containerClassName="inline-block"
+                          className="text-left transition hover:text-brand-pink"
+                          panelClassName="absolute bottom-full left-0 z-50 mb-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-border bg-background p-4 text-left shadow-2xl"
+                        />
+                      ) : (
+                        <FooterLink label={item.label} href={item.href} />
+                      )}
+                    </li>
+                  ))}
               </ul>
             </section>
           ))}

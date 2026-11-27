@@ -44,6 +44,10 @@ export interface Book {
   forWhom?: string;
   conversationQuestion: string;
   conversationRule?: string;
+  rentalOnly?: boolean;
+  coverImageAuthorized?: boolean;
+  openingImage?: string;
+  openingImageAlt?: string;
   coverImage?: string;
   coverImageAlt?: string;
   status: "published" | "provisional";
@@ -121,6 +125,12 @@ export interface HomepageContent {
   editorialStatus?: string;
   /** Prefijo editorial que acompaña a los estantes. */
   shelfPrefix: string;
+  entryBookSlug?: string;
+  entryImage?: string;
+  entryImageAlt?: string;
+  entryOgImage?: string;
+  hostImage?: string;
+  boxImage?: string;
 }
 
 export interface CartItem {

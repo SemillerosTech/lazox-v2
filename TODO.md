@@ -5,7 +5,22 @@
 > **Regla:** no marque una tarea como completada sin verificarla. Al cerrar una tarea, agregue una
 > nota breve con la fecha y la evidencia (comando, ruta o aprobación recibida).
 
-**Última actualización:** 5 de noviembre de 2026.
+**Última actualización:** 26 de noviembre de 2026.
+
+## Ajustes de apertura del 30 de noviembre
+
+Registro actual por tarjeta: [implementación](./docs/implementacion-30-noviembre.md).
+
+- [x] Revisión visual a 390 y 1440 px, 30 visitas a rutas y compra móvil de demostración verificadas el 26 de noviembre; además, 6 fichas con catálogo sintético para estados normal, agotado y solo renta.
+- [ ] Resolver el build: fallos de Google Fonts / `next/font` con Turbopack y Webpack; repetir antes de publicar. Next emitió también un aviso de actualización de seguridad.
+- [x] Confirmar `lazox.solo_renta_escolar` y `lazox.portada_autorizada`: Storefront devolvió ambos booleanos con valor `false` para Inseparables el 26 de noviembre. Consulta de solo lectura.
+- [x] Conectar las seis claves de portada reportadas desde Shopify Admin en `HOMEPAGE_FIELD_KEYS`. Evidencia: dos pruebas nuevas en `pnpm test:opening` y entrada `global` legible por Storefront el 26 de noviembre.
+- [ ] Verificar referencias reales de producto e imágenes en Storefront cuando se cargue contenido aprobado. Los seis campos de portada están vacíos y no aparecen en la respuesta actual.
+- [x] Confirmar por Storefront año 2021 y 48 páginas de Inseparables el 26 de noviembre. Formato y encuadernación siguen sin confirmarse.
+- [ ] Recibir L1 real abierto y su versión 1200 × 630, C1 real, confirmación de caja impresa, portada autorizada y gelatinita aprobada (hero, carrito vacío y 404).
+- [ ] Recibir número oficial y probar destinatario, mensaje y vista previa en WhatsApp desde un celular real.
+- [ ] Adaptar la notificación real de Shopify: el repositorio solo contiene un ejemplo visual del correo.
+- [ ] Definir convenio inicial y El patio 2.0 antes de abrir claves, folios, selección y pagos de renta.
 
 ## Avance del catálogo parcial (5 de noviembre de 2026)
 

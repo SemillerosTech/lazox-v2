@@ -8,7 +8,7 @@ export const books: Book[] = [
     author: "Mar Pavón",
     illustrator: "María Girón",
     publisher: "Tramuntana Editorial",
-    year: 2015,
+    year: 2021,
     isbn: "978-84-943046-0-6",
     pages: 48,
     coverImage: "/images/portada-inseparables.jpg",

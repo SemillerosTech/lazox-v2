@@ -19,6 +19,11 @@ Antes de cambiar comportamiento, contenido o arquitectura, lea:
 Si la documentación y el código no coinciden, investigue antes de asumir que uno de los dos está
 equivocado. No invente requisitos ni contenido editorial.
 
+Para los ajustes de apertura del 30 de noviembre, aplique también
+[`docs/LAZOX-ajustes-codigo-30-noviembre.md`](./docs/LAZOX-ajustes-codigo-30-noviembre.md),
+solicitado expresamente por el usuario. Sus requisitos actualizados de caja, renta y navegación
+tienen prioridad sobre las descripciones históricas de esta entrega.
+
 ## 2. Contexto operativo
 
 - **Proyecto activo:** `lazox-v2/`, una aplicación Next.js 16 desplegable en Vercel con Root
@@ -101,6 +106,7 @@ app/
       pedido/                 Confirmación y caja
       cinco-preguntas/        Página del regalo (En preparación)
       trazaurus/              Página de la serie (En preparación)
+      renta-escolar/          Renta pública; acceso escolar cerrado
       para-escuelas/          Ferias, acervos, renta y equipamiento
       nosotros/               Página institucional (En preparación)
       factura/                Factura (En preparación)
@@ -166,8 +172,9 @@ Estas reglas son parte del brief y de las 27 tarjetas. No las cambie sin aprobac
 - **Portada:** las imágenes actuales son maquetas para ver el sitio armado. La portada, la toma L1,
   la toma C1 y el anfitrión no son definitivos y se reemplazan cuando lleguen los assets aprobados.
 - **Anfitrión:** hoy se muestra una maqueta no aprobada. No inventar personajes ni caras de niños.
-- **Caja:** «Qué trae la caja» se muestra con la maqueta C1 y los cuatro renglones aprobados. La
-  foto real de la caja impresa sigue pendiente.
+- **Caja:** «Qué trae la caja» permanece oculto hasta `LAZOX_BOX_PRINTED_CONFIRMED=true`.
+  `LAZOX_PREVIEW_BOX=true` permite inspeccionarlo solo con `pnpm dev`. Sin foto real se usa
+  el recuadro C1. No vuelva a mostrar la maqueta como foto real.
 - **Cinco preguntas:** la página dice «En preparación» hasta que Rossy firme la tarjeta. No hay
   PDF inventado.
 - **Sin buscador, cuenta ni newsletter:** no hay flujo asociado. No agregue formularios que pidan

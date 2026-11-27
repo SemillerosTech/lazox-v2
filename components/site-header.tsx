@@ -21,7 +21,7 @@ export function SiteHeader() {
           <Logo priority />
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm font-bold lg:flex" aria-label="Principal">
+        <nav className="hidden items-center gap-4 text-sm font-bold lg:flex" aria-label="Principal">
           {SITE_NAV.map((item) => (
             <Link key={item.label} href={item.href} className="hover:text-brand-pink">
               {item.label}
@@ -81,6 +81,7 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          <WhatsAppInquiry label="WhatsApp" showSampleReply={false} />
           <Link
             href="/carrito"
             onClick={() => setOpen(false)}

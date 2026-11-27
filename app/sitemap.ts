@@ -17,6 +17,7 @@ const STATIC_PATHS = [
   "/guias",
   "/cinco-preguntas",
   "/trazaurus",
+  "/renta-escolar",
   "/para-escuelas",
   "/nosotros",
   "/que-es-silee",

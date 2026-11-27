@@ -19,6 +19,30 @@ confirmación y representación de la caja.
 > `TODO.md` es la lista viva de pendientes. La hoja de las 27 tarjetas está en
 > [`docs/lo-de-adentro-afuera.md`](./docs/lo-de-adentro-afuera.md).
 
+## Ajustes para la apertura del 30 de noviembre
+
+Implementación local del documento `docs/LAZOX-ajustes-codigo-30-noviembre.md`, revisada el
+26 de noviembre de 2026. El registro por tarjeta, pruebas y dependencias está en
+[`docs/implementacion-30-noviembre.md`](./docs/implementacion-30-noviembre.md).
+No se ha publicado este cambio. Los campos creados desde Shopify Admin se conectaron al código
+el 26 de noviembre; esta conexión solo realizó consultas de lectura a Storefront.
+
+- Menú: Libros, Guías, Renta escolar, Trazaurus, Para escuelas y Nosotros.
+- `/renta-escolar` explica la renta y enlaza a guías y WhatsApp; no muestra acceso con clave,
+  precios ni referencias a la asociación, incluido su pie.
+- Hero con recuadro L1 mientras no haya foto real autorizada; se retiraron las maquetas del hero
+  y de las vistas previas al compartir. Las portadas existentes del borrador se conservan.
+- Caja oculta hasta `LAZOX_BOX_PRINTED_CONFIRMED=true`. Para revisarla con `pnpm dev`, usar
+  `LAZOX_PREVIEW_BOX=true`; esta vista previa no la publica en un build de producción.
+- `NEXT_PUBLIC_ENABLE_RENTAL_ONLY=false` al abrir. Si se activa y el producto tiene
+  `lazox.solo_renta_escolar=true`, se omiten precio/carrito y se valida la restricción también
+  en el servidor al agregar, actualizar y entregar acceso al checkout.
+- La vista previa de cada libro solo incluye su portada con `lazox.portada_autorizada=true`.
+  Ambos campos ya están creados; Storefront devuelve `false` en Inseparables.
+- Las seis claves nuevas de portada están conectadas en `HOMEPAGE_FIELD_KEYS`. La entrada
+  `global` es legible por Storefront y sus campos nuevos siguen vacíos hasta recibir contenido aprobado.
+- `pnpm test:opening` ejecuta las pruebas de renta, WhatsApp y campos de portada, sin llamadas a Shopify.
+
 ## 1. Contexto del proyecto
 
 LAZOX trabaja con familias, escuelas y comunidades. La propuesta editorial organiza los libros en
@@ -32,7 +56,7 @@ El borrador sirve para validar el recorrido alrededor de un solo libro aprobado:
 | Autora           | Mar Pavón                                                                 |
 | Ilustradora      | María Girón                                                               |
 | Editorial        | Tramuntana Editorial                                                      |
-| Año              | 2015                                                                      |
+| Año              | 2021                                                                      |
 | ISBN             | 978-84-943046-0-6                                                         |
 | Páginas          | 48                                                                        |
 | Edad sugerida    | Hacia los 7 años en adelante, y por toda la familia                       |

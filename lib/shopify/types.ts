@@ -117,6 +117,7 @@ export interface ShopifyCartLineMerchandise {
     handle: string;
     title: string;
     featuredImage: ShopifyImage | null;
+    rentalOnly?: { value: string | null } | null;
   };
 }
 

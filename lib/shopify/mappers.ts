@@ -217,6 +217,8 @@ export function mapProduct(product: ShopifyProduct): Book | null {
     synopsis: plainTextFromHtml(product.descriptionHtml) || product.description,
     conversationQuestion: readText(fields, "pregunta_conversar") ?? "",
     status: "published",
+    rentalOnly: readText(fields, "solo_renta_escolar") === "true",
+    coverImageAuthorized: readText(fields, "portada_autorizada") === "true",
     ...(readText(fields, "ilustradora") ? { illustrator: readText(fields, "ilustradora") } : {}),
     ...(readText(fields, "traductor") ? { translator: readText(fields, "traductor") } : {}),
     ...(readText(fields, "editorial") ? { publisher: readText(fields, "editorial") } : {}),
@@ -355,6 +357,11 @@ export function mapHomepageContent(
 ): HomepageContent | null {
   if (!metaobject) return null;
 
+  const entryBook = metaobject.fields.find(
+    (field) => field.key === HOMEPAGE_FIELD_KEYS.entryBook,
+  )?.reference;
+  const media = (key: string | null) =>
+    key ? referenceUrl(metaobject.fields.find((field) => field.key === key)?.reference) : undefined;
   const shelfPrefix = guideField(metaobject.fields, HOMEPAGE_FIELD_KEYS.shelfPrefix);
   if (!shelfPrefix) return null;
 
@@ -365,6 +372,24 @@ export function mapHomepageContent(
   return {
     id: guideField(metaobject.fields, HOMEPAGE_FIELD_KEYS.identifier) ?? metaobject.handle,
     shelfPrefix,
+    ...(entryBook?.__typename === "Product" && entryBook.handle
+      ? { entryBookSlug: entryBook.handle }
+      : {}),
+    ...(media(HOMEPAGE_FIELD_KEYS.entryImage)
+      ? { entryImage: media(HOMEPAGE_FIELD_KEYS.entryImage) }
+      : {}),
+    ...(guideField(metaobject.fields, HOMEPAGE_FIELD_KEYS.entryImageAlt)
+      ? { entryImageAlt: guideField(metaobject.fields, HOMEPAGE_FIELD_KEYS.entryImageAlt) }
+      : {}),
+    ...(media(HOMEPAGE_FIELD_KEYS.entryOgImage)
+      ? { entryOgImage: media(HOMEPAGE_FIELD_KEYS.entryOgImage) }
+      : {}),
+    ...(media(HOMEPAGE_FIELD_KEYS.hostImage)
+      ? { hostImage: media(HOMEPAGE_FIELD_KEYS.hostImage) }
+      : {}),
+    ...(media(HOMEPAGE_FIELD_KEYS.boxImage)
+      ? { boxImage: media(HOMEPAGE_FIELD_KEYS.boxImage) }
+      : {}),
     ...(guideField(metaobject.fields, HOMEPAGE_FIELD_KEYS.title)
       ? { title: guideField(metaobject.fields, HOMEPAGE_FIELD_KEYS.title) }
       : {}),

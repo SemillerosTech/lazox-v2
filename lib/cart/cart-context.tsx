@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 
+import { canPurchaseBook } from "@/lib/rental";
 import { getBookUnitPrice, resolvePriceOption } from "@/lib/pricing";
 import type { Book, CartLineItem, PriceOption } from "@/lib/types";
 
@@ -58,7 +59,7 @@ export function CartProvider({
 
     return snapshot.items.flatMap((line) => {
       const book = bookIndex.get(line.bookId);
-      if (!book) return [];
+      if (!book || !canPurchaseBook(book)) return [];
 
       const priceOption = resolvePriceOption(book, line.priceOption);
       const unitPrice = getBookUnitPrice(book, priceOption);
@@ -82,9 +83,10 @@ export function CartProvider({
   const add = useCallback(
     (bookId: string, quantity?: number, priceOption?: PriceOption) => {
       if (!enabled) return;
-      addToCart(bookId, quantity, priceOption);
+      const book = bookIndex.get(bookId);
+      if (book) addToCart(book, quantity, priceOption);
     },
-    [enabled],
+    [enabled, bookIndex],
   );
 
   const setQuantity = useCallback(

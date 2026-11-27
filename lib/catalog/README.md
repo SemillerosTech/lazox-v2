@@ -75,3 +75,19 @@ El detalle de claves, variables y diagnóstico está en
 - Las páginas deben consumir `catalog`; no agregue imports directos de `lib/data/` salvo las
   excepciones documentadas: `lib/data/pricing-preview.ts` para `/revision/precios` y el adaptador
   local mismo. El carrito ya no importa `lib/data/`: recibe los libros desde el layout de servidor.
+
+## Preparación de apertura (26 de noviembre de 2026)
+
+- `Book.rentalOnly` representa `lazox.solo_renta_escolar` (booleano verificado por Storefront). Solo
+  afecta a la compra con `NEXT_PUBLIC_ENABLE_RENTAL_ONLY=true`; el defecto es apagado.
+- `Book.coverImageAuthorized` representa `lazox.portada_autorizada`, también nuevo. Se usa
+  para incluir la portada en Open Graph; nunca se infiere autorización por existir una imagen.
+- `HomepageContent.entryBookSlug` selecciona el libro de entrada. `entryImage` y
+  `entryImageAlt` deben describir la foto real autorizada; `entryOgImage` es su versión
+  1200 × 630. `hostImage` y `boxImage` aceptan los recursos aprobados.
+- El adaptador local entrega Inseparables como selección inicial. En Shopify se mantiene el
+  metaobjeto `contenido_de_portada_lazox/global`; las seis claves nuevas están conectadas en
+  `HOMEPAGE_FIELD_KEYS` conforme al reporte de Shopify Admin. Storefront devuelve la entrada;
+  los campos nuevos siguen vacíos. No se cargaron recursos ni se cambió la selección editorial.
+- Sin fotografía se muestra el recuadro L1. La caja se controla en servidor con
+  `LAZOX_BOX_PRINTED_CONFIRMED`; su vista de desarrollo usa `LAZOX_PREVIEW_BOX`.

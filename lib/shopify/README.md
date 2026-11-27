@@ -458,3 +458,41 @@ Con `LAZOX_CATALOG_SOURCE=shopify` y las credenciales locales:
   administrador. No hay entradas publicadas contra las cuales contrastarlas todavía.
 
 No se creó ningún carrito real ni se modificó Shopify.
+
+## Preparación de renta y recursos autorizados (26 de noviembre de 2026)
+
+La integración consulta dos campos booleanos del namespace `lazox`: `solo_renta_escolar` y
+`portada_autorizada`. Se crearon desde Shopify Admin según el reporte de la conversación
+«Guardar ajustes Shopify». La consulta directa de Storefront del 26 de noviembre confirmó ambos
+con valor `false` en Inseparables. Esta conexión no realizó escrituras en Shopify.
+Un campo ausente conserva la compra normal y no autoriza una portada para Open Graph.
+
+Con `NEXT_PUBLIC_ENABLE_RENTAL_ONLY=true`, la acción de agregar consulta por ID la variante
+solicitada y comprueba el campo de su producto en servidor antes de crear o modificar el carrito.
+La actualización y el acceso al checkout comprueban también las líneas persistidas; una lectura
+incompleta falla cerrada. El flag permanece apagado al abrir y los flags existentes de carrito
+y checkout siguen siendo obligatorios. No habilitarlo solo en el navegador: es variable de build
+compartida por cliente y servidor. Pruebas sin red: `pnpm test:opening`.
+
+El contenido de entrada sigue en `contenido_de_portada_lazox/global`. Las claves confirmadas
+en el reporte de Shopify Admin ya están conectadas en `HOMEPAGE_FIELD_KEYS`:
+
+| Campo del código | Clave Shopify              | Tipo                     |
+| ---------------- | -------------------------- | ------------------------ |
+| `entryBook`      | `libro_entrada`            | Referencia a un producto |
+| `entryImage`     | `foto_entrada`             | Archivo de imagen        |
+| `entryImageAlt`  | `foto_entrada_alt`         | Texto de una línea       |
+| `entryOgImage`   | `imagen_entrada_compartir` | Archivo de imagen        |
+| `hostImage`      | `anfitrion_aprobado`       | Archivo de imagen        |
+| `boxImage`       | `foto_caja`                | Archivo de imagen        |
+
+Storefront devuelve la entrada `global`, que el adaptador procesa correctamente. Los seis
+campos están vacíos según Admin y no aparecen en la respuesta actual de Storefront. Las pruebas
+sin red verifican referencias a producto, MediaImage y GenericFile y la omisión de campos
+vacíos. Falta comprobar esas referencias con recursos reales aprobados; no se llenaron campos
+para realizar la prueba.
+Las fotos y el anfitrión cargados allí deben estar autorizados; no reutilizar las maquetas.
+
+Inseparables en el borrador local tiene 48 páginas y año 2021 conforme al documento de apertura.
+La consulta directa a Storefront del 26 de noviembre confirmó los enteros `lazox.paginas=48` y
+`lazox.anio=2021`. No se agregan valores locales ocultos al modo Shopify.

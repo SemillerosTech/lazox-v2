@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Driver } from "driver.js";
 
 import { useCart } from "@/lib/cart/cart-context";
-import { addToCart, getCartSnapshot, setCartQuantity } from "@/lib/cart/cart-store";
+import { getCartSnapshot, setCartQuantity } from "@/lib/cart/cart-store";
 import { createDemoOrder, saveDemoOrder } from "@/lib/cart/demo-order";
 import type { DemoOrderLine } from "@/lib/types";
 
@@ -62,7 +62,7 @@ function clearPersistedStep(): void {
 export function DemoTourProvider() {
   const router = useRouter();
   const pathname = usePathname();
-  const { items, subtotal, clear } = useCart();
+  const { items, subtotal, clear, add } = useCart();
 
   const [isRunning, setIsRunning] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
@@ -165,14 +165,14 @@ export function DemoTourProvider() {
     const line = snapshot.items.find((item) => item.bookId === DEMO_TOUR_BOOK_ID);
 
     if (!line) {
-      addToCart(DEMO_TOUR_BOOK_ID, 1);
+      add(DEMO_TOUR_BOOK_ID, 1);
       return;
     }
 
     if (line.quantity !== 1) {
       setCartQuantity(DEMO_TOUR_BOOK_ID, 1);
     }
-  }, []);
+  }, [add]);
 
   const goToStep = useCallback(
     (index: number) => {

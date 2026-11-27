@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isRentalOnly } from "@/lib/rental";
 import { ArrowRight } from "lucide-react";
 
 import { BookCover } from "@/components/book-cover";
@@ -23,7 +24,11 @@ export function BookCard({ book, dataTour }: { book: Book; dataTour?: string | u
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">{book.author}</p>
         <div className="mt-auto flex items-center justify-between gap-3 pt-4">
-          <Price price={book.price} />
+          {isRentalOnly(book) ? (
+            <span className="text-sm font-bold">Solo en renta escolar</span>
+          ) : (
+            <Price price={book.price} />
+          )}
           <Link
             href={`/libros/${book.slug}`}
             className="inline-flex items-center gap-1 text-sm font-bold text-brand-pink hover:underline"

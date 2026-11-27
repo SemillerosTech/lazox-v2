@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+import { isRentalOnly } from "@/lib/rental";
 import { notFound } from "next/navigation";
 import { Download } from "lucide-react";
 
@@ -29,12 +31,16 @@ export async function generateMetadata({
   const description = book.conversationQuestion || book.synopsis;
 
   return {
-    title: `${book.title} · Lazox`,
+    title: { absolute: `${book.title} · Lazox` },
     description,
     openGraph: {
       title: `${book.title} · Lazox`,
       description,
       type: "book",
+      images:
+        book.coverImageAuthorized && book.coverImage
+          ? [{ url: book.coverImage, alt: book.coverImageAlt ?? `Portada de ${book.title}` }]
+          : [],
     },
   };
 }
@@ -63,6 +69,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
     shelfSlug ? catalog.getShelf(shelfSlug) : Promise.resolve(null),
   ]);
   const outOfStock = isBookOutOfStock(book);
+  const rentalOnly = isRentalOnly(book);
   const credits = illustrationLine(book);
 
   return (
@@ -80,6 +87,15 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
       <div className="mt-8 grid gap-8 md:grid-cols-[minmax(0,260px)_1fr] md:items-start md:gap-10">
         <div className="mx-auto w-full max-w-[220px] md:mx-0 md:max-w-none">
           <BookCover book={book} sizes="(max-width: 768px) 220px, 260px" />
+          {book.openingImage && book.openingImageAlt && (
+            <Image
+              src={book.openingImage}
+              alt={book.openingImageAlt}
+              width={520}
+              height={390}
+              className="mt-4 rounded-2xl"
+            />
+          )}
         </div>
 
         <div data-tour="product-info">
@@ -138,7 +154,24 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
         </section>
       )}
 
-      {outOfStock ? (
+      {rentalOnly ? (
+        <section className="mt-8 rounded-3xl border-2 border-border p-6">
+          <h2 className="text-2xl font-extrabold">Solo en renta escolar</h2>
+          <p className="mt-3">
+            Este libro no está a la venta: aquí solo se presta, por renta escolar.
+          </p>
+          <div className="mt-4">
+            <ButtonLink href="/renta-escolar">Así funciona la renta escolar</ButtonLink>
+          </div>
+          {guide && (
+            <div className="mt-4">
+              <ButtonLink href={`/guias/${guide.slug}/descargar`} variant="outline">
+                Descargar la guía · sin registro
+              </ButtonLink>
+            </div>
+          )}
+        </section>
+      ) : outOfStock ? (
         <section className="mt-8 rounded-3xl border-2 border-border bg-background p-6">
           <Price price={book.price} className="text-3xl" />
           <p className="mt-4 text-lg font-bold text-brand-ink">
@@ -156,6 +189,7 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
             <WhatsAppInquiry
               label="Avisarme cuando vuelva"
               message={getBookWhatsAppMessage(book.title)}
+              showSampleReply={false}
             />
           </div>
         </section>
@@ -170,6 +204,13 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
       <div className="mt-3" data-tour="product-whatsapp">
         <WhatsAppInquiry message={getBookWhatsAppMessage(book.title)} />
       </div>
+
+      <p className="mt-4 text-sm">
+        ¿Le gustaría que libros como este se rentaran en la escuela de sus hijos?{" "}
+        <Link href="/renta-escolar" className="font-bold text-brand-pink underline">
+          Así funciona la renta escolar
+        </Link>
+      </p>
 
       {shelf && (
         <section aria-labelledby="shelves-title" className="mt-10">
@@ -187,6 +228,19 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
               Para el niño o la niña que {shelf.name}
             </Link>
           </div>
+        </section>
+      )}
+
+      {book.neighborBook && (
+        <section className="mt-10">
+          <h2 className="text-2xl font-extrabold">Su vecino</h2>
+          <Link
+            href={`/libros/${book.neighborBook.slug}`}
+            className="mt-3 inline-block font-bold text-brand-pink underline"
+          >
+            {book.neighborBook.title}
+          </Link>
+          {book.neighborBook.reason && <p className="mt-2">{book.neighborBook.reason}</p>}
         </section>
       )}
 
