@@ -7,6 +7,17 @@
 
 **Última actualización:** 26 de noviembre de 2026.
 
+## Tarjetas con libros de colores (26 de noviembre de 2026)
+
+- [x] Repisa SVG decorativa compartida entre portada e índice de estantes; seis libros con colores
+      de la paleta `brand-*`, alturas y orden de colores distintos por estante. Sin títulos ni
+      representación de existencias. Se conservan textos y destinos de las tarjetas.
+- [x] Formato, lint y tipos correctos. Revisión en Chrome de portada e índice a 320, 375, 390,
+      768 y 1440 px: diez estantes, seis colores por ilustración, sin overflow ni errores de página;
+      enlace al estante verificado.
+- [ ] Build sigue fallando en la resolución de Google Fonts con `next/font` (fallo previamente
+      registrado); no hubo cambios de dependencias ni de configuración de fuentes.
+
 ## Ajustes de apertura del 30 de noviembre
 
 Registro actual por tarjeta: [implementación](./docs/implementacion-30-noviembre.md).

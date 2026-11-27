@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
+import { ShelfBooks } from "@/components/shelf-books";
+
 export function ShelfDoor({
   href,
   name,
@@ -16,8 +18,8 @@ export function ShelfDoor({
     <Link
       href={href}
       data-shelf-code={shelfCode}
-      className={`group flex flex-col justify-between rounded-3xl border-2 border-border bg-background transition hover:-translate-y-1 hover:border-brand-pink hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-pink ${
-        size === "small" ? "min-h-32 p-5" : "min-h-48 p-6"
+      className={`group flex flex-col rounded-3xl border-2 border-border bg-background transition hover:-translate-y-1 hover:border-brand-pink hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-pink ${
+        size === "small" ? "min-h-72 p-5" : "min-h-80 p-6"
       }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -34,6 +36,9 @@ export function ShelfDoor({
       >
         {name}
       </p>
+      <div className={`mx-auto mt-auto w-full pt-7 ${size === "small" ? "max-w-64" : "max-w-80"}`}>
+        <ShelfBooks variant={shelfCode ?? name} />
+      </div>
     </Link>
   );
 }

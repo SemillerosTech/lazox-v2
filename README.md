@@ -43,6 +43,11 @@ el 26 de noviembre; esta conexión solo realizó consultas de lectura a Storefro
   `global` es legible por Storefront y sus campos nuevos siguen vacíos hasta recibir contenido aprobado.
 - `pnpm test:opening` ejecuta las pruebas de renta, WhatsApp y campos de portada, sin llamadas a Shopify.
 
+Las tarjetas de estantes de portada y `/estantes` incluyen una repisa SVG con libros
+decorativos de varios colores de la paleta `brand-*`. No representan inventario. El índice
+muestra dos columnas desde 360 px y tres en escritorio; por debajo de 360 px usa una columna
+para conservar la legibilidad.
+
 ## 1. Contexto del proyecto
 
 LAZOX trabaja con familias, escuelas y comunidades. La propuesta editorial organiza los libros en
